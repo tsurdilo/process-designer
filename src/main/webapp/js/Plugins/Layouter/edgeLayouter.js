@@ -43,12 +43,14 @@ new function(){
 		 */
 		findRelatedEdges: function(shape, ignoreList) {
 			edges = new Array();
-			if (this.isIncludedInEdgeIds(shape)) {
-				edges.push(shape);
-			} else {
-				this.getChildShapesWithout(shape, ignoreList).each(function(child) {
-					edges = edges.concat(child.outgoing).concat(child.incoming).concat(this.findRelatedEdges(child, ignoreList));
-				}.bind(this));
+			if (shape.getStencil) { // in case the docker shape reaches here, but it has no stencil
+				if (this.isIncludedInEdgeIds(shape)) {
+					edges.push(shape);
+				} else {
+					this.getChildShapesWithout(shape, ignoreList).each(function(child) {
+						edges = edges.concat(child.outgoing).concat(child.incoming).concat(this.findRelatedEdges(child, ignoreList));
+					}.bind(this));
+				}
 			}
 			
 			return edges;

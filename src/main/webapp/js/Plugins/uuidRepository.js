@@ -124,13 +124,20 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 	 * @param value, the show string.
 	 */
 	setautosavetooltips: function(value){
-		var gen211 = document.getElementById("ext-gen211");
-		var gen244 = document.getElementById("ext-gen244");
-		if(gen211 && gen211.tagName.toLowerCase() == 'button'){
-				gen211.title = value; 
+		var table = document.getElementById("ext-comp-1017");
+		var autosavebutton;
+		try{
+		if(table)
+		{
+		  autosavebutton = table.childNodes[0].childNodes[0].childNodes[1].childNodes[0].childNodes[0];
+		  if(autosavebutton)
+		  {
+		   autosavebutton.title = value;
+		  }
 		}
-	  	if(gen244 && gen244.tagName.toLowerCase() == 'button'){
-				gen244.title = value;
+		}
+		catch(e){
+		//catch exception
 		}
 	},
 	

@@ -85,11 +85,11 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 			'functionality': function(context) {
 			   this.setautosave(ORYX.CONFIG.UUID_AUTOSAVE_INTERVAL);
 			   if (this.autosaving) {
-				   context.setIcon(ORYX.PATH + "images/disk_multiple.png"); 
-				   context.setTooltip(ORYX.I18N.Save.autosaveDesc_on);
+				   context.setIcon(ORYX.PATH + "images/disk_multiple.png");
+				   this.setautosavetooltips(ORYX.I18N.Save.autosaveDesc_on);
 			   } else {
 				   context.setIcon(ORYX.PATH + "images/disk_multiple_disabled.png");
-				   context.setTooltip(ORYX.I18N.Save.autosaveDesc_off);
+				   this.setautosavetooltips(ORYX.I18N.Save.autosaveDesc_off);;
 			   }
 			   context.hide();
 			   context.show();
@@ -117,6 +117,21 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 		// let's set autosave on.
 		this.autosaveFunction = function() { if (/*savePlugin.changeDifference != 0*/true) { this._save(this, true, true); }}.bind(this, autosavecfg);
 		this.setautosave(ORYX.CONFIG.UUID_AUTOSAVE_INTERVAL);
+	},
+	
+	/**
+	 * Set the tooltips of button Autosave dynamically
+	 * @param value, the show string.
+	 */
+	setautosavetooltips: function(value){
+		var gen211 = document.getElementById("ext-gen211");
+		var gen244 = document.getElementById("ext-gen244");
+		if(gen211 && gen211.tagName.toLowerCase() == 'button'){
+				gen211.title = value; 
+		}
+	  	if(gen244 && gen244.tagName.toLowerCase() == 'button'){
+				gen244.title = value;
+		}
 	},
 	
 	/**

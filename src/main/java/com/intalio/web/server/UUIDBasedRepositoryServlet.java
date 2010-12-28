@@ -116,12 +116,14 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
             String uuid = (String) jsonObject.get("uuid");
             String profileName = (String) jsonObject.get("profile");
             boolean autosave = jsonObject.getBoolean("savetype");
-            String model = "";
-            
-            IDiagramProfile profile = getProfile(req, profileName);
-            
-            _repository.save(req, uuid, json, svg, profile, autosave);
 
+            _logger.info("Calling UUIDBasedRepositoryServlet doPost()...");
+            _logger.info("    autosave: " + autosave);
+            IDiagramProfile profile = getProfile(req, profileName);
+            _logger.info("  Got profile...");
+            _logger.info("  Begin saving the diagram");
+            _repository.save(req, uuid, json, svg, profile, autosave);
+            _logger.info("  Finish saving the diagram");
         } catch (JSONException e1) {
             throw new ServletException(e1);
         }

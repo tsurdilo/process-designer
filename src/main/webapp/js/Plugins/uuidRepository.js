@@ -161,18 +161,21 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
                 asynchronous: asynchronous,
                 postBody: Ext.encode({data: serializedDOM, svg : svgDOM, uuid: ORYX.UUID, rdf: rdf, profile: ORYX.PROFILE, savetype: asave}),
 				onSuccess : (function(transport) {
-					// Check result JSON.
-					var jsonObj = eval("(" + transport.responseText + ")");
-					// If there's no check error, errorMsgs will be empty.
-					var errorMsgs = jsonObj.errorMsgs;
-				
-					// Display warning messages if there are check errors.
-					if (errorMsgs.length > 0) {
-						// raise loading disable event.
-						this.facade.raiseEvent({
-							type : ORYX.CONFIG.EVENT_LOADING_DISABLE
-						});
-						this.showMessages(jsonObj);
+					response = transport.responseText;
+					if (response.length != 0) {
+						try {
+							var jsonObj = response.evalJSON();
+							var errorMsgs = jsonObj.errorMsgs;
+							if (errorMsgs != undefined) {
+								// raise loading disable event.
+								this.facade.raiseEvent({
+									type : ORYX.CONFIG.EVENT_LOADING_DISABLE
+								});
+								this.showMessages(jsonObj);
+							}
+						} catch (err) {
+							ORYX.LOG.error(err);
+						}
 					} else {
 						// show saved status
 						this.facade.raiseEvent({

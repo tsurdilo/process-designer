@@ -160,13 +160,27 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
                 method: 'POST',
                 asynchronous: asynchronous,
                 postBody: Ext.encode({data: serializedDOM, svg : svgDOM, uuid: ORYX.UUID, rdf: rdf, profile: ORYX.PROFILE, savetype: asave}),
-			onSuccess: (function(transport) {
-				//show saved status
-				this.facade.raiseEvent({
-						type:ORYX.CONFIG.EVENT_LOADING_STATUS,
-						text:ORYX.I18N.Save.saved
-					});
-			}).bind(this),
+				onSuccess : (function(transport) {
+					// Check result JSON.
+					var jsonObj = eval("(" + transport.responseText + ")");
+					// If there's no check error, errorMsgs will be empty.
+					var errorMsgs = jsonObj.errorMsgs;
+				
+					// Display warning messages if there are check errors.
+					if (errorMsgs.length > 0) {
+						// raise loading disable event.
+						this.facade.raiseEvent({
+							type : ORYX.CONFIG.EVENT_LOADING_DISABLE
+						});
+						this.showMessages(jsonObj);
+					} else {
+						// show saved status
+						this.facade.raiseEvent({
+							type : ORYX.CONFIG.EVENT_LOADING_STATUS,
+							text : ORYX.I18N.Save.saved
+						});
+					}
+				}).bind(this),
 			onFailure: (function(transport) {
 				// raise loading disable event.
                 this.facade.raiseEvent({
@@ -214,6 +228,71 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 			//show an icon and a message in the toolbar
 			autosavecfg.buttonInstance.setIcon(ORYX.PATH + "images/disk_multiple.png");
 		}
+	},
+
+	/**
+	 * Shows the check error messages.
+	 * 
+	 * @param msg
+	 *            Check error messages array.
+	 */
+	showMessages : function(jsonObj) {
+
+		// load JSON data
+		var reader = new Ext.data.JsonReader({
+			root : "errorMsgs",
+			id : "index"
+		}, [ {
+			name : 'index'
+		}, {
+			name : 'nodename'
+		}, {
+			name : 'msg'
+		} ]);
+		var store = new Ext.data.Store({
+			proxy : new Ext.data.MemoryProxy(jsonObj),
+			reader : reader
+		});
+		store.load();
+
+		// create the window on the first click and reuse on subsequent clicks
+		var win = new Ext.Window({
+			title : 'Validation Error',
+			layout : 'fit',
+			width : 600,
+			modal : true,
+			closeAction : 'close',
+			plain : false,
+
+			items : new Ext.grid.GridPanel({
+				store : store,
+				height : 300,
+				columns : [ {
+					header : "<b>Index</b>",
+					sortable : true,
+					width : 44,
+					dataIndex : 'index'
+				}, {
+					header : "<b>Node Name</b>",
+					sortable : true,
+					width : 221,
+					dataIndex : 'nodename'
+				}, {
+					header : "<b>Error Message</b>",
+					sortable : true,
+					width : 300,
+					dataIndex : 'msg'
+				} ]
+			}),
+
+			buttons : [ {
+				text : 'Close',
+				handler : function() {
+					win.hide();
+				}
+			} ]
+		});
+		win.show(this);
 	}
 });
 

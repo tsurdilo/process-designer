@@ -42,6 +42,7 @@ import org.osgi.framework.ServiceReference;
 import com.intalio.web.profile.IDiagramProfile;
 import com.intalio.web.profile.IDiagramProfileService;
 import com.intalio.web.profile.impl.DefaultProfileImpl;
+import com.intalio.web.repository.DiagramValidationException;
 import com.intalio.web.repository.IUUIDBasedRepository;
 import com.intalio.web.repository.IUUIDBasedRepositoryService;
 import com.intalio.web.repository.impl.UUIDBasedFileRepository;
@@ -122,10 +123,15 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
             IDiagramProfile profile = getProfile(req, profileName);
             _logger.info("  Got profile...");
             _logger.info("  Begin saving the diagram");
+
             _repository.save(req, uuid, json, svg, profile, autosave);
+
             _logger.info("  Finish saving the diagram");
         } catch (JSONException e1) {
             throw new ServletException(e1);
+        } catch (DiagramValidationException e) {
+            // set the error JSON to response
+            resp.getWriter().write(e.getErrorJsonStr());
         }
     }
     

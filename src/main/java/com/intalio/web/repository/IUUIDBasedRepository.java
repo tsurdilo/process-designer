@@ -55,7 +55,8 @@ public interface IUUIDBasedRepository {
      * @param json the json model
      * @param svg the svg representation of the model
      * @param profile the profile
+     * @throws DiagramValidationException 
      */
-    public void save(HttpServletRequest req, String uuid, String json, String svg, IDiagramProfile profile, Boolean autosave);
+    public void save(HttpServletRequest req, String uuid, String json, String svg, IDiagramProfile profile, Boolean autosave) throws DiagramValidationException;
 
 }

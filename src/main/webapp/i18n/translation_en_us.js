@@ -776,7 +776,7 @@ ORYX.I18N.SyntaxChecker.MULT_ERRORS = "Multiple Errors";
 
 /** New Language Properties: 08.09.2009*/
 if(!ORYX.I18N.PropertyWindow) ORYX.I18N.PropertyWindow = {};
-ORYX.I18N.PropertyWindow.oftenUsed = "Often Used";
+ORYX.I18N.PropertyWindow.oftenUsed = "Often used";
 ORYX.I18N.PropertyWindow.moreProps = "More Properties";
 
 /** New Language Properties: 17.09.2009*/

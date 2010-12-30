@@ -273,12 +273,12 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 				columns : [ {
 					header : "<b>Index</b>",
 					sortable : true,
-					width : 44,
+					width : 50,
 					dataIndex : 'index'
 				}, {
 					header : "<b>Node Name</b>",
 					sortable : true,
-					width : 221,
+					width : 220,
 					dataIndex : 'nodename'
 				}, {
 					header : "<b>Error Message</b>",

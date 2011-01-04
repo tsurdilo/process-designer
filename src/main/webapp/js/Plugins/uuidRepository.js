@@ -226,7 +226,7 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 	 * Shows the saving status
 	 * @param asynchronous whether the save is synchronous or asynchronous.
 	 */
-	hideSaveStatus: function(asynchronous) {
+	hideSaveStatus: function(savePlugin, asynchronous) {
 		if (asynchronous) {
 			//show an icon and a message in the toolbar
 			autosavecfg.buttonInstance.setIcon(ORYX.PATH + "images/disk_multiple.png");

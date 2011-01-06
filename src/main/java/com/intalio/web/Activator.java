@@ -53,37 +53,6 @@ public class Activator implements BundleActivator {
     public void start(final BundleContext context) throws Exception {
         {
             ServiceReference sRef =
-                context.getServiceReference(IUUIDBasedRepositoryService.class.getName());
-            if (sRef != null) {
-                IUUIDBasedRepositoryService service = (IUUIDBasedRepositoryService) context.getService(sRef);
-                UUIDBasedRepositoryServlet._factory = service;
-            } else {
-                //use a service tracker to be called back when the IUUIDBasedRepositoryFactory is ready:
-                ServiceTrackerCustomizer cust = new ServiceTrackerCustomizer() {
-
-                    public void removedService(ServiceReference reference, Object service) {
-                        //special servlet shutdown
-                    }
-
-                    public void modifiedService(ServiceReference reference, Object service) {
-                        //reload?
-                    }
-
-                    public Object addingService(ServiceReference reference) {
-                        IUUIDBasedRepositoryService service = (IUUIDBasedRepositoryService) context.getService(reference);
-                        UUIDBasedRepositoryServlet._factory = service;
-                        return service;
-                    }
-                };
-                ServiceTracker tracker = new ServiceTracker(context,
-                        IUUIDBasedRepositoryService.class.getName(), cust);
-                tracker.open();
-
-            }
-        }
-        
-        {
-            ServiceReference sRef =
                 context.getServiceReference(IDiagramPreferenceService.class.getName());
             if (sRef != null) {
             	IDiagramPreferenceService service = (IDiagramPreferenceService) context.getService(sRef);

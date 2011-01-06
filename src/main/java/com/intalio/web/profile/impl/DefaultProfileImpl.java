@@ -1,5 +1,5 @@
 /***************************************
- * Copyright (c) Intalio, Inc 2010
+ * Copyright (c) Intalio, Inc 2011
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -48,6 +48,9 @@ import com.intalio.web.profile.IDiagramProfile;
 
 /**
  * The implementation of the default profile for Process Designer.
+ * 
+ * TODO this could be refactored as an abstract class as the drools profile
+ * reuses most of it.
  * @author Antoine Toulme
  */
 public class DefaultProfileImpl implements IDiagramProfile {
@@ -92,8 +95,7 @@ public class DefaultProfileImpl implements IDiagramProfile {
         FileInputStream fileStream = null;
         try {
             try {
-                fileStream = new FileInputStream(new StringBuilder(context.getRealPath("/")).append("/").
-                        append("/").append("profiles").append("/").append("default.xml").toString());
+                fileStream = new FileInputStream(context.getRealPath("/") + "/profiles/default.xml");
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }

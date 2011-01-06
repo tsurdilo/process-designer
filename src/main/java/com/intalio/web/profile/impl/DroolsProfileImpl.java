@@ -1,3 +1,24 @@
+/***************************************
+ * Copyright (c) Tihomir Surdilovic 2010
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+****************************************/
 package com.intalio.web.profile.impl;
 
 import java.io.ByteArrayOutputStream;
@@ -71,8 +92,7 @@ public class DroolsProfileImpl implements IDiagramProfile {
         FileInputStream fileStream = null;
         try {
             try {
-                fileStream = new FileInputStream(new StringBuilder(context.getRealPath("/")).append("/").
-                        append("/").append("profiles").append("/").append("drools.xml").toString());
+                fileStream = new FileInputStream(context.getRealPath("/") + "/profiles/drools.xml");
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }

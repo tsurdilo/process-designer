@@ -32,11 +32,10 @@ import javax.servlet.ServletConfig;
 public interface IUUIDBasedRepositoryService {
     
     /**
-     * @return a repository object.
+     * @param config
+     *   the servlet config to help create the repository
+     * @return a new IUUIDBasedRepository object
      */
-    public void init();
-    public IUUIDBasedRepository createRepository();
     public IUUIDBasedRepository createRepository(ServletConfig config);
-    public IUUIDBasedRepository lookupRepository(String name);
 
 }

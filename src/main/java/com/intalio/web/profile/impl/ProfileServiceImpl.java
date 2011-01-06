@@ -54,6 +54,8 @@ public class ProfileServiceImpl implements IDiagramProfileService {
      * @param context the servlet context to initialize the profile.
      */
     public void init(ServletContext context) {
+        //TODO look in the profiles folder and load profiles from there ?
+        //TODO we could abstract the file-based profile impl
         _registry.put("default", new DefaultProfileImpl(context));
         _registry.put("drools", new DroolsProfileImpl(context));
         

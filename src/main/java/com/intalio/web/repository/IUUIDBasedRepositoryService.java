@@ -22,6 +22,7 @@
 package com.intalio.web.repository;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 
 /**
  * @author Antoine Toulme
@@ -36,6 +37,7 @@ public interface IUUIDBasedRepositoryService {
      *   the servlet config to help create the repository
      * @return a new IUUIDBasedRepository object
      */
-    public IUUIDBasedRepository createRepository(ServletConfig config);
+    public IUUIDBasedRepository createRepository(ServletConfig config) 
+    throws ServletException;
 
 }

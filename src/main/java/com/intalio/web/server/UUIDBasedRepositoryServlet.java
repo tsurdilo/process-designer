@@ -28,6 +28,7 @@ import java.io.StringWriter;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -71,7 +72,7 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
     /**
      * The class name of the default repository.
      */
-    private static final String DEFAULT_REPOSITORY = UUIDBasedFileRepository.class.getCanonicalName();
+    private static final String DEFAULT_REPOSITORY = UUIDBasedFileRepository.class.getName();
     /**
      * The default factory for creation of repositories.
      * 
@@ -88,7 +89,8 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
          * @return a new IUUIDBasedRepository object
          */
         @SuppressWarnings("rawtypes")
-        public IUUIDBasedRepository createRepository(ServletConfig config) {
+        public IUUIDBasedRepository createRepository(ServletConfig config) 
+            throws ServletException {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             if (cl == null) {
                 cl = UUIDBasedRepositoryServlet.class.getClassLoader();
@@ -114,7 +116,7 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
      * 
      * The factory looks for a registered IUUIDBasedRepositoryService using
      * the current BundleContext. 
-     * If none is found, it will throw a IllegalStateException.
+     * If none is found, it will throw a UnavailableException.
      * The first one found will otherwise be used to create the repository.
      */
     private static IUUIDBasedRepositoryService _osgiFactory = new IUUIDBasedRepositoryService() {
@@ -123,15 +125,17 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
          * @param config
          *   the servlet config to help create the repository
          * @return a new IUUIDBasedRepository object
+         * @throws ServletException 
          */
-        public IUUIDBasedRepository createRepository(ServletConfig config) {
+        public IUUIDBasedRepository createRepository(ServletConfig config) throws ServletException {
             BundleContext bundleContext = ((BundleReference) getClass().
                     getClassLoader()).getBundle().getBundleContext();
             ServiceReference ref = bundleContext.getServiceReference(
                     IUUIDBasedRepositoryService.class.getName());
             if (ref == null) {
-                throw new IllegalStateException(
-                        "No service registered for IUUIDBasedRepositoryService");
+                _logger.error("No service registered for IUUIDBasedRepositoryService");
+                throw new UnavailableException(
+                        "No service registered for IUUIDBasedRepositoryService", 0);
             }
             IUUIDBasedRepositoryService service = (IUUIDBasedRepositoryService) 
                 bundleContext.getService(ref);
@@ -187,6 +191,9 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
             
             _repository.configure(this);
         } catch (Exception e) {
+            if (e instanceof ServletException) {
+                throw (ServletException) e;
+            }
             throw new ServletException(e);
         }
         

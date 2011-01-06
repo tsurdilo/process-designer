@@ -183,7 +183,7 @@ ORYX.Plugins.Toolbar = Clazz.extend({
                     icon:           value.icon,         // icons can also be specified inline
                     cls:            'x-btn-icon',       // Class who shows only the icon
                     itemId:         value.id,
-					tooltip:        value.description,  // Set the tooltip
+					tooltip:        value.title,  // Set the tooltip
                     tooltipType:    'title',            // Tooltip will be shown as in the html-title attribute
                     handler:        value.toggle ? null : value.functionality,  // Handler for mouse click
                     enableToggle:   value.toggle, // Option for enabling toggling
@@ -191,6 +191,12 @@ ORYX.Plugins.Toolbar = Clazz.extend({
                 }); 
                 
                 this.toolbar.add(button);
+                if(value.description){
+                     Ext.QuickTips.register({
+                     target: button.getEl().child("button:first").dom,
+                     text: value.description
+                    }); 
+                }
 
                 button.getEl().onclick = function() {this.blur()}
             }

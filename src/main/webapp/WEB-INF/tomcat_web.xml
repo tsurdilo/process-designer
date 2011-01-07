@@ -401,8 +401,8 @@
 	       com.intalio.web.server.UUIDBasedRepositoryServlet
 	   </servlet-class>
        <init-param>
-          <param-name>factoryName</param-name> 
-          <param-value>drools</param-value>
+          <param-name>repositoryClass</param-name> 
+          <param-value>com.intalio.web.repository.impl.UUIDBasedDroolsRepository</param-value>
        </init-param>
 	</servlet>
 	

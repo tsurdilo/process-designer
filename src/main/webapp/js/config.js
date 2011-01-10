@@ -159,7 +159,7 @@ ORYX.CONFIG.TYPE_URL =					"url";
 ORYX.CONFIG.TYPE_DIAGRAM_LINK =			"diagramlink";
 ORYX.CONFIG.TYPE_COMPLEX =				"complex";
 ORYX.CONFIG.TYPE_TEXT =					"text";
-	
+ORYX.CONFIG.TYPE_PASSWORD =				"password";
 	/* Vertical line distance of multiline labels */
 ORYX.CONFIG.LABEL_LINE_DISTANCE =		2;
 ORYX.CONFIG.LABEL_DEFAULT_LINE_HEIGHT =	12;

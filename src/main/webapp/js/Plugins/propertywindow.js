@@ -216,7 +216,13 @@ ORYX.Plugins.PropertyWindow = {
 
 			if(record.data.gridProperties.type == ORYX.CONFIG.TYPE_COLOR) {
 				value = "<div class='prop-background-color' style='background-color:" + value + "' />";
-			}			
+			} else if (record.data.gridProperties.type == ORYX.CONFIG.TYPE_PASSWORD) {
+				var afterReplaced = "";
+				for (var i=0; i<value.length; i++) {
+					afterReplaced += "*";
+				}
+				return afterReplaced;
+			}
 
 			record.data.icons.each(function(each) {
 				if(each.name == value) {

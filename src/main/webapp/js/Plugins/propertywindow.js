@@ -1099,15 +1099,18 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 			
 			if (dialogWidth > 800) {
 				dialogWidth = 800;
+			} else if (dialogWidth == 0) {
+				// if no items defined, the dialogWidth is 0. Set a default width.
+				dialogWidth = 200;
 			}
+			
 			dialogWidth += 22;
 			
 			var data = this.data;
-			if (data == "") {
+			if (data == "" || data == undefined) {
 				// empty string can not be parsed
-				data = "{}";
+				data = '{"items" : [], "totalCount" : 0}';
 			}
-			
 			
 			var ds = new Ext.data.Store({
 		        proxy: new Ext.data.MemoryProxy(eval("(" + data + ")")),				

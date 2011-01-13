@@ -164,6 +164,7 @@ table-layout:fixed;
     border-bottom:1px solid #ccc;
     padding-top:3px;
     padding-bottom:0px;
+    min-width:195px;
 	font-size:12px;
 	font-weight:bold;
 	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
@@ -214,6 +215,7 @@ table-layout:fixed;
 .ShapeRepEntree{
 	margin:1px;
 	padding:5px 0px;
+	min-width:193px;
 	border:1px solid #f1f1f1;
 	background-color:#f6f6f6;
 }

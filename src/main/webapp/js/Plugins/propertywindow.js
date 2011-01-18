@@ -116,11 +116,29 @@ ORYX.Plugins.PropertyWindow = {
 		        direction = direction || 'ASC';
 		        var st = this.fields.get(f).sortType;
 		        var fn = function(r1, r2){
-		        	//sort by displayorder asc
-		            //var v1 = st(r1.data['name']), v2 = st(r2.data['name']);
-		        	var v1 = r1.data['displayorder'], v2 = r2.data['displayorder']; 
+					//if displayorder of a property is greater than 0 
+					//then this property is sorted by displayorder asc
+					//else it is sorted by name asc
+					var v1 = st(r1.data['name']), v2 = st(r2.data['name']);
+					var d1 = r1.data['displayorder'], d2 = r2.data['displayorder'];
 					var p1 = r1.data['popular'], p2  = r2.data['popular'];
-		            return p1 && !p2 ? -1 : (!p1 && p2 ? 1 : (v1 > v2 ? 1 : (v1 < v2 ? -1 : 0)));
+
+					var result = -1;
+					if (p1 && !p2) { // p1 is popular, p2 is non-popular
+						result = -1;
+					} else if (!p1 && p2) { // p1 is non-popular, p2 is popular
+						result = 1;
+					} else { // both are popular or non popular
+						if (d1 > 0 && d2 > 0) {  // both displayorder > 0 
+							result = d1 < d2 ? -1 : (d1 > d2 ? 1 : 0);   
+						} else if (d1 + d2 > 0 && (d1 == 0 || d2 == 0)){ // only one displayorder = 0
+							result = d1 > d2 ? -1 : 1; 
+						} else { // both displayorder = 0
+							result = p1 && !p2 ? -1 : (!p1 && p2 ? 1 : (v1 > v2 ? 1 : (v1 < v2 ? -1 : 0)));
+						}
+					}
+					
+					return result;
 		        };
 		        this.data.sort(direction, fn);
 		        if(this.snapshot && this.snapshot != this.data){

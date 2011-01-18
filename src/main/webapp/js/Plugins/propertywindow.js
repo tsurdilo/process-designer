@@ -225,6 +225,14 @@ ORYX.Plugins.PropertyWindow = {
 					afterReplaced += "*";
 				}
 				return afterReplaced;
+			} else if (record.data.gridProperties.type == ORYX.CONFIG.TYPE_MAPPINGEDITOR) {
+				// TODO to be implemented as a Labelprovider.
+				if (value != "") {
+					mappintObj = value.evalJSON();
+					return "Total count : " + mappintObj.totalCount;
+				} else {
+					return value;
+				}
 			}
 
 			record.data.icons.each(function(each) {
@@ -844,24 +852,34 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 		}
 		
 		var jsonString = "[";
+		var size = 0;
 		for (var i = 0; i < ds.getCount(); i++) {
 			var data = ds.getAt(i);		
-			jsonString += "{";	
+			// a temp string, if all the values are empty, then don't set it into result JSON.
+			var innerJsonString = "{";
+			var strCannotEmpty = "";
 			for (var j = 0; j < this.items.length; j++) {
-				var key = this.items[j].id();
-				jsonString += key + ':' + ("" + data.get(key)).toJSON();
+				var key = this.items[j].id;
+				strCannotEmpty += data.get(key);
+				innerJsonString += key + ':' + ("" + data.get(key)).toJSON();
 				if (j < (this.items.length - 1)) {
-					jsonString += ", ";
+					innerJsonString += ", ";
 				}
 			}
-			jsonString += "}";
+			innerJsonString += "}";
 			if (i < (ds.getCount() - 1)) {
-				jsonString += ", ";
+				innerJsonString += ", ";
+			}
+			if (strCannotEmpty != "") {
+				jsonString += innerJsonString;
+				// increase the size if the temp string has been set into result JSON.
+				size++;
 			}
 		}
 		jsonString += "]";
 		
-		jsonString = "{'totalCount':" + ds.getCount().toJSON() + 
+		// finally, in the result json, there will be no emtpy element.
+		jsonString = "{'totalCount':" + size.toJSON() + 
 			", 'items':" + jsonString + "}";
 		return Object.toJSON(jsonString.evalJSON());
 	},
@@ -963,8 +981,8 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 		var initial = new Hash();
 		
 		for (var i = 0; i < items.length; i++) {
-			var id = items[i].id();
-			initial[id] = items[i].value();
+			var id = items[i].id;
+			initial[id] = items[i].value;
 		}
 		
 		var RecordTemplate = Ext.data.Record.create(recordType);
@@ -983,14 +1001,14 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 	buildColumnModel: function(parent) {
 		var cols = [];
 		for (var i = 0; i < this.items.length; i++) {
-			var id 		= this.items[i].id();
-			var header 	= this.items[i].name();
-			var width 	= this.items[i].width();
-			var type 	= this.items[i].type();
+			var id 		= this.items[i].id;
+			var header 	= this.items[i].name;
+			var width 	= this.items[i].width;
+			var type 	= this.items[i].type;
 			var editor;
 			
 			if (type == ORYX.CONFIG.TYPE_STRING) {
-				editor = new Ext.form.TextField({ allowBlank : this.items[i].optional(), width : width});
+				editor = new Ext.form.TextField({ allowBlank : this.items[i].optional, width : width});
 			} else if (type == ORYX.CONFIG.TYPE_CHOICE) {				
 				var items = this.items[i].items();
 				var select = ORYX.Editor.graft("http://www.w3.org/1999/xhtml", parent, ['select', {style:'display:none'}]);
@@ -1003,9 +1021,9 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 					{ typeAhead: true, triggerAction: 'all', transform:select, lazyRender:true,  msgTarget:'title', width : width});			
 			} else if (type == ORYX.CONFIG.TYPE_BOOLEAN) {
 				editor = new Ext.form.Checkbox( { width : width } );
-			} else if (type == "xpath") {
-				//TODO set the xpath type as string, same editor as string.
-				editor = new Ext.form.TextField({ allowBlank : this.items[i].optional(), width : width});
+			} else if (type == ORYX.CONFIG.TYPE_XPATH) {
+				// set the editor of xpath type as textarea.
+				editor = new Ext.form.TextArea({ allowBlank : this.items[i].optional, width : width, blankText : ORYX.I18N.PropertyWindow.xpathTextarea});
 			}
 					
 			cols.push({
@@ -1048,11 +1066,11 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 		for (var i = 0; i < this.items.length; i++) {
 			// check each item that defines a "disable" property
 			var item = this.items[i];
-			var disables = item.disable();
+			var disables = item.disable;
 			if (disables != undefined) {
 				
 				// check if the value of the column of this item in this row is equal to a disabling value
-				var value = this.grid.getStore().getAt(row).get(item.id());
+				var value = this.grid.getStore().getAt(row).get(item.id);
 				for (var j = 0; j < disables.length; j++) {
 					var disable = disables[j];
 					if (disable.value == value) {
@@ -1089,11 +1107,11 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 			var recordType 	= [];
 			
 			for (var i = 0; i < this.items.length; i++) {
-				var id 		= this.items[i].id();
-				var width 	= this.items[i].width();
-				var type 	= this.items[i].type();	
+				var id 		= this.items[i].id;
+				var width 	= this.items[i].width;
+				var type 	= this.items[i].type;	
 					
-				if (type == ORYX.CONFIG.TYPE_CHOICE) {
+				if (type == ORYX.CONFIG.TYPE_CHOICE || type == ORYX.CONFIG.TYPE_XPATH) {
 					type = ORYX.CONFIG.TYPE_STRING;
 				}
 						
@@ -1108,7 +1126,7 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 				dialogWidth = 200;
 			}
 			
-			dialogWidth += 22;
+			dialogWidth += 35;
 			
 			var data = this.data;
 			if (data == "" || data == undefined) {

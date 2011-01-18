@@ -377,5 +377,10 @@ ORYX.Core.StencilSet.Property = Clazz.extend({
     
     labelProvider: function() {
         return this._labelProvider;
+    },
+    
+    // add display order
+    displayOrder: function() {
+    	return this._jsonProp.displayorder;
     }
 });

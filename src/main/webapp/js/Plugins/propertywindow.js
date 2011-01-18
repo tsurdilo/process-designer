@@ -108,6 +108,7 @@ ORYX.Plugins.PropertyWindow = {
 				{name: 'name'},
 				{name: 'value'},
 				{name: 'icons'},
+				{name: 'displayorder'},
 				{name: 'gridProperties'}
 			]),
 			sortInfo: {field: 'popular', direction: "ASC"},
@@ -115,7 +116,9 @@ ORYX.Plugins.PropertyWindow = {
 		        direction = direction || 'ASC';
 		        var st = this.fields.get(f).sortType;
 		        var fn = function(r1, r2){
-		            var v1 = st(r1.data['name']), v2 = st(r2.data['name']);
+		        	//sort by displayorder asc
+		            //var v1 = st(r1.data['name']), v2 = st(r2.data['name']);
+		        	var v1 = r1.data['displayorder'], v2 = r2.data['displayorder']; 
 					var p1 = r1.data['popular'], p2  = r2.data['popular'];
 		            return p1 && !p2 ? -1 : (!p1 && p2 ? 1 : (v1 > v2 ? 1 : (v1 < v2 ? -1 : 0)));
 		        };
@@ -517,7 +520,8 @@ ORYX.Plugins.PropertyWindow = {
 				var name		= pair.title();
 				var icons		= [];
 				var attribute	= this.shapeSelection.commonPropertiesValues[key];
-				
+				var dispayOrder = pair.displayOrder();
+
 				var editorGrid = undefined;
 				var editorRenderer = null;
 				
@@ -730,7 +734,7 @@ ORYX.Plugins.PropertyWindow = {
 					
 					
 					if(pair.popular()) {
-						this.popularProperties.push([pair.popular(), name, attribute, icons, {
+						this.popularProperties.push([pair.popular(), name, attribute, icons, dispayOrder, {
 							editor: editorGrid,
 							propId: key,
 							type: pair.type(),
@@ -740,7 +744,7 @@ ORYX.Plugins.PropertyWindow = {
 						}]);
 					}
 					else {					
-						this.properties.push([pair.popular(), name, attribute, icons, {
+						this.properties.push([pair.popular(), name, attribute, icons, dispayOrder, {
 							editor: editorGrid,
 							propId: key,
 							type: pair.type(),

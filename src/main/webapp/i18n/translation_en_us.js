@@ -384,6 +384,7 @@ ORYX.I18N.PropertyWindow.text = "Editor for a Text Type";
 ORYX.I18N.PropertyWindow.ok = "Ok";
 ORYX.I18N.PropertyWindow.cancel = "Cancel";
 ORYX.I18N.PropertyWindow.dateFormat = "m/d/y";
+ORYX.I18N.PropertyWindow.mappingeditor = "Mapping Editor";
 ORYX.I18N.PropertyWindow.expression = "Editor for an Expression Type";
 ORYX.I18N.PropertyWindow.xpathTextarea = "Insert xpath expression";
 

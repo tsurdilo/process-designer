@@ -1123,15 +1123,22 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 		
 			var dialogWidth = 0;
 			var recordType 	= [];
+			// establish the window title
+			var windowTitle = ORYX.I18N.PropertyWindow.complex;
 			
 			for (var i = 0; i < this.items.length; i++) {
 				var id 		= this.items[i].id;
 				var width 	= this.items[i].width;
 				var type 	= this.items[i].type;	
 					
-				if (type == ORYX.CONFIG.TYPE_CHOICE || type == ORYX.CONFIG.TYPE_XPATH) {
+				if (type == ORYX.CONFIG.TYPE_CHOICE) {
 					type = ORYX.CONFIG.TYPE_STRING;
-				}
+				} else if (type == ORYX.CONFIG.TYPE_XPATH) {
+ 					type = ORYX.CONFIG.TYPE_STRING;
+					if (id == "from" || id == "to") {
+						windowTitle = ORYX.I18N.PropertyWindow.mappingeditor;
+					}
+ 				}
 						
 				dialogWidth += width;
 				recordType[i] = {name:id, type:type};
@@ -1207,7 +1214,7 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 			this.dialog = new Ext.Window({ 
 				autoScroll: true,
 				autoCreate: true, 
-				title: ORYX.I18N.PropertyWindow.complex, 
+				title: windowTitle, 
 				height: 350, 
 				width: dialogWidth, 
 				modal:true,

@@ -615,9 +615,6 @@ ORYX.Editor = {
 		var div = ORYX.Editor.graft("http://www.w3.org/1999/xhtml", null, ['div']);
 		// set class for custom styling
 		div.addClassName("ORYX_Editor");
-		// set the width and height
-		div.style.width = ORYX.CONFIG.CANVAS_WIDTH + 'px';
-		div.style.height = ORYX.CONFIG.CANVAS_HEIGHT + 'px';
 						
 		// create the canvas
 		this._canvas = new ORYX.Core.Canvas({

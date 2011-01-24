@@ -160,6 +160,21 @@ ORYX.Core.Canvas = ORYX.Core.AbstractShape.extend({
 				this._delegateEvent(event);
 			}.bind(this))
 		}
+		// resize the SVG and containing DIV
+		var currentWidth = this.bounds.b.x;
+		var currentHeight = this.bounds.b.y;
+		// DIV resize
+		this.rootNode.parentNode.style.width = currentWidth + 'px';
+		this.rootNode.parentNode.style.height = currentHeight + 'px';
+		// SVG resize
+		var svgWidthAttr = this.rootNode.attributes.getNamedItem("width");
+		var svgHeightAttr = this.rootNode.attributes.getNamedItem("height");
+		if(svgWidthAttr != "undefined") {
+			svgWidthAttr.nodeValue = currentWidth;
+		}
+		if(svgHeightAttr != "undefined") {
+			svgHeightAttr.nodeValue = currentHeight;
+		}
 		
 		this.nodes.invoke("_update");
 		
@@ -544,6 +559,11 @@ ORYX.Core.Canvas = ORYX.Core.AbstractShape.extend({
 
 	setSize: function(size, dontSetBounds) {
 		//size is dynamic, so never set. It is set as 100% on both axis.
+		var newWidth = size.width;
+		var newHeight = size.height;
+		if (!isNaN(newWidth) && !isNaN(newHeight)) {
+			this.bounds.set(0, 0, size.width, size.height);
+		}
 	},
 	
 	/**

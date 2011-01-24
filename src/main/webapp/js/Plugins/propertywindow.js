@@ -770,6 +770,15 @@ ORYX.Plugins.PropertyWindow = {
 						}]);
 					}
 					else {					
+						if(attribute.length>0&&(!isNaN(attribute))){
+							if(editorGrid.field.store.data.items){
+								editorGrid.field.store.data.items.each(function(each){
+									if(each.data.value==attribute){
+										attribute=each.data.title;
+									}
+								});
+							}
+						}
 						this.properties.push([pair.popular(), name, attribute, icons, dispayOrder, {
 							editor: editorGrid,
 							propId: key,

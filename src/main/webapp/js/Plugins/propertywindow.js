@@ -770,10 +770,10 @@ ORYX.Plugins.PropertyWindow = {
 						}]);
 					}
 					else {					
-						if(attribute.length>0&&(!isNaN(attribute))){
-							if(editorGrid.field.store.data.items){
-								editorGrid.field.store.data.items.each(function(each){
-									if(each.data.value==attribute){
+						if ((!isNaN(attribute)) && attribute.length>0) {
+							if (editorGrid.field.store.data.items) {
+								editorGrid.field.store.data.items.each(function(each) {
+									if (each.data.value==attribute) {
 										attribute=each.data.title;
 									}
 								});

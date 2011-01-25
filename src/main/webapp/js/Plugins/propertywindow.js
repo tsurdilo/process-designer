@@ -770,6 +770,15 @@ ORYX.Plugins.PropertyWindow = {
 						}]);
 					}
 					else {					
+						if ((!isNaN(attribute)) && attribute.length>0) {
+							if (editorGrid.field.store.data.items) {
+								editorGrid.field.store.data.items.each(function(each) {
+									if (each.data.value==attribute) {
+										attribute=each.data.title;
+									}
+								});
+							}
+						}
 						this.properties.push([pair.popular(), name, attribute, icons, dispayOrder, {
 							editor: editorGrid,
 							propId: key,
@@ -877,7 +886,7 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 			var innerJsonString = "{";
 			var strCannotEmpty = "";
 			for (var j = 0; j < this.items.length; j++) {
-				var key = this.items[j].id;
+				var key = this.items[j].id();
 				strCannotEmpty += data.get(key);
 				innerJsonString += key + ':' + ("" + data.get(key)).toJSON();
 				if (j < (this.items.length - 1)) {
@@ -999,8 +1008,8 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 		var initial = new Hash();
 		
 		for (var i = 0; i < items.length; i++) {
-			var id = items[i].id;
-			initial[id] = items[i].value;
+			var id = items[i].id();
+			initial[id] = items[i].value();
 		}
 		
 		var RecordTemplate = Ext.data.Record.create(recordType);
@@ -1019,14 +1028,14 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 	buildColumnModel: function(parent) {
 		var cols = [];
 		for (var i = 0; i < this.items.length; i++) {
-			var id 		= this.items[i].id;
-			var header 	= this.items[i].name;
-			var width 	= this.items[i].width;
-			var type 	= this.items[i].type;
+			var id 		= this.items[i].id();
+			var header 	= this.items[i].name();
+			var width 	= this.items[i].width();
+			var type 	= this.items[i].type();
 			var editor;
 			
 			if (type == ORYX.CONFIG.TYPE_STRING) {
-				editor = new Ext.form.TextField({ allowBlank : this.items[i].optional, width : width});
+				editor = new Ext.form.TextField({ allowBlank : this.items[i].optional(), width : width});
 			} else if (type == ORYX.CONFIG.TYPE_CHOICE) {				
 				var items = this.items[i].items();
 				var select = ORYX.Editor.graft("http://www.w3.org/1999/xhtml", parent, ['select', {style:'display:none'}]);
@@ -1041,7 +1050,7 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 				editor = new Ext.form.Checkbox( { width : width } );
 			} else if (type == ORYX.CONFIG.TYPE_XPATH) {
 				// set the editor of xpath type as textarea.
-				editor = new Ext.form.TextArea({ allowBlank : this.items[i].optional, width : width, blankText : ORYX.I18N.PropertyWindow.xpathTextarea});
+				editor = new Ext.form.TextArea({ allowBlank : this.items[i].optional(), width : width, blankText : ORYX.I18N.PropertyWindow.xpathTextarea});
 			}
 					
 			cols.push({
@@ -1084,11 +1093,11 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 		for (var i = 0; i < this.items.length; i++) {
 			// check each item that defines a "disable" property
 			var item = this.items[i];
-			var disables = item.disable;
+			var disables = item.disable();
 			if (disables != undefined) {
 				
 				// check if the value of the column of this item in this row is equal to a disabling value
-				var value = this.grid.getStore().getAt(row).get(item.id);
+				var value = this.grid.getStore().getAt(row).get(item.id());
 				for (var j = 0; j < disables.length; j++) {
 					var disable = disables[j];
 					if (disable.value == value) {
@@ -1123,15 +1132,22 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 		
 			var dialogWidth = 0;
 			var recordType 	= [];
+			// establish the window title
+			var windowTitle = ORYX.I18N.PropertyWindow.complex;
 			
 			for (var i = 0; i < this.items.length; i++) {
-				var id 		= this.items[i].id;
-				var width 	= this.items[i].width;
-				var type 	= this.items[i].type;	
+				var id 		= this.items[i].id();
+				var width 	= this.items[i].width();
+				var type 	= this.items[i].type();	
 					
-				if (type == ORYX.CONFIG.TYPE_CHOICE || type == ORYX.CONFIG.TYPE_XPATH) {
+				if (type == ORYX.CONFIG.TYPE_CHOICE) {
 					type = ORYX.CONFIG.TYPE_STRING;
-				}
+				} else if (type == ORYX.CONFIG.TYPE_XPATH) {
+ 					type = ORYX.CONFIG.TYPE_STRING;
+					if (id == "from" || id == "to") {
+						windowTitle = ORYX.I18N.PropertyWindow.mappingeditor;
+					}
+ 				}
 						
 				dialogWidth += width;
 				recordType[i] = {name:id, type:type};
@@ -1207,7 +1223,7 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 			this.dialog = new Ext.Window({ 
 				autoScroll: true,
 				autoCreate: true, 
-				title: ORYX.I18N.PropertyWindow.complex, 
+				title: windowTitle, 
 				height: 350, 
 				width: dialogWidth, 
 				modal:true,

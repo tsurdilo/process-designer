@@ -51,43 +51,9 @@ table-layout:fixed;
 	width:10px;
 }
 
-#oryx_editor_header {
-       background-image: url('../images/header_bg.small.gif');
-       background-position: top center;
-       background-repeat: repeat-x;
-       position: absolute;
-       width: 100%;
-	   height: 30px;
-}
-
 .x-panel-editor-north .x-panel-body .x-panel-body,
 .x-panel-editor-north .x-panel-body .x-panel-bwrap {
 	overflow:visible;
-}
-
-#oryx_editor_header .openid{
-	font-family:tahoma;
-	font-size:11px;
-	position:absolute;
-	right:15px;
-	top:8px;
-}
-
-#oryx_editor_header .openid.not{
-	color:#666666;
-	font-style:italic;
-}
-
-#oryx_editor_header .mashupinfo{
-	margin-left:8px;
-	position:relative;
-	top:3px;
-	vertical-align:top;
-}
-
-#oryx_editor_header .mashupinfo img{
-	margin-left:5px;
-	width:14px;
 }
 
 
@@ -121,7 +87,6 @@ table-layout:fixed;
 }
 
 .ORYX_Editor {
-	/*background:url(../images/controls/background.bmp);*/
 	background: #EEF1FE;
 	border:0px double #99BBE8;
 }
@@ -164,7 +129,7 @@ table-layout:fixed;
     border-bottom:1px solid #ccc;
     padding-top:3px;
     padding-bottom:0px;
-    min-width:195px;
+    min-width:220px;
 	font-size:12px;
 	font-weight:bold;
 	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
@@ -215,7 +180,7 @@ table-layout:fixed;
 .ShapeRepEntree{
 	margin:1px;
 	padding:5px 0px;
-	min-width:193px;
+	min-width:218px;
 	border:1px solid #f1f1f1;
 	background-color:#f6f6f6;
 }

@@ -787,6 +787,18 @@ ORYX.Core.Node = {
         }
         
         /**initialize labels*/
+        // Add a text node in each SVG of Pipe shape.
+        if (this.getStencil().namespace() == ORYX.CONFIG.NAMESPACE_INTALIO_PIPES) {
+            var pipeLabelTextNode = document.createElementNS(ORYX.CONFIG.NAMESPACE_SVG, "text");
+            pipeLabelTextNode.setAttribute("id", svgNode.id + 'text_label');
+            pipeLabelTextNode.setAttribute("font-size", "11");
+            pipeLabelTextNode.setAttribute("x", this.bounds.width() / 2 + offsetX);
+            pipeLabelTextNode.setAttribute("y", this.bounds.height() + 8 + offsetY);
+            pipeLabelTextNode.setAttributeNS("http://www.b3mn.org/oryx", "oryx:align", "middle center");
+            pipeLabelTextNode.setAttributeNS("http://www.b3mn.org/oryx", "oryx:fittoelem", "unvisibleBorder");
+            pipeLabelTextNode.setAttribute("stroke", "black");
+            svgNode.appendChild(pipeLabelTextNode);
+        }
         var textElems = svgNode.getElementsByTagNameNS(ORYX.CONFIG.NAMESPACE_SVG, 'text');
         $A(textElems).each((function(textElem){
             var label = new ORYX.Core.SVG.Label({

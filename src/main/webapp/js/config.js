@@ -110,6 +110,7 @@ ORYX.CONFIG.TBPMIMPORT =				ORYX.CONFIG.ROOT_PATH + "tbpmimport";
 	/* Namespaces */
 ORYX.CONFIG.NAMESPACE_ORYX =			"http://www.b3mn.org/oryx";
 ORYX.CONFIG.NAMESPACE_SVG =				"http://www.w3.org/2000/svg";
+ORYX.CONFIG.NAMESPACE_INTALIO_PIPES =	"http://www.intalio.com/pipes#";
 
 	/* UI */
 ORYX.CONFIG.CANVAS_WIDTH =				1485; 

@@ -107,10 +107,10 @@ ORYX.Editor = {
 		// Load particular stencilset
 		if(ORYX.CONFIG.BACKEND_SWITCH) {
 			var ssUrl = (model.stencilset.namespace||model.stencilset.url).replace("#", "%23");
-        	ORYX.Core.StencilSet.loadStencilSet(ORYX.CONFIG.STENCILSET_HANDLER + ssUrl, this.id);
+        	ORYX.Core.StencilSet.loadStencilSet(this, ORYX.CONFIG.STENCILSET_HANDLER + ssUrl, this.id);
 		} else {
 			var ssUrl = model.stencilset.url;
-        	ORYX.Core.StencilSet.loadStencilSet(ssUrl, this.id);
+        	ORYX.Core.StencilSet.loadStencilSet(this, ssUrl, this.id);
 		}
 		
         
@@ -121,37 +121,11 @@ ORYX.Editor = {
             }.bind(this));
         }
 
-		// CREATES the canvas
-		this._createCanvas(model.stencil ? model.stencil.id : null, model.properties);
+		// Register the callback of creating the canvas
+		this.registerOnEvent(ORYX.CONFIG.EVENT_SS_LOADED_ON_STARTUP, this._createCanvas.bind(this));
 
-		// GENERATES the whole EXT.VIEWPORT
-		this._generateGUI();
-
-		// Initializing of a callback to check loading ends
-		var loadPluginFinished 	= false;
-		var loadContentFinished = false;
-		var initFinished = function(){	
-			if( !loadPluginFinished || !loadContentFinished ){ return }
-			this._finishedLoading();
-		}.bind(this)
-		
 		// disable key events when Ext modal window is active
 		ORYX.Editor.makeExtModalWindowKeysave(this._getPluginFacade());
-		
-		// LOAD the plugins
-		window.setTimeout(function(){
-			this.loadPlugins();
-			loadPluginFinished = true;
-			initFinished();
-		}.bind(this), 100);
-
-		// LOAD the content of the current editor instance
-		window.setTimeout(function(){
-            this.loadSerialized(model);
-            this.getCanvas().update();
-			loadContentFinished = true;
-			initFinished();
-		}.bind(this), 200);
 	},
 	
 	_finishedLoading: function() {
@@ -589,10 +563,14 @@ ORYX.Editor = {
 
 	/**
 	 * Creates the Canvas
-	 * @param {String} [stencilType] The stencil type used for creating the canvas. If not given, a stencil with myBeRoot = true from current stencil set is taken.
-	 * @param {Object} [canvasConfig] Any canvas properties (like language).
+	 * @param {Event} [event] The event detail
+	 * @param {String} [uiObj.stencilType] The stencil type used for creating the canvas. If not given, a stencil with myBeRoot = true from current stencil set is taken.
+	 * @param {Object} [uiObj.canvasConfig] Any canvas properties (like language).
 	 */
-	_createCanvas: function(stencilType, canvasConfig) {
+	_createCanvas: function(event, uiObj) {
+		canvasConfig = uiObj.canvasConfig;
+		stencilType = uiObj.stencilType;
+
         if (stencilType) {
             // Add namespace to stencilType
             if (stencilType.search(/^http/) === -1) {
@@ -639,9 +617,36 @@ ORYX.Editor = {
             
           this._canvas.deserialize(properties);
         }
-				
-	},
 
+		// GENERATES the whole EXT.VIEWPORT
+        this._generateGUI();
+
+		// Initializing of a callback to check loading ends
+		this._loadPluginFinished = false;
+		var initFinished = function() {
+
+		}.bind(this);
+		// LOAD the plugins
+		window.setTimeout(function() {
+			this.loadPlugins();
+			this._loadPluginFinished = true;
+			this.initFinished();
+		}.bind(this), 100);
+
+		// LOAD the content of the current editor instance
+		window.setTimeout(function() {
+			this.modelMetaData.contentLoadedCallback(this);
+		}.bind(this), 200);
+	},
+	/**
+	 * Invoke when loadPlugins or contentLoadedCallback is finished
+	 */
+	initFinished : function() {
+		if (!this._loadPluginFinished) {
+			return;
+		}
+		this._finishedLoading();
+	},
 	/**
 	 * Returns a per-editor singleton plugin facade.
 	 * To be used in plugin initialization.
@@ -1146,7 +1151,7 @@ ORYX.Editor = {
 	
 	loadStencilSet: function(source) {
 		try {
-			ORYX.Core.StencilSet.loadStencilSet(source, this.id);
+			ORYX.Core.StencilSet.loadStencilSet(this, source, this.id);
 			this.handleEvents({type:ORYX.CONFIG.EVENT_STENCIL_SET_LOADED});
 		} catch (e) {
 			ORYX.Log.warn("Requesting stencil set file failed. (" + e + ")");

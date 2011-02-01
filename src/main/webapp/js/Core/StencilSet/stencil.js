@@ -177,9 +177,10 @@ ORYX.Core.StencilSet.Stencil = {
 		            throw "ORYX.Core.StencilSet.Stencil(_loadSVGOnSuccess): The response is not a SVG document."
 		        }
 		    } else {
+		    	ORYX.Log.debug("Send request to load SVG for stencil: " + this.title());
 		        new Ajax.Request(
 		                url, {
-		                    asynchronous:false, method:'get',
+		                    asynchronous:true, method:'get',
 		                    onSuccess:this._loadSVGOnSuccess.bind(this),
 		                    onFailure:this._loadSVGOnFailure.bind(this)
 		                });
@@ -352,7 +353,7 @@ ORYX.Core.StencilSet.Stencil = {
 	},
 
 	_loadSVGOnSuccess: function(result) {
-		
+		ORYX.Log.debug("Receive response of the SVG of " + this.title());
 		var xml = null;
 		
 		/*

@@ -133,36 +133,14 @@ ORYX.Core.StencilSet.rules = function(editorId) {
  * It also stores which editor instance loads the stencil set and 
  * initializes the Rules object for the editor instance.
  */
-ORYX.Core.StencilSet.loadStencilSet = function(url, editorId) {
+ORYX.Core.StencilSet.loadStencilSet = function(oryxEditor, url, editorId) {
 	var stencilSet = ORYX.Core.StencilSet._stencilSetsByUrl[url];
 
 	if(!stencilSet) {
 		//load stencil set
-		stencilSet = new ORYX.Core.StencilSet.StencilSet(url);
+		stencilSet = new ORYX.Core.StencilSet.StencilSet(oryxEditor, url, editorId);
 		
-		//store stencil set
-		ORYX.Core.StencilSet._stencilSetsByNamespace[stencilSet.namespace()] = stencilSet;
-		
-		//store stencil set by url
-		ORYX.Core.StencilSet._stencilSetsByUrl[url] = stencilSet;
-	}
-	
-	var namespace = stencilSet.namespace();
-	
-	//store which editorInstance loads the stencil set
-	if(ORYX.Core.StencilSet._StencilSetNSByEditorInstance[editorId]) {
-		ORYX.Core.StencilSet._StencilSetNSByEditorInstance[editorId].push(namespace);
-	} else {
-		ORYX.Core.StencilSet._StencilSetNSByEditorInstance[editorId] = [namespace];
-	}
 
-	//store the rules for the editor instance
-	if(ORYX.Core.StencilSet._rulesByEditorInstance[editorId]) {
-		ORYX.Core.StencilSet._rulesByEditorInstance[editorId].initializeRules(stencilSet);
-	} else {
-		var rules = new ORYX.Core.StencilSet.Rules();
-		rules.initializeRules(stencilSet);
-		ORYX.Core.StencilSet._rulesByEditorInstance[editorId] = rules;
 	}
 };
 

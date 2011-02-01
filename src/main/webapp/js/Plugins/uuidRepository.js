@@ -174,7 +174,7 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 								this.showMessages(jsonObj);
 							}
 						} catch (err) {
-							ORYX.LOG.error(err);
+							ORYX.Log.error(err);
 						}
 					} else {
 						// show saved status
@@ -193,7 +193,7 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 
 				Ext.Msg.alert(ORYX.I18N.Oryx.title, ORYX.I18N.Save.failed);
 				
-				ORYX.log.warn("Saving failed: " + transport.responseText);
+				ORYX.Log.warn("Saving failed: " + transport.responseText);
 			}).bind(this),
 			on403: (function(transport) {
 				// raise loading disable event.
@@ -312,28 +312,33 @@ window.onOryxResourcesLoaded = function() {
 		}
 	};
 	if(!(ORYX.UUID === undefined)) {
-		
- 		//load the model from the repository from its uuid
-		new Ajax.Request(ORYX.CONFIG.UUID_URL(), {
-            asynchronous: false,
-            method: 'get',
-            onSuccess: function(transport) {
-				response = transport.responseText;
-				
-				if (response.length != 0) {
-				    try {
-					    model = response.evalJSON();
-					    editor_parameters.model = model;
-				    } catch(err) {
-				    	ORYX.LOG.error(err);
-				    }
+		editor_parameters.contentLoadedCallback = function(oryxEditor) {
+	 		//load the model from the repository from its uuid
+			new Ajax.Request(ORYX.CONFIG.UUID_URL(), {
+				asynchronous: true,
+				method: 'get',
+				onSuccess: function(transport) {
+					response = transport.responseText;
+
+					if (response.length != 0) {
+						try {
+							model = response.evalJSON();
+							editor_parameters.model = model;
+
+							oryxEditor.loadSerialized(model);
+							oryxEditor.getCanvas().update();
+						} catch(err) {
+							ORYX.Log.error(err);
+						}
+					}
+					oryxEditor.initFinished();
+				},
+				onFailure: function(transport) {
+					ORYX.Log.error("Could not load the model for uuid " + ORYX.UUID);
+					oryxEditor._finishedLoading();
 				}
-				
-			},
-            onFailure: function(transport) {
-            	ORYX.LOG.error("Could not load the model for uuid " + ORYX.UUID);
-			}
-        });
+	        });
+		};
 	}
 	// finally open the editor:
 	new ORYX.Editor(editor_parameters);

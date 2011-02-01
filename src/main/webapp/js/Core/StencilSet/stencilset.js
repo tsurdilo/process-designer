@@ -46,7 +46,8 @@ ORYX.Core.StencilSet.StencilSet = Clazz.extend({
      * @param source {URL} A reference to the stencil set specification.
      *
      */
-    construct: function(source){
+    construct: function(oryxEditor, source, editorId){
+
         arguments.callee.$.construct.apply(this, arguments);
         
         if (!source) {
@@ -57,15 +58,21 @@ ORYX.Core.StencilSet.StencilSet = Clazz.extend({
         }
 		
 		this._extensions = new Hash();
-        
+
+        // save reference
+        this._oryxEditor = oryxEditor;
         this._source = source;
+        this._editorId = editorId;
         this._baseUrl = ORYX.PATH + "stencilset/" + source + "/"
         this._jsonObject = {};
         
         this._stencils = new Hash();
 		this._availableStencils = new Hash();
+
+        ORYX.Log.debug("Start to load the stencilset: " + source);
+
 		new Ajax.Request(ORYX.PATH + "stencilset/" + source, {
-            asynchronous: false,
+            asynchronous: true,
             method: 'get',
             onSuccess: this._init.bind(this),
             onFailure: function() {
@@ -394,6 +401,7 @@ ORYX.Core.StencilSet.StencilSet = Clazz.extend({
      * 			stencil set specification.
      */
     _init: function(response){
+        ORYX.Log.debug("Finish loading the of stencilset: " + this._source);
         // init and check consistency.
         this.__handleStencilset(response);
 		
@@ -407,6 +415,7 @@ ORYX.Core.StencilSet.StencilSet = Clazz.extend({
 		}
 		
 		var defaultPosition = 0;
+		ORYX.Log.debug("Start to load each stencil");
         // init each stencil
         $A(this._jsonObject.stencils).each((function(stencil){
         	defaultPosition++;
@@ -424,10 +433,34 @@ ORYX.Core.StencilSet.StencilSet = Clazz.extend({
         	        }
         	    }
         	}
-        	
-        	
-            
         }).bind(this));
+        
+
+		//store stencil set
+		ORYX.Core.StencilSet._stencilSetsByNamespace[this.namespace()] = this;
+
+		//store stencil set by url
+		ORYX.Core.StencilSet._stencilSetsByUrl[this._source] = this;
+		
+		var namespace = this.namespace();
+		
+		//store which editorInstance loads the stencil set
+		if(ORYX.Core.StencilSet._StencilSetNSByEditorInstance[this._editorId]) {
+			ORYX.Core.StencilSet._StencilSetNSByEditorInstance[this._editorId].push(namespace);
+		} else {
+			ORYX.Core.StencilSet._StencilSetNSByEditorInstance[this._editorId] = [namespace];
+		}
+
+		//store the rules for the editor instance
+		if(ORYX.Core.StencilSet._rulesByEditorInstance[this._editorId]) {
+			ORYX.Core.StencilSet._rulesByEditorInstance[this._editorId].initializeRules(this);
+		} else {
+			var rules = new ORYX.Core.StencilSet.Rules();
+			rules.initializeRules(this);
+			ORYX.Core.StencilSet._rulesByEditorInstance[this._editorId] = rules;
+		}
+		
+		this._oryxEditor.handleEvents( {type: ORYX.CONFIG.EVENT_SS_LOADED_ON_STARTUP}, { stencilType: null, canvasConfig: null });
     },
     
     toString: function(){

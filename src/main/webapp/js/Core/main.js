@@ -122,7 +122,7 @@ ORYX.Editor = {
         }
 
 		// Register the callback of creating the canvas
-		this.registerOnEvent(ORYX.CONFIG.EVENT_SS_LOADED_ON_STARTUP, this._createCanvas.bind(this));
+		this.registerOnEvent(ORYX.CONFIG.EVENT_SS_LOADED_ON_STARTUP, this._stencilSetLoadFinished.bind(this));
 
 		// disable key events when Ext modal window is active
 		ORYX.Editor.makeExtModalWindowKeysave(this._getPluginFacade());
@@ -560,17 +560,36 @@ ORYX.Editor = {
 		this.setSelection();
 		
 	},
+	/**
+	 * Callback when stencil set loading finished
+	 * @param {Event} [event] The event detail
+	 * @param {Object] [uiObj] The context object
+	 */
+	_stencilSetLoadFinished : function(event, uiObj) {
+		this._createCanvas(uiObj.canvasConfig, uiObj.stencilType);
 
+		// GENERATES the whole EXT.VIEWPORT
+		this._generateGUI();
+
+		// LOAD the plugins
+		this.loadPlugins();
+
+		// LOAD the content of the current editor instance
+		this.modelMetaData.contentLoadedCallback(function(model) {
+			if (model != null) {
+				this.loadSerialized(model);
+				this.getCanvas().update();
+			}
+			this._finishedLoading();
+		}.bind(this));
+	},
 	/**
 	 * Creates the Canvas
 	 * @param {Event} [event] The event detail
-	 * @param {String} [uiObj.stencilType] The stencil type used for creating the canvas. If not given, a stencil with myBeRoot = true from current stencil set is taken.
-	 * @param {Object} [uiObj.canvasConfig] Any canvas properties (like language).
+	 * @param {String} [stencilType] The stencil type used for creating the canvas. If not given, a stencil with myBeRoot = true from current stencil set is taken.
+	 * @param {Object} [canvasConfig] Any canvas properties (like language).
 	 */
-	_createCanvas: function(event, uiObj) {
-		canvasConfig = uiObj.canvasConfig;
-		stencilType = uiObj.stencilType;
-
+	_createCanvas: function(canvasConfig, stencilType) {
         if (stencilType) {
             // Add namespace to stencilType
             if (stencilType.search(/^http/) === -1) {
@@ -617,35 +636,6 @@ ORYX.Editor = {
             
           this._canvas.deserialize(properties);
         }
-
-		// GENERATES the whole EXT.VIEWPORT
-        this._generateGUI();
-
-		// Initializing of a callback to check loading ends
-		this._loadPluginFinished = false;
-		var initFinished = function() {
-
-		}.bind(this);
-		// LOAD the plugins
-		window.setTimeout(function() {
-			this.loadPlugins();
-			this._loadPluginFinished = true;
-			this.initFinished();
-		}.bind(this), 100);
-
-		// LOAD the content of the current editor instance
-		window.setTimeout(function() {
-			this.modelMetaData.contentLoadedCallback(this);
-		}.bind(this), 200);
-	},
-	/**
-	 * Invoke when loadPlugins or contentLoadedCallback is finished
-	 */
-	initFinished : function() {
-		if (!this._loadPluginFinished) {
-			return;
-		}
-		this._finishedLoading();
 	},
 	/**
 	 * Returns a per-editor singleton plugin facade.

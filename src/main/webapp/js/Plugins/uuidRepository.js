@@ -312,7 +312,7 @@ window.onOryxResourcesLoaded = function() {
 		}
 	};
 	if(!(ORYX.UUID === undefined)) {
-		editor_parameters.contentLoadedCallback = function(oryxEditor) {
+		editor_parameters.contentLoadedCallback = function(editorCallback) {
 	 		//load the model from the repository from its uuid
 			new Ajax.Request(ORYX.CONFIG.UUID_URL(), {
 				asynchronous: true,
@@ -320,22 +320,20 @@ window.onOryxResourcesLoaded = function() {
 				onSuccess: function(transport) {
 					response = transport.responseText;
 
+					var model = null;
 					if (response.length != 0) {
 						try {
 							model = response.evalJSON();
 							editor_parameters.model = model;
-
-							oryxEditor.loadSerialized(model);
-							oryxEditor.getCanvas().update();
 						} catch(err) {
 							ORYX.Log.error(err);
 						}
 					}
-					oryxEditor.initFinished();
+					editorCallback(model);
 				},
 				onFailure: function(transport) {
 					ORYX.Log.error("Could not load the model for uuid " + ORYX.UUID);
-					oryxEditor._finishedLoading();
+					editorCallback(null);
 				}
 	        });
 		};

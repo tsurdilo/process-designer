@@ -78,7 +78,7 @@ ORYX.I18N.AMLSupport.impProgress = "Importierung wird ausgeführt...";
 ORYX.I18N.AMLSupport.cancel = "Abbrechen";
 ORYX.I18N.AMLSupport.name = "Name";
 ORYX.I18N.AMLSupport.allImported = "Alle importierten Diagramme.";
-ORYX.I18N.AMLSupport.ok = "Ok";
+ORYX.I18N.AMLSupport.ok = "OK";
 
 if(!ORYX.I18N.Arrangement) ORYX.I18N.Arrangement = {};
 
@@ -374,7 +374,7 @@ ORYX.I18N.PropertyWindow.add = "Hinzufügen";
 ORYX.I18N.PropertyWindow.rem = "Löschen";
 ORYX.I18N.PropertyWindow.complex = "Editor für komplexe Eigenschaft";
 ORYX.I18N.PropertyWindow.text = "Editor für einen Text";
-ORYX.I18N.PropertyWindow.ok = "Ok";
+ORYX.I18N.PropertyWindow.ok = "OK";
 ORYX.I18N.PropertyWindow.cancel = "Abbrechen";
 ORYX.I18N.PropertyWindow.dateFormat = "d/m/y";
 
@@ -442,7 +442,7 @@ ORYX.I18N.XFormsSerialization.importXForms = "XForms Import";
 ORYX.I18N.XFormsSerialization.importXFormsDesc = "Import von XForms+XHTML Markup";
 ORYX.I18N.XFormsSerialization.noClientXFormsSupport = "Keine XForms Unterstützung";
 ORYX.I18N.XFormsSerialization.noClientXFormsSupportDesc = "<h2>Ihr Browser unterstützt XForms nicht. Bitte installieren Sie das <a href=\"https://addons.mozilla.org/firefox/addon/824\" target=\"_blank\">Mozilla XForms Add-on</a> für Firefox.</h2>";
-ORYX.I18N.XFormsSerialization.ok = "Ok";
+ORYX.I18N.XFormsSerialization.ok = "OK";
 ORYX.I18N.XFormsSerialization.selectFile = "Wählen sie eine XHTML Datei (.xhtml) aus oder geben Sie das XForms+XHTML Markup im Textfeld ein.";
 ORYX.I18N.XFormsSerialization.selectCss = "Optional: Geben sie die URL der gewünschten css Datei an.";
 ORYX.I18N.XFormsSerialization.file = "Datei";

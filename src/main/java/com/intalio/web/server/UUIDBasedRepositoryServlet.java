@@ -205,7 +205,10 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String uuid = req.getParameter("uuid");
+        if (resp.isCommitted()) {
+        	return;//called twice... need to clean-up the FilterChainImpl that is quite wrong.
+        }
+    	String uuid = req.getParameter("uuid");
         if (uuid == null) {
             throw new ServletException("uuid parameter required");
         }
@@ -238,6 +241,9 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
         throws ServletException, IOException {
+        if (resp.isCommitted()) {
+        	return;//called twice... need to clean-up the FilterChainImpl that is quite wrong.
+        }
         
         BufferedReader reader = req.getReader();
         StringWriter reqWriter = new StringWriter();
@@ -306,4 +312,5 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
         }
         return profile;
     }
+    
 }

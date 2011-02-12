@@ -276,6 +276,11 @@ ORYX.Plugins.ShapeRepository = {
 
 				this.facade.setSelection([this.shape]);
 				this.facade.getCanvas().update();
+				
+				// make the node (been hidden since created) visible after update
+				if (this.shape instanceof ORYX.Core.Node) {
+					this.shape.setVisible(true);
+				}
 				this.facade.updateSelection();
 				
 				this.facade.raiseEvent({type:ORYX.CONFIG.EVENT_DROP_SHAPE, shape:this.shape});
@@ -288,6 +293,11 @@ ORYX.Plugins.ShapeRepository = {
 
 				this.facade.setSelection(this.selection.without(this.shape));
 				this.facade.getCanvas().update();
+				
+				// make the node (been hidden since created) visible after update
+				if (this.shape instanceof ORYX.Core.Node) {
+					this.shape.setVisible(true);
+				}
 				this.facade.updateSelection();
 				
 			}

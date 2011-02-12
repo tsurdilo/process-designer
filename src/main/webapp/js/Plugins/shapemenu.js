@@ -1413,6 +1413,11 @@ ORYX.Plugins.ShapeMenuPlugin.CreateCommand = ORYX.Core.Command.extend({
 		}
 		
 		this.plugin.facade.getCanvas().update();
+		
+		// make the node (been hidden since created) visible after update
+		if (this.shape instanceof ORYX.Core.Node) {
+			this.shape.setVisible(true);
+		}
 		this.plugin.facade.updateSelection();
 		
 		if (!resume) {

@@ -828,6 +828,21 @@ ORYX.Core.Node = {
     
     toString: function(){
         return this._stencil.title() + " " + this.id
+    },
+    
+    /**
+     * Set visibility for the node.
+     * Node visible if isVisible is TRUE
+     * Node invisible if isVisible is FALSE
+     * 
+     * @param {boolean} isVisible
+     */
+    setVisible: function(isVisible){
+        if (isVisible) {
+            this.node.setAttributeNS(null, 'display', 'inherit');
+        } else {
+            this.node.setAttributeNS(null, 'display', 'none');
+        }
     }
 };
 ORYX.Core.Node = ORYX.Core.Shape.extend(ORYX.Core.Node);

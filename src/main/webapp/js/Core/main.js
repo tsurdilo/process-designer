@@ -1298,6 +1298,9 @@ ORYX.Editor = {
 
 		// Add to the canvas
 		if(option.parent && newShapeObject instanceof ORYX.Core.Node) {
+			// make the raw SVG of the node invisible before it's updated
+			// to avoid the abnormal display when drag a shape into the canvas in Firefox
+			newShapeObject.setVisible(false);
 			option.parent.add(newShapeObject);
 		} else {
 			canvas.add(newShapeObject);

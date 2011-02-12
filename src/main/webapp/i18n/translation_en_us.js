@@ -385,7 +385,7 @@ ORYX.I18N.PropertyWindow.ok = "OK";
 ORYX.I18N.PropertyWindow.cancel = "Cancel";
 ORYX.I18N.PropertyWindow.dateFormat = "m/d/y";
 ORYX.I18N.PropertyWindow.mappingeditor = "Mapping Editor";
-ORYX.I18N.PropertyWindow.expression = "Editor for an Expression Type";
+ORYX.I18N.PropertyWindow.expression = "Expression Editor";
 ORYX.I18N.PropertyWindow.xpathTextarea = "Insert xpath expression";
 
 if(!ORYX.I18N.ShapeMenuPlugin) ORYX.I18N.ShapeMenuPlugin = {};

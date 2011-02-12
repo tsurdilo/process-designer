@@ -43,6 +43,7 @@ import java.util.WeakHashMap;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -196,7 +197,7 @@ public class EditorHandler extends HttpServlet {
         }
     
         // generate script to setup the languages
-        _envFiles.add("i18n/translation_en_us.js");
+        //_envFiles.add("i18n/translation_ja.js");
         if (System.getProperty(DEV) == null) {
             StringWriter sw = new StringWriter();
             for (String file : _envFiles) {
@@ -256,6 +257,34 @@ public class EditorHandler extends HttpServlet {
         } else {
             addScript(doc, oryx_path + "jsc/env_combined.js", true);
         }
+        
+     // get language from cookie
+        String lang = null;
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if ("locale".equals(cookie.getName())) {
+                lang = cookie.getValue().trim();
+                break;
+            }
+        }
+ 
+        // i18n message resource file name
+        String i18nJsFile = null;
+ 
+        if ("de_DE".equals(lang)) {
+            i18nJsFile = "i18n/translation_de.js";
+        } else if ("ru".equals(lang)){
+            i18nJsFile = "i18n/translation_ru.js";
+        } else if ("es".equals(lang)){
+            i18nJsFile = "i18n/translation_es.js";
+        } else if ("ja_JP".equals(lang)){
+            i18nJsFile = "i18n/translation_ja.js";
+        } else {
+            i18nJsFile = "i18n/translation_en_us.js";
+        }
+        // generate script to setup the languages
+        addScript(doc, oryx_path + i18nJsFile, true);
+
         
         // generate script tags for plugins.
         // they are located after the initialization script.

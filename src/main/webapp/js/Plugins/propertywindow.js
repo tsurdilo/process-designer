@@ -247,7 +247,7 @@ ORYX.Plugins.PropertyWindow = {
 				// TODO to be implemented as a Labelprovider.
 				if (value != "") {
 					mappintObj = value.evalJSON();
-					return "Total count : " + mappintObj.totalCount;
+					return mappintObj.totalCount + " associations";
 				} else {
 					return value;
 				}

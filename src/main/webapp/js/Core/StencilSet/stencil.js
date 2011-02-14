@@ -356,6 +356,10 @@ ORYX.Core.StencilSet.Stencil = {
 		ORYX.Log.debug("Receive response of the SVG of " + this.title());
 		var xml = null;
 		
+		// if this SVG is the last stencil which should be loaded
+		if (this._stencilSet.isLastStencil()) {
+			this._stencilSet.stencilSetLoadFinish();
+		}
 		/*
 		 * We want to get a dom object for the requested file. Unfortunately,
 		 * safari has some issues here. this is meant as a fallback for all

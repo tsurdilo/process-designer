@@ -69,6 +69,11 @@ ORYX.Core.StencilSet.StencilSet = Clazz.extend({
         this._stencils = new Hash();
 		this._availableStencils = new Hash();
 
+		// A counter works with "totalStencilCount" to judge whether all the SVGs have finished loading.
+		// To avoid that Model.json begin to load before all the SVGs are downloaded.
+		this._currentStencilCount = 0;
+		this._totalStencilCount = 0;
+
         ORYX.Log.debug("Start to load the stencilset: " + source);
 
 		new Ajax.Request(ORYX.PATH + "stencilset/" + source, {
@@ -416,6 +421,8 @@ ORYX.Core.StencilSet.StencilSet = Clazz.extend({
 		
 		var defaultPosition = 0;
 		ORYX.Log.debug("Start to load each stencil");
+		// set the total count of all the stencils
+		this._totalStencilCount = this._jsonObject.stencils.length;
         // init each stencil
         $A(this._jsonObject.stencils).each((function(stencil){
         	defaultPosition++;
@@ -459,11 +466,30 @@ ORYX.Core.StencilSet.StencilSet = Clazz.extend({
 			rules.initializeRules(this);
 			ORYX.Core.StencilSet._rulesByEditorInstance[this._editorId] = rules;
 		}
-		
-		this._oryxEditor.handleEvents( {type: ORYX.CONFIG.EVENT_SS_LOADED_ON_STARTUP}, { stencilType: null, canvasConfig: null });
     },
     
     toString: function(){
         return "StencilSet " + this.title() + " (" + this.namespace() + ")";
+    },
+    
+    /**
+     * judge whether the current stencil is the last of StencilSet
+     */
+    isLastStencil: function() {
+        // increase _currentStencilCount after this SVG has been loaded.
+        this._currentStencilCount++;
+        // if this SVG is the last stencil in StencilSet
+        if (this._currentStencilCount == this._totalStencilCount) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    
+    /**
+     * Callback when stencil set loading finished
+     */
+    stencilSetLoadFinish: function() {
+        this._oryxEditor.handleEvents( {type: ORYX.CONFIG.EVENT_SS_LOADED_ON_STARTUP}, { stencilType: null, canvasConfig: null });
     }
 });

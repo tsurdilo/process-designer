@@ -190,9 +190,45 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
                     type: ORYX.CONFIG.EVENT_LOADING_DISABLE
                 });
 
-
-				Ext.Msg.alert(ORYX.I18N.Oryx.title, ORYX.I18N.Save.failed);
-				
+	        // create a new Panel
+	        var panel = new Ext.Panel({
+	            frame: true,
+	            autoHeight: true,
+				html : '<table><tr><td class="x-table-layout-cell"><img src="/crm/img/alerts/error.png"/></td><td class="x-table-layout-cell">' + 
+				       ORYX.I18N.Save.failedMsg + '</td></tr></table>',
+				buttons : [ {
+					text : ORYX.I18N.Save.failedOKBtn,
+					handler : function() {
+						faildWin.hide();
+					}
+					},
+					{
+					text : ORYX.I18N.Save.failedDetailsBtn,
+					handler : function() {
+	                    var errWin=window.open('about:blank','_blank','menubar=no,toolbar=no,location=no,scrollbars=yes,resizable=yes,top=0,left=0,width='+
+	                               (screen.availWidth-10)+',height='+(screen.availHeight-100));
+	                    errWin.document.write('<h3>' + ORYX.I18N.Save.failedThereWas + '</h3>'+ transport.responseText);
+	                    errWin.document.close();				
+						faildWin.hide();
+					}
+					}
+				]
+	        })
+	
+	        // create save failed window
+			var faildWin = new Ext.Window({
+				title : ORYX.I18N.Save.failedTitle,
+				layout : 'fit',
+				frame: true,
+				width : 334,
+				modal : true,
+				closeAction : 'close',
+				plain : false,
+	            autoHeight: true,
+	            items: [panel]
+			});
+			faildWin.show(this);
+                
 				ORYX.Log.warn("Saving failed: " + transport.responseText);
 			}).bind(this),
 			on403: (function(transport) {
@@ -200,7 +236,6 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
                 this.facade.raiseEvent({
                     type: ORYX.CONFIG.EVENT_LOADING_DISABLE
                 });
-
 
 				Ext.Msg.alert(ORYX.I18N.Oryx.title, ORYX.I18N.Save.noRights);
 				

@@ -106,6 +106,30 @@
     checkChromeFrame = function() {
         CFInstall.check({mode: "popup",node: "prompt"});
     };
+    
+    // function to possibly override keypress
+    // FIX to BPM-626 Jira issue. 
+    // It was taken from : http://jimblackler.net/blog/?p=20
+    trapfunction = function(event){
+        var keynum;
+       
+        if (window.event){ // eg. IE
+            keynum = window.event.keyCode;
+        } else if (event.which){ // eg. Firefox
+            keynum = event.which;
+        }
+ 
+        if (keynum == 8){ // backspace has code 8
+            return false;
+            // nullifies the backspace
+        }
+        return true;
+    }
+   
+    document.onkeydown = trapfunction; // IE, Firefox, Safari
+    document.onkeypress = trapfunction; // only Opera needs the backspace nullifying in onkeypress
+   
+
     </script>    
   </head>
   <body style="overflow:hidden;" onLoad="checkChromeFrame()">

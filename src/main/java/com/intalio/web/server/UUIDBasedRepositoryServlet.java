@@ -133,7 +133,7 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
             ServiceReference ref = bundleContext.getServiceReference(
                     IUUIDBasedRepositoryService.class.getName());
             if (ref == null) {
-                _logger.error("No service registered for IUUIDBasedRepositoryService");
+                _logger.info("No service registered for IUUIDBasedRepositoryService");
                 throw new UnavailableException(
                         "No service registered for IUUIDBasedRepositoryService", 0);
             }

@@ -349,7 +349,7 @@ window.onOryxResourcesLoaded = function() {
 	if(!(ORYX.UUID === undefined)) {
 		editor_parameters.contentLoadedCallback = function(editorCallback) {
 	 		//load the model from the repository from its uuid
-			new Ajax.Request(ORYX.CONFIG.UUID_URL(), {
+			new Ajax.Request(ORYX.CONFIG.UUID_URL() + "&time=" +(new Date()).getTime(), {
 				asynchronous: true,
 				method: 'get',
 				onSuccess: function(transport) {

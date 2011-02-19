@@ -118,8 +118,25 @@
         } else if (event.which){ // eg. Firefox
             keynum = event.which;
         }
- 
+        
+        var target;
+	    if (!event) {
+	        event = window.event;
+	    }
+	    if (event.target) {
+	        target = event.target;
+	    } else if (event.srcElement) {
+	        target = event.srcElement;
+	    }
+	    if (target.nodeType == 3) {// defeat Safari bug
+		    target = target.parentNode;
+        }
+        
+        
         if (keynum == 8){ // backspace has code 8
+        	if (target.getAttribute("type") == "text") {
+        	    return true;
+        	}
             return false;
             // nullifies the backspace
         }

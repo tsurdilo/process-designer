@@ -280,6 +280,7 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
             throw new ServletException(e1);
         } catch (DiagramValidationException e) {
             // set the error JSON to response
+            resp.setCharacterEncoding("utf-8");
             resp.getWriter().write(e.getErrorJsonStr());
         }
     }

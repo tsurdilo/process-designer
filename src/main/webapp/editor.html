@@ -134,7 +134,7 @@
         
         
         if (keynum == 8){ // backspace has code 8
-        	if (target.getAttribute("type") == "text") {
+        	if (target.nodeName == "input" || target.nodeName == "textarea") {
         	    return true;
         	}
             return false;

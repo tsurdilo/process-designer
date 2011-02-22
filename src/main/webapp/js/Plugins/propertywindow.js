@@ -752,7 +752,7 @@ ORYX.Plugins.PropertyWindow = {
 				}
 				
 				// Push to the properties-array
-				if(pair.visible()) {
+				if(pair.visible() && !pair._jsonProp.hidden) {
 					// Popular Properties are those with a refToView set or those which are set to be popular
 					if (pair.refToView()[0] || refToViewFlag || pair.popular()) {
 						pair.setPopular();

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @author Garret.Bi
  * 
  * Contains all strings for the Janpanese language.

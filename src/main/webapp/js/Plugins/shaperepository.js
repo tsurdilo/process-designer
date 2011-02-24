@@ -163,6 +163,12 @@ ORYX.Plugins.ShapeRepository = {
 
 	createStencilTreeNode: function(parentTreeNode, stencil) {
 
+		// assume we cannot execute if the "serializer" field is empty
+		var unserializable = stencil._jsonStencil.unserializable;
+		// if the shape is not executeable, make the color looks dim
+		var cssClass = !unserializable
+				? 'ShapeRepEntree'
+				: 'x-tree-node-disabled ShapeRepEntree';
 		// Create and add the Stencil to the Group
 		var newElement = new Ext.tree.TreeNode({
 				text:		stencil.title(), 		// Text of the stencil
@@ -170,7 +176,7 @@ ORYX.Plugins.ShapeRepository = {
 				allowDrag:	false,					// Don't use the Drag and Drop of Ext-Tree
 				allowDrop:	false,
 				iconCls:	'ShapeRepEntreeImg', 	// CSS-Class for Icon
-				cls:		'ShapeRepEntree'		// CSS-Class for the Tree-Entree
+				cls:		cssClass				// CSS-Class for the Tree-Entree
 				});
 
 		parentTreeNode.appendChild(newElement);		

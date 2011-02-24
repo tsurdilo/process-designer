@@ -34,7 +34,7 @@ if (!ORYX.LabelProviders) {
     ORYX.LabelProviders = {};
 }
 
-
+inToggelGroup = false;
 
 ORYX.Plugins.PropertyWindow = {
 
@@ -157,7 +157,7 @@ ORYX.Plugins.PropertyWindow = {
 			// the column model
 			colModel: this.columnModel,
 			enableHdMenu: false,
-			view: new Ext.grid.GroupingView({
+			view: new Ext.grid.OryxGroupingView({
 				forceFit: true,
 				groupTextTpl: '{[values.rs.first().data.popular ? ORYX.I18N.PropertyWindow.oftenUsed : ORYX.I18N.PropertyWindow.moreProps]}'
 			}),
@@ -325,7 +325,10 @@ ORYX.Plugins.PropertyWindow = {
 				}.bind(this));
 				this.facade.setSelection(this.selectedElements);
 				this.facade.getCanvas().update();
-				this.facade.updateSelection();
+				// if the GroupingView is collapsing or expanding, don't refresh.
+				if (!inToggelGroup) {
+					this.facade.updateSelection();
+				}
 			},
 			rollback: function(){
 				this.selectedElements.each(function(shape){
@@ -1274,7 +1277,36 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 	}
 });
 
+/**
+ * Override the Ext.grid.GroupingView.
+ * It allows the property value which is being editing in property window
+ * can be saved when the GroupingView collapses or expands.
+ * 
+ * @class Ext.grid.OryxGroupingView
+ * @extends Ext.grid.GroupingView
+ */
+Ext.grid.OryxGroupingView = Ext.extend(Ext.grid.GroupingView,  {
 
+    /**
+     * Toggles the specified group.
+     * Save the property value which is being editing.
+     * 
+     * @param {String} group The groupId assigned to the group (see getGroupId)
+     * @param {Boolean} expanded (optional)
+     */
+    toggleGroup : function(group, expanded){
+        inToggelGroup = true;
+        this.grid.stopEditing(false);
+        inToggelGroup = false;
+        group = Ext.getDom(group);
+        var gel = Ext.fly(group);
+        expanded = expanded !== undefined ?
+                expanded : gel.hasClass('x-grid-group-collapsed');
+
+        this.state[gel.dom.id] = expanded;
+        gel[expanded ? 'removeClass' : 'addClass']('x-grid-group-collapsed');
+    }
+})
 
 
 

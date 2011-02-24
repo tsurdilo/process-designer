@@ -13,7 +13,7 @@ ORYX.I18N.Language = "en_us"; //Pattern <ISO language code>_<ISO country code> i
 if(!ORYX.I18N.Oryx) ORYX.I18N.Oryx = {};
 
 ORYX.I18N.Oryx.title		= ORYX.TITLE;
-ORYX.I18N.Oryx.noBackendDefined	= "Caution! \nNo Backend defined.\n The requested model cannot be loaded. Try to load a configuration with a save plugin.";
+ORYX.I18N.Oryx.noBackendDefined	= "Caution! \nNo backend defined.\n The requested model cannot be loaded. Try to load a configuration with a save plugin.";
 ORYX.I18N.Oryx.pleaseWait 	= "Please wait while loading...";
 ORYX.I18N.Oryx.notLoggedOn = "Not logged on";
 ORYX.I18N.Oryx.editorOpenTimeout = "The editor does not seem to be started yet. Please check, whether you have a popup blocker enabled and disable it or allow popups for this site. We will never display any commercials on this site.";
@@ -60,7 +60,7 @@ ORYX.I18N.AdHocCC.and = "and";
 ORYX.I18N.AdHocCC.or = "or";
 ORYX.I18N.AdHocCC.not = "not";
 ORYX.I18N.AdHocCC.clearCC = "Clear Completion Condition";
-ORYX.I18N.AdHocCC.editCC = "Edit Ad-Hoc Completion Condtions";
+ORYX.I18N.AdHocCC.editCC = "Edit Ad Hoc Completion Conditions";
 ORYX.I18N.AdHocCC.addExecState = "Add Execution State Expression: ";
 ORYX.I18N.AdHocCC.addDataExp = "Add Data Expression: ";
 ORYX.I18N.AdHocCC.addLogOp = "Add Logical Operators: ";
@@ -178,9 +178,9 @@ ORYX.I18N.Bpel4ChorTransformation.warning = "Warning";
 ORYX.I18N.Bpel4ChorTransformation.wrongValue = 'The changed name must have the value "1" to avoid errors during the transformation to BPEL4Chor';
 ORYX.I18N.Bpel4ChorTransformation.loopNone = 'The loop type of the receive task must be "None" to be transformable to BPEL4Chor';
 ORYX.I18N.Bpel4ChorTransformation.error = "Error";
-ORYX.I18N.Bpel4ChorTransformation.noSource = "1 with id 2 has no source object.";
-ORYX.I18N.Bpel4ChorTransformation.noTarget = "1 with id 2 has no target object.";
-ORYX.I18N.Bpel4ChorTransformation.transCall = "An error occured during the transformation call. 1:2";
+ORYX.I18N.Bpel4ChorTransformation.noSource = "1 with ID 2 has no source object.";
+ORYX.I18N.Bpel4ChorTransformation.noTarget = "1 with ID 2 has no target object.";
+ORYX.I18N.Bpel4ChorTransformation.transCall = "An error occurred during the transformation call. 1:2";
 ORYX.I18N.Bpel4ChorTransformation.loadingXPDL4ChorExport = "Export to XPDL4Chor";
 ORYX.I18N.Bpel4ChorTransformation.loadingBPEL4ChorExport = "Export to BPEL4Chor";
 ORYX.I18N.Bpel4ChorTransformation.noGen = "The transformation input could not be generated: 1\n2\n";
@@ -220,7 +220,7 @@ ORYX.I18N.DesynchronizabilityOverlay.group = "Overlay";
 ORYX.I18N.DesynchronizabilityOverlay.name = "Desynchronizability Checker";
 ORYX.I18N.DesynchronizabilityOverlay.desc = "Desynchronizability Checker";
 ORYX.I18N.DesynchronizabilityOverlay.sync = "The net is desynchronizable.";
-ORYX.I18N.DesynchronizabilityOverlay.error = "The net has 1 syntax errors.";
+ORYX.I18N.DesynchronizabilityOverlay.error = "The net has 1 syntax error.";
 ORYX.I18N.DesynchronizabilityOverlay.invalid = "Invalid answer from server.";
 
 if(!ORYX.I18N.Edit) ORYX.I18N.Edit = {};
@@ -527,7 +527,7 @@ ORYX.I18N.BPMN2XPDL.close = "Close";
 /** Resource Perspective Additions: 24 March 2009 */
 if(!ORYX.I18N.ResourcesSoDAdd) ORYX.I18N.ResourcesSoDAdd = {};
 
-ORYX.I18N.ResourcesSoDAdd.name = "Define Separation of Duties Contraint";
+ORYX.I18N.ResourcesSoDAdd.name = "Define Separation of Duties Constraint";
 ORYX.I18N.ResourcesSoDAdd.group = "Resource Perspective";
 ORYX.I18N.ResourcesSoDAdd.desc = "Define a Separation of Duties constraint for the selected tasks";
 
@@ -725,9 +725,9 @@ ORYX.I18N.SyntaxChecker.EPC_FUNCTION_AFTER_PI =  "There must be no function afte
 if(!ORYX.I18N.SyntaxChecker.PetriNet) ORYX.I18N.SyntaxChecker.PetriNet={};
 ORYX.I18N.SyntaxChecker.PetriNet_NOT_BIPARTITE = "The graph is not bipartite";
 ORYX.I18N.SyntaxChecker.PetriNet_NO_LABEL = "Label not set for a labeled transition";
-ORYX.I18N.SyntaxChecker.PetriNet_NO_ID = "There is a node without id";
+ORYX.I18N.SyntaxChecker.PetriNet_NO_ID = "There is a node without ID";
 ORYX.I18N.SyntaxChecker.PetriNet_SAME_SOURCE_AND_TARGET = "Two flow relationships have the same source and target";
-ORYX.I18N.SyntaxChecker.PetriNet_NODE_NOT_SET = "A node is not set for a flowrelationship";
+ORYX.I18N.SyntaxChecker.PetriNet_NODE_NOT_SET = "A node is not set for a flow relationship";
 
 /** New Language Properties: 02.06.2009*/
 ORYX.I18N.Edge = "Edge";
@@ -770,8 +770,8 @@ ORYX.I18N.PluginLoad.loadErrorTitle="Loading Error";
 ORYX.I18N.PluginLoad.loadErrorDesc = "Unable to load Plugin. \n Error:\n";
 ORYX.I18N.PluginLoad.WindowTitle ="Add additional Plugins";
 
-ORYX.I18N.PluginLoad.NOTUSEINSTENCILSET = "Not allowed in this Stencilset!";
-ORYX.I18N.PluginLoad.REQUIRESTENCILSET = "Require another Stencilset!";
+ORYX.I18N.PluginLoad.NOTUSEINSTENCILSET = "Not allowed in this stencil set!";
+ORYX.I18N.PluginLoad.REQUIRESTENCILSET = "Require another stencil set!";
 ORYX.I18N.PluginLoad.NOTFOUND = "Pluginname not found!"
 ORYX.I18N.PluginLoad.YETACTIVATED = "Plugin is yet activated!"
 
@@ -839,7 +839,7 @@ ORYX.I18N.SyntaxChecker.BPMN_MESSAGE_FLOW_NOT_ALLOWED = "A Message Flow is not a
 /** New Language Properties 27.11.2009 */
 ORYX.I18N.SyntaxChecker.BPMN2_EVENT_BASED_WITH_TOO_LESS_INCOMING_SEQUENCE_FLOWS = "An Event-based Gateway that is not instantiating must have a minimum of one incoming Sequence Flow.";
 ORYX.I18N.SyntaxChecker.BPMN2_TOO_FEW_INITIATING_PARTICIPANTS = "A Choreography Activity must have one initiating Participant (white).";
-ORYX.I18N.SyntaxChecker.BPMN2_TOO_MANY_INITIATING_PARTICIPANTS = "A Choreography Acitivity must not have more than one initiating Participant (white)."
+ORYX.I18N.SyntaxChecker.BPMN2_TOO_MANY_INITIATING_PARTICIPANTS = "A Choreography Activity must not have more than one initiating Participant (white)."
 
 ORYX.I18N.SyntaxChecker.COMMUNICATION_AT_LEAST_TWO_PARTICIPANTS = "The communication must be connected to at least two participants.";
 ORYX.I18N.SyntaxChecker.MESSAGEFLOW_START_MUST_BE_PARTICIPANT = "The message flow's source must be a participant.";

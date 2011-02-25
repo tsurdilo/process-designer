@@ -153,13 +153,14 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 		this.showSaveStatus(savePlugin, asynchronous);
 		var svgDOM = DataManager.serialize(this.facade.getCanvas().getSVGRepresentation(true));
 		var serializedDOM = Ext.encode(this.facade.getJSON());
-		var rdf = this.getRDFFromDOM();
+		//var rdf = this.getRDFFromDOM();
 
 		// Send the request to the server.
 		new Ajax.Request(ORYX.CONFIG.UUID_URL(), {
                 method: 'POST',
                 asynchronous: asynchronous,
-                postBody: Ext.encode({data: serializedDOM, svg : svgDOM, uuid: ORYX.UUID, rdf: rdf, profile: ORYX.PROFILE, savetype: asave}),
+                postBody: Ext.encode({data: serializedDOM, svg : svgDOM, uuid: ORYX.UUID, //rdf: rdf, 
+                    profile: ORYX.PROFILE, savetype: asave}),
 				onSuccess : (function(transport) {
 					response = transport.responseText;
 					if (response.length != 0) {

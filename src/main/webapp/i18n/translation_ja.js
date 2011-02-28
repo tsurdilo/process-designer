@@ -20,7 +20,7 @@ ORYX.I18N.Oryx.editorOpenTimeout = "JA:The editor does not seem to be started ye
 
 if(!ORYX.I18N.AddDocker) ORYX.I18N.AddDocker = {};
 
-ORYX.I18N.AddDocker.group = "JA:Docker";
+ORYX.I18N.AddDocker.group = "Docker";
 ORYX.I18N.AddDocker.add = "JA:Add Docker";
 ORYX.I18N.AddDocker.addDesc = "JA:Add a Docker to an edge, by clicking on it";
 ORYX.I18N.AddDocker.del = "JA:Delete Docker";
@@ -28,13 +28,13 @@ ORYX.I18N.AddDocker.delDesc = "JA:Delete a Docker";
 
 if(!ORYX.I18N.ShapeConnector) ORYX.I18N.ShapeConnector = {};
 
-ORYX.I18N.ShapeConnector.group = "JA:Connector";
+ORYX.I18N.ShapeConnector.group = "Connector";
 ORYX.I18N.ShapeConnector.add = "JA:Connect Shapes";
 ORYX.I18N.ShapeConnector.addDesc = "JA:Connect several nodes by marking them in the desired order";
 
 if(!ORYX.I18N.SSExtensionLoader) ORYX.I18N.SSExtensionLoader = {};
 
-ORYX.I18N.SSExtensionLoader.group = "JA:Stencil Set";
+ORYX.I18N.SSExtensionLoader.group = "Stencil Set";
 ORYX.I18N.SSExtensionLoader.add = "JA:Add Stencil Set Extension";
 ORYX.I18N.SSExtensionLoader.addDesc = "JA:Add a stencil set extension";
 ORYX.I18N.SSExtensionLoader.loading = "JA:Loading Stencil Set Extension";
@@ -46,7 +46,7 @@ ORYX.I18N.SSExtensionLoader.panelText = "JA:Select the stencil set extensions yo
 
 if(!ORYX.I18N.AdHocCC) ORYX.I18N.AdHocCC = {};
 
-ORYX.I18N.AdHocCC.group = "JA:Ad Hoc";
+ORYX.I18N.AdHocCC.group = "Ad Hoc";
 ORYX.I18N.AdHocCC.compl = "JA:Edit Completion Condition";
 ORYX.I18N.AdHocCC.complDesc = "JA:Edit an Ad Hoc Activity's Completion Condition";
 ORYX.I18N.AdHocCC.notOne = "JA:Not exactly one element selected!";
@@ -68,7 +68,7 @@ ORYX.I18N.AdHocCC.curCond = "JA:Current Completion Condition: ";
 
 if(!ORYX.I18N.AMLSupport) ORYX.I18N.AMLSupport = {};
 
-ORYX.I18N.AMLSupport.group = "JA:EPC";
+ORYX.I18N.AMLSupport.group = "EPC";
 ORYX.I18N.AMLSupport.imp = "JA:Import AML file";
 ORYX.I18N.AMLSupport.impDesc = "JA:Import an Aris 7 AML file";
 ORYX.I18N.AMLSupport.failed = "JA:Importing AML file failed. Please check, if the selected file is a valid AML file. Error message: ";
@@ -90,7 +90,7 @@ ORYX.I18N.AMLSupport.ok = "JA:OK";
 
 if(!ORYX.I18N.Arrangement) ORYX.I18N.Arrangement = {};
 
-ORYX.I18N.Arrangement.groupZ = "JA:Z-Order";
+ORYX.I18N.Arrangement.groupZ = "Z-Order";
 ORYX.I18N.Arrangement.btf = "JA:Bring To Front";
 ORYX.I18N.Arrangement.btfDesc = "JA:Bring to Front";
 ORYX.I18N.Arrangement.btb = "JA:Bring To Back";
@@ -99,7 +99,7 @@ ORYX.I18N.Arrangement.bf = "JA:Bring Forward";
 ORYX.I18N.Arrangement.bfDesc = "JA:Bring Forward";
 ORYX.I18N.Arrangement.bb = "JA:Bring Backward";
 ORYX.I18N.Arrangement.bbDesc = "JA:Bring Backward";
-ORYX.I18N.Arrangement.groupA = "JA:Alignment";
+ORYX.I18N.Arrangement.groupA = "Alignment";
 ORYX.I18N.Arrangement.ab = "JA:Alignment Bottom";
 ORYX.I18N.Arrangement.abDesc = "JA:Bottom";
 ORYX.I18N.Arrangement.am = "JA:Alignment Middle";
@@ -117,7 +117,7 @@ ORYX.I18N.Arrangement.asDesc = "JA:Same Size";
 
 if(!ORYX.I18N.BPELSupport) ORYX.I18N.BPELSupport = {};
 
-ORYX.I18N.BPELSupport.group = "JA:BPEL";
+ORYX.I18N.BPELSupport.group = "BPEL";
 ORYX.I18N.BPELSupport.exp = "JA:Export BPEL";
 ORYX.I18N.BPELSupport.expDesc = "JA:Export diagram to BPEL";
 ORYX.I18N.BPELSupport.imp = "JA:Import BPEL";
@@ -135,7 +135,7 @@ ORYX.I18N.BPELSupport.impFailed = "JA:An error while importing occurs! <br/>Plea
 
 if(!ORYX.I18N.BPELLayout) ORYX.I18N.BPELLayout = {};
 
-ORYX.I18N.BPELLayout.group = "JA:BPELLayout";
+ORYX.I18N.BPELLayout.group = "BPELLayout";
 ORYX.I18N.BPELLayout.disable = "JA:disable layout";
 ORYX.I18N.BPELLayout.disDesc = "JA:disable auto layout plug-in";
 ORYX.I18N.BPELLayout.enable = "JA:enable layout";
@@ -143,13 +143,13 @@ ORYX.I18N.BPELLayout.enDesc = "JA:enable auto layout plug-in";
 
 if(!ORYX.I18N.BPEL4Chor2BPELSupport) ORYX.I18N.BPEL4Chor2BPELSupport = {};
 
-ORYX.I18N.BPEL4Chor2BPELSupport.group = "JA:BPEL4Chor";
+ORYX.I18N.BPEL4Chor2BPELSupport.group = "BPEL4Chor";
 ORYX.I18N.BPEL4Chor2BPELSupport.exp = "JA:Export to BPEL";
 ORYX.I18N.BPEL4Chor2BPELSupport.expDesc = "JA:Export diagram to BPEL";
 
 if(!ORYX.I18N.BPEL4ChorSupport) ORYX.I18N.BPEL4ChorSupport = {};
 
-ORYX.I18N.BPEL4ChorSupport.group = "JA:BPEL4Chor";
+ORYX.I18N.BPEL4ChorSupport.group = "BPEL4Chor";
 ORYX.I18N.BPEL4ChorSupport.exp = "JA:Export BPEL4Chor";
 ORYX.I18N.BPEL4ChorSupport.expDesc = "JA:Export diagram to BPEL4Chor";
 ORYX.I18N.BPEL4ChorSupport.imp = "JA:Import BPEL4Chor";
@@ -169,7 +169,7 @@ ORYX.I18N.BPEL4ChorSupport.impFailed = "JA:An error while importing occurs! <br/
 
 if(!ORYX.I18N.Bpel4ChorTransformation) ORYX.I18N.Bpel4ChorTransformation = {};
 
-ORYX.I18N.Bpel4ChorTransformation.group = "JA:Export";
+ORYX.I18N.Bpel4ChorTransformation.group = "Export";
 ORYX.I18N.Bpel4ChorTransformation.exportBPEL = "JA:Export BPEL4Chor";
 ORYX.I18N.Bpel4ChorTransformation.exportBPELDesc = "JA:Export diagram to BPEL4Chor";
 ORYX.I18N.Bpel4ChorTransformation.exportXPDL = "JA:Export XPDL4Chor";
@@ -216,7 +216,7 @@ ORYX.I18N.TransformationDownloadDialog.downloadAll = "JA:Download all result fil
 
 if(!ORYX.I18N.DesynchronizabilityOverlay) ORYX.I18N.DesynchronizabilityOverlay = {};
 //TODO desynchronizability is not a correct term
-ORYX.I18N.DesynchronizabilityOverlay.group = "JA:Overlay";
+ORYX.I18N.DesynchronizabilityOverlay.group = "Overlay";
 ORYX.I18N.DesynchronizabilityOverlay.name = "JA:Desynchronizability Checker";
 ORYX.I18N.DesynchronizabilityOverlay.desc = "JA:Desynchronizability Checker";
 ORYX.I18N.DesynchronizabilityOverlay.sync = "JA:The net is desynchronizable.";
@@ -225,7 +225,7 @@ ORYX.I18N.DesynchronizabilityOverlay.invalid = "JA:Invalid answer from server.";
 
 if(!ORYX.I18N.Edit) ORYX.I18N.Edit = {};
 
-ORYX.I18N.Edit.group = "JA:Edit";
+ORYX.I18N.Edit.group = "Edit";
 ORYX.I18N.Edit.cut = "JA:Cut";
 ORYX.I18N.Edit.cutDesc = "JA:Cuts the selection into the clipboard";
 ORYX.I18N.Edit.copy = "JA:Copy";
@@ -237,7 +237,7 @@ ORYX.I18N.Edit.delDesc = "JA:Deletes all selected shapes";
 
 if(!ORYX.I18N.EPCSupport) ORYX.I18N.EPCSupport = {};
 
-ORYX.I18N.EPCSupport.group = "JA:EPC";
+ORYX.I18N.EPCSupport.group = "EPC";
 ORYX.I18N.EPCSupport.exp = "JA:Export EPC";
 ORYX.I18N.EPCSupport.expDesc = "JA:Export diagram to EPML";
 ORYX.I18N.EPCSupport.imp = "JA:Import EPC";
@@ -274,7 +274,7 @@ ORYX.I18N.ERDFSupport.deprText = "JA:Exporting to eRDF is not recommended anymor
 
 if(!ORYX.I18N.jPDLSupport) ORYX.I18N.jPDLSupport = {};
 
-ORYX.I18N.jPDLSupport.group = "JA:Export";
+ORYX.I18N.jPDLSupport.group = "Export";
 ORYX.I18N.jPDLSupport.exp = "JA:Export to jPDL";
 ORYX.I18N.jPDLSupport.expDesc = "JA:Export to jPDL";
 ORYX.I18N.jPDLSupport.imp = "JA:Import from jPDL";
@@ -296,7 +296,7 @@ ORYX.I18N.jPDLSupport.close = "JA:Close";
 
 if(!ORYX.I18N.Bpmn2Bpel) ORYX.I18N.Bpmn2Bpel = {};
 
-ORYX.I18N.Bpmn2Bpel.group = "JA:ExecBPMN";
+ORYX.I18N.Bpmn2Bpel.group = "ExecBPMN";
 ORYX.I18N.Bpmn2Bpel.show = "JA:Show transformed BPEL";
 ORYX.I18N.Bpmn2Bpel.download = "JA:Download transformed BPEL";
 ORYX.I18N.Bpmn2Bpel.deploy = "JA:Deploy transformed BPEL";
@@ -312,7 +312,7 @@ ORYX.I18N.Bpmn2Bpel.ApacheOdeUrlInputPanelText = "JA:Please type-in the URL to t
 
 if(!ORYX.I18N.Save) ORYX.I18N.Save = {};
 
-ORYX.I18N.Save.group = "JA:File";
+ORYX.I18N.Save.group = "File";
 ORYX.I18N.Save.save = "JA:Save";
 ORYX.I18N.Save.autosave = "JA:Autosave";
 ORYX.I18N.Save.saveDesc = "JA:Save";
@@ -340,7 +340,7 @@ ORYX.I18N.Save.saveAsHint = "JA:The process diagram is stored under:";
 
 if(!ORYX.I18N.File) ORYX.I18N.File = {};
 
-ORYX.I18N.File.group = "JA:File";
+ORYX.I18N.File.group = "File";
 ORYX.I18N.File.print = "JA:Print";
 ORYX.I18N.File.printDesc = "JA:Print current model";
 ORYX.I18N.File.pdf = "JA:Export as PDF";
@@ -355,14 +355,14 @@ ORYX.I18N.File.printMsg = "JA:We are currently experiencing problems with the pr
 if(!ORYX.I18N.Grouping) ORYX.I18N.Grouping = {};
 
 ORYX.I18N.Grouping.grouping = "JA:Grouping";
-ORYX.I18N.Grouping.group = "JA:Group";
+ORYX.I18N.Grouping.group = "Group";
 ORYX.I18N.Grouping.groupDesc = "JA:Groups all selected shapes";
 ORYX.I18N.Grouping.ungroup = "JA:Ungroup";
 ORYX.I18N.Grouping.ungroupDesc = "JA:Deletes the group of all selected Shapes";
 
 if(!ORYX.I18N.IBPMN2BPMN) ORYX.I18N.IBPMN2BPMN = {};
 
-ORYX.I18N.IBPMN2BPMN.group = "JA:Export";
+ORYX.I18N.IBPMN2BPMN.group = "Export";
 ORYX.I18N.IBPMN2BPMN.name = "JA:IBPMN 2 BPMN Mapping";
 ORYX.I18N.IBPMN2BPMN.desc = "JA:Convert IBPMN to BPMN";
 
@@ -372,7 +372,7 @@ ORYX.I18N.Loading.waiting = "JA:Please wait...";
 
 if(!ORYX.I18N.Pnmlexport) ORYX.I18N.Pnmlexport = {};
 
-ORYX.I18N.Pnmlexport.group = "JA:Export";
+ORYX.I18N.Pnmlexport.group = "Export";
 ORYX.I18N.Pnmlexport.name = "JA:BPMN to PNML";
 ORYX.I18N.Pnmlexport.desc = "JA:Export as executable PNML and deploy";
 
@@ -401,13 +401,13 @@ ORYX.I18N.ShapeMenuPlugin.morphMsg = "JA:Morph shape";
 
 if(!ORYX.I18N.SimplePnmlexport) ORYX.I18N.SimplePnmlexport = {};
 
-ORYX.I18N.SimplePnmlexport.group = "JA:Export";
+ORYX.I18N.SimplePnmlexport.group = "Export";
 ORYX.I18N.SimplePnmlexport.name = "JA:Export to PNML";
 ORYX.I18N.SimplePnmlexport.desc = "JA:Export to PNML";
 
 if(!ORYX.I18N.StepThroughPlugin) ORYX.I18N.StepThroughPlugin = {};
 
-ORYX.I18N.StepThroughPlugin.group = "JA:Step Through";
+ORYX.I18N.StepThroughPlugin.group = "Step Through";
 ORYX.I18N.StepThroughPlugin.stepThrough = "JA:Step Through";
 ORYX.I18N.StepThroughPlugin.stepThroughDesc = "JA:Step through your model";
 ORYX.I18N.StepThroughPlugin.undo = "JA:Undo";
@@ -417,7 +417,7 @@ ORYX.I18N.StepThroughPlugin.executing = "JA:Executing";
 
 if(!ORYX.I18N.SyntaxChecker) ORYX.I18N.SyntaxChecker = {};
 
-ORYX.I18N.SyntaxChecker.group = "JA:Verification";
+ORYX.I18N.SyntaxChecker.group = "Verification";
 ORYX.I18N.SyntaxChecker.name = "JA:Syntax Checker";
 ORYX.I18N.SyntaxChecker.desc = "JA:Check Syntax";
 ORYX.I18N.SyntaxChecker.noErrors = "JA:There are no syntax errors.";
@@ -426,7 +426,7 @@ ORYX.I18N.SyntaxChecker.checkingMessage = "JA:Checking ...";
 
 if(!ORYX.I18N.Undo) ORYX.I18N.Undo = {};
 
-ORYX.I18N.Undo.group = "JA:Undo";
+ORYX.I18N.Undo.group = "Undo";
 ORYX.I18N.Undo.undo = "JA:Undo";
 ORYX.I18N.Undo.undoDesc = "JA:Undo the last action";
 ORYX.I18N.Undo.redo = "JA:Redo";
@@ -437,7 +437,7 @@ ORYX.I18N.Validator.checking = "JA:Checking";
 
 if(!ORYX.I18N.View) ORYX.I18N.View = {};
 
-ORYX.I18N.View.group = "JA:Zoom";
+ORYX.I18N.View.group = "Zoom";
 ORYX.I18N.View.zoomIn = "JA:Zoom In";
 ORYX.I18N.View.zoomInDesc = "JA:Zoom into the model";
 ORYX.I18N.View.zoomOut = "JA:Zoom Out";
@@ -449,7 +449,7 @@ ORYX.I18N.View.zoomFitToModelDesc = "JA:Zoom to fit the model size";
 
 if(!ORYX.I18N.XFormsSerialization) ORYX.I18N.XFormsSerialization = {};
 
-ORYX.I18N.XFormsSerialization.group = "JA:XForms Serialization";
+ORYX.I18N.XFormsSerialization.group = "XForms Serialization";
 ORYX.I18N.XFormsSerialization.exportXForms = "JA:XForms Export";
 ORYX.I18N.XFormsSerialization.exportXFormsDesc = "JA:Export XForms+XHTML markup";
 ORYX.I18N.XFormsSerialization.importXForms = "JA:XForms Import";
@@ -471,13 +471,13 @@ ORYX.I18N.XFormsSerialization.close = "JA:Close";
 if(!ORYX.I18N.TreeGraphSupport) ORYX.I18N.TreeGraphSupport = {};
 
 ORYX.I18N.TreeGraphSupport.syntaxCheckName = "JA:Syntax Check";
-ORYX.I18N.TreeGraphSupport.group = "JA:Tree Graph Support";
+ORYX.I18N.TreeGraphSupport.group = "Tree Graph Support";
 ORYX.I18N.TreeGraphSupport.syntaxCheckDesc = "JA:Check the syntax of an tree graph structure";
 
 if(!ORYX.I18N.QueryEvaluator) ORYX.I18N.QueryEvaluator = {};
 
 ORYX.I18N.QueryEvaluator.name = "JA:Query Evaluator";
-ORYX.I18N.QueryEvaluator.group = "JA:Verification";
+ORYX.I18N.QueryEvaluator.group = "Verification";
 ORYX.I18N.QueryEvaluator.desc = "JA:Evaluate query";
 ORYX.I18N.QueryEvaluator.noResult = "JA:Query resulted in no match.";
 ORYX.I18N.QueryEvaluator.invalidResponse = "JA:Invalid answer from server.";
@@ -513,7 +513,7 @@ Ext.MessageBox.buttonText.ok = "JA:OK";
 
 /** New Language Properties: 28.01.2009 */
 if(!ORYX.I18N.BPMN2XPDL) ORYX.I18N.BPMN2XPDL = {};
-ORYX.I18N.BPMN2XPDL.group = "JA:Export";
+ORYX.I18N.BPMN2XPDL.group = "Export";
 ORYX.I18N.BPMN2XPDL.xpdlExport = "JA:Export to XPDL";
 ORYX.I18N.BPMN2XPDL.xpdlImport = "JA:Import from XPDL";
 ORYX.I18N.BPMN2XPDL.importGroup = "JA:Import";
@@ -528,37 +528,37 @@ ORYX.I18N.BPMN2XPDL.close = "JA:Close";
 if(!ORYX.I18N.ResourcesSoDAdd) ORYX.I18N.ResourcesSoDAdd = {};
 
 ORYX.I18N.ResourcesSoDAdd.name = "JA:Define Separation of Duties Constraint";
-ORYX.I18N.ResourcesSoDAdd.group = "JA:Resource Perspective";
+ORYX.I18N.ResourcesSoDAdd.group = "Resource Perspective";
 ORYX.I18N.ResourcesSoDAdd.desc = "JA:Define a Separation of Duties constraint for the selected tasks";
 
 if(!ORYX.I18N.ResourcesSoDShow) ORYX.I18N.ResourcesSoDShow = {};
 
 ORYX.I18N.ResourcesSoDShow.name = "JA:Show Separation of Duties Constraints";
-ORYX.I18N.ResourcesSoDShow.group = "JA:Resource Perspective";
+ORYX.I18N.ResourcesSoDShow.group = "Resource Perspective";
 ORYX.I18N.ResourcesSoDShow.desc = "JA:Show Separation of Duties constraints of the selected task";
 
 if(!ORYX.I18N.ResourcesBoDAdd) ORYX.I18N.ResourcesBoDAdd = {};
 
 ORYX.I18N.ResourcesBoDAdd.name = "JA:Define Binding of Duties Constraint";
-ORYX.I18N.ResourcesBoDAdd.group = "JA:Resource Perspective";
+ORYX.I18N.ResourcesBoDAdd.group = "Resource Perspective";
 ORYX.I18N.ResourcesBoDAdd.desc = "JA:Define a Binding of Duties Constraint for the selected tasks";
 
 if(!ORYX.I18N.ResourcesBoDShow) ORYX.I18N.ResourcesBoDShow = {};
 
 ORYX.I18N.ResourcesBoDShow.name = "JA:Show Binding of Duties Constraints";
-ORYX.I18N.ResourcesBoDShow.group = "JA:Resource Perspective";
+ORYX.I18N.ResourcesBoDShow.group = "Resource Perspective";
 ORYX.I18N.ResourcesBoDShow.desc = "JA:Show Binding of Duties constraints of the selected task";
 
 if(!ORYX.I18N.ResourceAssignment) ORYX.I18N.ResourceAssignment = {};
 
 ORYX.I18N.ResourceAssignment.name = "JA:Resource Assignment";
-ORYX.I18N.ResourceAssignment.group = "JA:Resource Perspective";
+ORYX.I18N.ResourceAssignment.group = "Resource Perspective";
 ORYX.I18N.ResourceAssignment.desc = "JA:Assign resources to the selected task(s)";
 
 if(!ORYX.I18N.ClearSodBodHighlights) ORYX.I18N.ClearSodBodHighlights = {};
 
 ORYX.I18N.ClearSodBodHighlights.name = "JA:Clear Highlights and Overlays";
-ORYX.I18N.ClearSodBodHighlights.group = "JA:Resource Perspective";
+ORYX.I18N.ClearSodBodHighlights.group = "Resource Perspective";
 ORYX.I18N.ClearSodBodHighlights.desc = "JA:Remove all Separation and Binding of Duties Highlights/ Overlays";
 
 
@@ -605,7 +605,7 @@ ORYX.I18N.TBPMSupport = {
 
 /** New Language Properties: 08.05.2009 */
 if(!ORYX.I18N.BPMN2XHTML) ORYX.I18N.BPMN2XHTML = {};
-ORYX.I18N.BPMN2XHTML.group = "JA:Export";
+ORYX.I18N.BPMN2XHTML.group = "Export";
 ORYX.I18N.BPMN2XHTML.XHTMLExport = "JA:Export XHTML Documentation";
 
 /** New Language Properties: 09.05.2009 */
@@ -670,13 +670,13 @@ ORYX.I18N.Feedback.subjects = [
 
 /** New Language Properties: 11.05.2009 */
 if(!ORYX.I18N.BPMN2DTRPXMI) ORYX.I18N.BPMN2DTRPXMI = {};
-ORYX.I18N.BPMN2DTRPXMI.group = "JA:Export";
+ORYX.I18N.BPMN2DTRPXMI.group = "Export";
 ORYX.I18N.BPMN2DTRPXMI.DTRPXMIExport = "JA:Export to XMI (Design Thinking)";
 ORYX.I18N.BPMN2DTRPXMI.DTRPXMIExportDescription = "JA:Exports current model to XMI (requires stencil set extension 'BPMN Subset for Design Thinking')";
 
 /** New Language Properties: 14.05.2009 */
 if(!ORYX.I18N.RDFExport) ORYX.I18N.RDFExport = {};
-ORYX.I18N.RDFExport.group = "JA:Export";
+ORYX.I18N.RDFExport.group = "Export";
 ORYX.I18N.RDFExport.rdfExport = "JA:Export to RDF";
 ORYX.I18N.RDFExport.rdfExportDescription = "JA:Exports current model to the XML serialization defined for the Resource Description Framework (RDF)";
 
@@ -794,7 +794,7 @@ ORYX.I18N.Bpmn2_0Serialization.showDesc = "JA:Show BPMN 2.0 DI XML of the curren
 ORYX.I18N.Bpmn2_0Serialization.download = "JA:Download BPMN 2.0 DI XML";
 ORYX.I18N.Bpmn2_0Serialization.downloadDesc = "JA:Download BPMN 2.0 DI XML of the current BPMN 2.0 model";
 ORYX.I18N.Bpmn2_0Serialization.serialFailed = "JA:An error occurred while generating the BPMN 2.0 DI XML Serialization.";
-ORYX.I18N.Bpmn2_0Serialization.group = "JA:BPMN 2.0";
+ORYX.I18N.Bpmn2_0Serialization.group = "BPMN 2.0";
 
 /** New Language Properties 01.10.2009 */
 if(!ORYX.I18N.SyntaxChecker.BPMN2) ORYX.I18N.SyntaxChecker.BPMN2 = {};
@@ -864,7 +864,7 @@ ORYX.I18N.cpntoolsSupport.importLable = "JA:Import";
 ORYX.I18N.cpntoolsSupport.close = "JA:Close";
 ORYX.I18N.cpntoolsSupport.wrongCPNFile = "JA:Not chosen correct CPN - File.";
 ORYX.I18N.cpntoolsSupport.noPageSelection = "JA:No page has been selected.";
-ORYX.I18N.cpntoolsSupport.group = "JA:Export";
+ORYX.I18N.cpntoolsSupport.group = "Export";
 ORYX.I18N.cpntoolsSupport.importProgress = "JA:Importing ...";
 ORYX.I18N.cpntoolsSupport.exportProgress = "JA:Exporting ...";
 ORYX.I18N.cpntoolsSupport.exportDescription = "JA:Export to CPN Tools";
@@ -872,6 +872,6 @@ ORYX.I18N.cpntoolsSupport.importDescription = "JA:Import from CPN Tools";
 
 if(!ORYX.I18N.BPMN2YAWLMapper) ORYX.I18N.BPMN2YAWLMapper = {};
 
-ORYX.I18N.BPMN2YAWLMapper.group = "JA:Export";
-ORYX.I18N.BPMN2YAWLMapper.name = 'YAWL Export';
-ORYX.I18N.BPMN2YAWLMapper.desc = 'Map this diagram to YAWL and export it, please ensure "BPMN Subset for mapping to YAWL" is loaded';
+ORYX.I18N.BPMN2YAWLMapper.group = "Export";
+ORYX.I18N.BPMN2YAWLMapper.name = 'JA:YAWL Export';
+ORYX.I18N.BPMN2YAWLMapper.desc = 'JA:Map this diagram to YAWL and export it, please ensure "BPMN Subset for mapping to YAWL" is loaded';

@@ -1,7 +1,7 @@
 ﻿/**
  * @author Garret.Bi
  * 
- * Contains all strings for the Janpanese language.
+ * Contains all strings for the Japanese language.
  * Version 1 - 02/09/11
  */
 if(!ORYX) var ORYX = {};
@@ -121,7 +121,7 @@ ORYX.I18N.BPELSupport.group = "BPEL";
 ORYX.I18N.BPELSupport.exp = "BPEL のエキスポート";
 ORYX.I18N.BPELSupport.expDesc = "ダイアグラムの BPEL へのエキスポート";
 ORYX.I18N.BPELSupport.imp = "BPEL のインポート";
-ORYX.I18N.BPELSupport.impDesc = "BPEL ファイルのインポート;
+ORYX.I18N.BPELSupport.impDesc = "BPEL ファイルのインポート";
 ORYX.I18N.BPELSupport.selectFile = "インポートする BPEL ファイルの選択";
 ORYX.I18N.BPELSupport.file = "ファイル";
 ORYX.I18N.BPELSupport.impPanel = "BPEL ファイルのインポートfile";

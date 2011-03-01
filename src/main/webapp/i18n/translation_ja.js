@@ -20,7 +20,7 @@ ORYX.I18N.Oryx.editorOpenTimeout = "エディターが起動していません�
 
 if(!ORYX.I18N.AddDocker) ORYX.I18N.AddDocker = {};
 
-ORYX.I18N.AddDocker.group = "ドック";
+ORYX.I18N.AddDocker.group = "Docker";
 ORYX.I18N.AddDocker.add = "ドックの追加";
 ORYX.I18N.AddDocker.addDesc = "クリックし、ドックを端に追加します";
 ORYX.I18N.AddDocker.del = "ドックの削除";
@@ -28,13 +28,13 @@ ORYX.I18N.AddDocker.delDesc = "ドックを削除します";
 
 if(!ORYX.I18N.ShapeConnector) ORYX.I18N.ShapeConnector = {};
 
-ORYX.I18N.ShapeConnector.group = "コネクター";
+ORYX.I18N.ShapeConnector.group = "Connector";
 ORYX.I18N.ShapeConnector.add = "シェープの接続";
 ORYX.I18N.ShapeConnector.addDesc = "順序を付け複数のノードを接続します";
 
 if(!ORYX.I18N.SSExtensionLoader) ORYX.I18N.SSExtensionLoader = {};
 
-ORYX.I18N.SSExtensionLoader.group = "ステンシルセット";
+ORYX.I18N.SSExtensionLoader.group = "Stencil Set";
 ORYX.I18N.SSExtensionLoader.add = "ステンシルセット拡張の追加";
 ORYX.I18N.SSExtensionLoader.addDesc = "ステンシルセット拡張を追加します";
 ORYX.I18N.SSExtensionLoader.loading = "ステンシルセット拡張のロード";
@@ -46,7 +46,7 @@ ORYX.I18N.SSExtensionLoader.panelText = "ロードしたいステンシルセッ
 
 if(!ORYX.I18N.AdHocCC) ORYX.I18N.AdHocCC = {};
 
-ORYX.I18N.AdHocCC.group = "アドホック";
+ORYX.I18N.AdHocCC.group = "Ad Hoc";
 ORYX.I18N.AdHocCC.compl = "完了条件の編集";
 ORYX.I18N.AdHocCC.complDesc = "アドホックアクティビティーの完了条件の編集";
 ORYX.I18N.AdHocCC.notOne = "１つの要素が正しく選択されていません!";
@@ -90,7 +90,7 @@ ORYX.I18N.AMLSupport.ok = "OK";
 
 if(!ORYX.I18N.Arrangement) ORYX.I18N.Arrangement = {};
 
-ORYX.I18N.Arrangement.groupZ = "順序";
+ORYX.I18N.Arrangement.groupZ = "Z-Order";
 ORYX.I18N.Arrangement.btf = "最前面へ移動";
 ORYX.I18N.Arrangement.btfDesc = "最前面へ移動";
 ORYX.I18N.Arrangement.btb = "最背面へ移動";
@@ -99,7 +99,7 @@ ORYX.I18N.Arrangement.bf = "前面へ移動";
 ORYX.I18N.Arrangement.bfDesc = "前面へ移動";
 ORYX.I18N.Arrangement.bb = "背面へ移動";
 ORYX.I18N.Arrangement.bbDesc = "背面へ移動";
-ORYX.I18N.Arrangement.groupA = "配置";
+ORYX.I18N.Arrangement.groupA = "Alignment";
 ORYX.I18N.Arrangement.ab = "下揃え";
 ORYX.I18N.Arrangement.abDesc = "下";
 ORYX.I18N.Arrangement.am = "上下中央揃え";
@@ -135,7 +135,7 @@ ORYX.I18N.BPELSupport.impFailed = "インポート中にエラーが発生しま
 
 if(!ORYX.I18N.BPELLayout) ORYX.I18N.BPELLayout = {};
 
-ORYX.I18N.BPELLayout.group = "BPELレイアウト";
+ORYX.I18N.BPELLayout.group = "BPELLayout";
 ORYX.I18N.BPELLayout.disable = "レイアウトの無効";
 ORYX.I18N.BPELLayout.disDesc = "自動レイアウトプラグインの無効化";
 ORYX.I18N.BPELLayout.enable = "レイアウトの有効";
@@ -169,7 +169,7 @@ ORYX.I18N.BPEL4ChorSupport.impFailed = "インポート中にエラーが発生�
 
 if(!ORYX.I18N.Bpel4ChorTransformation) ORYX.I18N.Bpel4ChorTransformation = {};
 
-ORYX.I18N.Bpel4ChorTransformation.group = "エクスポート";
+ORYX.I18N.Bpel4ChorTransformation.group = "Export";
 ORYX.I18N.Bpel4ChorTransformation.exportBPEL = "BPEL4Chor のエクスポート";
 ORYX.I18N.Bpel4ChorTransformation.exportBPELDesc = "ダイアグラムの BPEL4Chor へのエクスポート";
 ORYX.I18N.Bpel4ChorTransformation.exportXPDL = "XPDL4Chor のエクスポート";
@@ -216,7 +216,7 @@ ORYX.I18N.TransformationDownloadDialog.downloadAll = "すべての結果ファ�
 
 if(!ORYX.I18N.DesynchronizabilityOverlay) ORYX.I18N.DesynchronizabilityOverlay = {};
 //TODO desynchronizability is not a correct term
-ORYX.I18N.DesynchronizabilityOverlay.group = "オーバーレイ";
+ORYX.I18N.DesynchronizabilityOverlay.group = "Overlay";
 ORYX.I18N.DesynchronizabilityOverlay.name = "非同期化の確認";
 ORYX.I18N.DesynchronizabilityOverlay.desc = "非同期化の確認";
 ORYX.I18N.DesynchronizabilityOverlay.sync = "ネットは非同期にできます。";
@@ -225,7 +225,7 @@ ORYX.I18N.DesynchronizabilityOverlay.invalid = "サーバーからの無効な�
 
 if(!ORYX.I18N.Edit) ORYX.I18N.Edit = {};
 
-ORYX.I18N.Edit.group = "編集";
+ORYX.I18N.Edit.group = "Edit";
 ORYX.I18N.Edit.cut = "カット";
 ORYX.I18N.Edit.cutDesc = "選択したものをクリップボードへカット";
 ORYX.I18N.Edit.copy = "コピー";
@@ -274,7 +274,7 @@ ORYX.I18N.ERDFSupport.deprText = "eRDF へのエキスポートは推奨され�
 
 if(!ORYX.I18N.jPDLSupport) ORYX.I18N.jPDLSupport = {};
 
-ORYX.I18N.jPDLSupport.group = "エキスポート";
+ORYX.I18N.jPDLSupport.group = "Export";
 ORYX.I18N.jPDLSupport.exp = "jPDL へのエキスポート";
 ORYX.I18N.jPDLSupport.expDesc = "jPDL へのエキスポート";
 ORYX.I18N.jPDLSupport.imp = "jPDL のインポート";
@@ -312,7 +312,7 @@ ORYX.I18N.Bpmn2Bpel.ApacheOdeUrlInputPanelText = "Apache ODE BPEL-エンジン�
 
 if(!ORYX.I18N.Save) ORYX.I18N.Save = {};
 
-ORYX.I18N.Save.group = "ファイル";
+ORYX.I18N.Save.group = "File";
 ORYX.I18N.Save.save = "保存";
 ORYX.I18N.Save.autosave = "自動保存";
 ORYX.I18N.Save.saveDesc = "保存";
@@ -340,7 +340,7 @@ ORYX.I18N.Save.saveAsHint = "プロセスダイアグラムが次に保存され
 
 if(!ORYX.I18N.File) ORYX.I18N.File = {};
 
-ORYX.I18N.File.group = "ファイル";
+ORYX.I18N.File.group = "File";
 ORYX.I18N.File.print = "印刷";
 ORYX.I18N.File.printDesc = "現在のモデルの印刷";
 ORYX.I18N.File.pdf = "PDF としてエキスポート";
@@ -354,15 +354,15 @@ ORYX.I18N.File.printMsg = "現在、印刷機能に問題があります。ダ�
 
 if(!ORYX.I18N.Grouping) ORYX.I18N.Grouping = {};
 
-ORYX.I18N.Grouping.grouping = "グルーピング";
-ORYX.I18N.Grouping.group = "グループ";
+ORYX.I18N.Grouping.grouping = "Grouping";
+ORYX.I18N.Grouping.group = "Group";
 ORYX.I18N.Grouping.groupDesc = "選択したすべてのシェープをグループ化";
 ORYX.I18N.Grouping.ungroup = "グループ解除";
 ORYX.I18N.Grouping.ungroupDesc = "選択したすべてのシェープのグループを削除";
 
 if(!ORYX.I18N.IBPMN2BPMN) ORYX.I18N.IBPMN2BPMN = {};
 
-ORYX.I18N.IBPMN2BPMN.group = "エキスポート";
+ORYX.I18N.IBPMN2BPMN.group = "Export";
 ORYX.I18N.IBPMN2BPMN.name = "IBPMN から BPMN へマッピング";
 ORYX.I18N.IBPMN2BPMN.desc = "IBPMN から BPMN へ変換";
 
@@ -372,7 +372,7 @@ ORYX.I18N.Loading.waiting = "しばらくお待ちください...";
 
 if(!ORYX.I18N.Pnmlexport) ORYX.I18N.Pnmlexport = {};
 
-ORYX.I18N.Pnmlexport.group = "エキスポート";
+ORYX.I18N.Pnmlexport.group = "Export";
 ORYX.I18N.Pnmlexport.name = "BPMN から PNML へ";
 ORYX.I18N.Pnmlexport.desc = "実行可能 PNML へエキスポートしデプロイ";
 
@@ -401,13 +401,13 @@ ORYX.I18N.ShapeMenuPlugin.morphMsg = "モーフ形状";
 
 if(!ORYX.I18N.SimplePnmlexport) ORYX.I18N.SimplePnmlexport = {};
 
-ORYX.I18N.SimplePnmlexport.group = "エキスポート";
+ORYX.I18N.SimplePnmlexport.group = "Export";
 ORYX.I18N.SimplePnmlexport.name = "PNML へエキスポート";
 ORYX.I18N.SimplePnmlexport.desc = "PNML へエキスポート";
 
 if(!ORYX.I18N.StepThroughPlugin) ORYX.I18N.StepThroughPlugin = {};
 
-ORYX.I18N.StepThroughPlugin.group = "ステップスルー";
+ORYX.I18N.StepThroughPlugin.group = "Step Through";
 ORYX.I18N.StepThroughPlugin.stepThrough = "ステップスルー";
 ORYX.I18N.StepThroughPlugin.stepThroughDesc = "モデルのステップスルー";
 ORYX.I18N.StepThroughPlugin.undo = "取り消し";
@@ -417,7 +417,7 @@ ORYX.I18N.StepThroughPlugin.executing = "実行中";
 
 if(!ORYX.I18N.SyntaxChecker) ORYX.I18N.SyntaxChecker = {};
 
-ORYX.I18N.SyntaxChecker.group = "検証";
+ORYX.I18N.SyntaxChecker.group = "Verification";
 ORYX.I18N.SyntaxChecker.name = "シンタックスチェック";
 ORYX.I18N.SyntaxChecker.desc = "シンタックスチェック";
 ORYX.I18N.SyntaxChecker.noErrors = "シンタックスエラーはありません。";
@@ -426,7 +426,7 @@ ORYX.I18N.SyntaxChecker.checkingMessage = "チェック中...";
 
 if(!ORYX.I18N.Undo) ORYX.I18N.Undo = {};
 
-ORYX.I18N.Undo.group = "取り消し";
+ORYX.I18N.Undo.group = "Undo";
 ORYX.I18N.Undo.undo = "取り消し";
 ORYX.I18N.Undo.undoDesc = "最後のアクションの取り消し";
 ORYX.I18N.Undo.redo = "やり直し";
@@ -437,7 +437,7 @@ ORYX.I18N.Validator.checking = "チェック中";
 
 if(!ORYX.I18N.View) ORYX.I18N.View = {};
 
-ORYX.I18N.View.group = "ズーム";
+ORYX.I18N.View.group = "Zoom";
 ORYX.I18N.View.zoomIn = "拡大";
 ORYX.I18N.View.zoomInDesc = "モデルを拡大";
 ORYX.I18N.View.zoomOut = "縮小";
@@ -449,7 +449,7 @@ ORYX.I18N.View.zoomFitToModelDesc = "モデルサイズにズーム";
 
 if(!ORYX.I18N.XFormsSerialization) ORYX.I18N.XFormsSerialization = {};
 
-ORYX.I18N.XFormsSerialization.group = "XForms のシリアリぜーション";
+ORYX.I18N.XFormsSerialization.group = "XForms Serialization";
 ORYX.I18N.XFormsSerialization.exportXForms = "XForms のエキスポート";
 ORYX.I18N.XFormsSerialization.exportXFormsDesc = "XForms+XHTML アークアップのエキスポート";
 ORYX.I18N.XFormsSerialization.importXForms = "XForms のインポート";
@@ -471,13 +471,13 @@ ORYX.I18N.XFormsSerialization.close = "閉じる";
 if(!ORYX.I18N.TreeGraphSupport) ORYX.I18N.TreeGraphSupport = {};
 
 ORYX.I18N.TreeGraphSupport.syntaxCheckName = "シンタックスチェック";
-ORYX.I18N.TreeGraphSupport.group = "ツリーグラフサポート";
+ORYX.I18N.TreeGraphSupport.group = "Tree Graph Support";
 ORYX.I18N.TreeGraphSupport.syntaxCheckDesc = "ツリーグラフ構造のシンタックスチェック";
 
 if(!ORYX.I18N.QueryEvaluator) ORYX.I18N.QueryEvaluator = {};
 
 ORYX.I18N.QueryEvaluator.name = "クエリ―評価";
-ORYX.I18N.QueryEvaluator.group = "検証";
+ORYX.I18N.QueryEvaluator.group = "Verification";
 ORYX.I18N.QueryEvaluator.desc = "クエリ―の評価";
 ORYX.I18N.QueryEvaluator.noResult = "クエリ―結果がマッチしません。";
 ORYX.I18N.QueryEvaluator.invalidResponse = "サーバーからの無効な回答です。";
@@ -513,7 +513,7 @@ Ext.MessageBox.buttonText.ok = "OK";
 
 /** New Language Properties: 28.01.2009 */
 if(!ORYX.I18N.BPMN2XPDL) ORYX.I18N.BPMN2XPDL = {};
-ORYX.I18N.BPMN2XPDL.group = "エキスポート";
+ORYX.I18N.BPMN2XPDL.group = "Export";
 ORYX.I18N.BPMN2XPDL.xpdlExport = "XPDL へエキスポート";
 ORYX.I18N.BPMN2XPDL.xpdlImport = "XPDL からインポート";
 ORYX.I18N.BPMN2XPDL.importGroup = "インポート";
@@ -528,37 +528,37 @@ ORYX.I18N.BPMN2XPDL.close = "閉じる";
 if(!ORYX.I18N.ResourcesSoDAdd) ORYX.I18N.ResourcesSoDAdd = {};
 
 ORYX.I18N.ResourcesSoDAdd.name = "責任制約セパレータ―の定義";
-ORYX.I18N.ResourcesSoDAdd.group = "リソースパースペクティブ";
+ORYX.I18N.ResourcesSoDAdd.group = "Resource Perspective";
 ORYX.I18N.ResourcesSoDAdd.desc = "選択したタスクの責任制約のセパレータ―の定義";
 
 if(!ORYX.I18N.ResourcesSoDShow) ORYX.I18N.ResourcesSoDShow = {};
 
 ORYX.I18N.ResourcesSoDShow.name = "責任制約のセパレータ―の表示";
-ORYX.I18N.ResourcesSoDShow.group = "リソースパースペクティブ";
+ORYX.I18N.ResourcesSoDShow.group = "Resource Perspective";
 ORYX.I18N.ResourcesSoDShow.desc = "選択したタスクの責任制約のセパレータ―の表示";
 
 if(!ORYX.I18N.ResourcesBoDAdd) ORYX.I18N.ResourcesBoDAdd = {};
 
 ORYX.I18N.ResourcesBoDAdd.name = "責任制約のバインディングの定義";
-ORYX.I18N.ResourcesBoDAdd.group = "リソースパースペクティブ";
+ORYX.I18N.ResourcesBoDAdd.group = "Resource Perspective";
 ORYX.I18N.ResourcesBoDAdd.desc = "選択したタスクの責任制約のバインディングの定義";
 
 if(!ORYX.I18N.ResourcesBoDShow) ORYX.I18N.ResourcesBoDShow = {};
 
 ORYX.I18N.ResourcesBoDShow.name = "責任制約のバインディングの表示";
-ORYX.I18N.ResourcesBoDShow.group = "リソースパースペクティブ";
+ORYX.I18N.ResourcesBoDShow.group = "Resource Perspective";
 ORYX.I18N.ResourcesBoDShow.desc = "選択したタスクの責任制約のバインディングの表示";
 
 if(!ORYX.I18N.ResourceAssignment) ORYX.I18N.ResourceAssignment = {};
 
 ORYX.I18N.ResourceAssignment.name = "リソース割り当て";
-ORYX.I18N.ResourceAssignment.group = "リソースパースペクティブ";
+ORYX.I18N.ResourceAssignment.group = "Resource Perspective";
 ORYX.I18N.ResourceAssignment.desc = "選択したタスクにリソースを割り当て";
 
 if(!ORYX.I18N.ClearSodBodHighlights) ORYX.I18N.ClearSodBodHighlights = {};
 
 ORYX.I18N.ClearSodBodHighlights.name = "ハイライトとオーバーレイのクリアー";
-ORYX.I18N.ClearSodBodHighlights.group = "リソースパースペクティブ";
+ORYX.I18N.ClearSodBodHighlights.group = "Resource Perspective";
 ORYX.I18N.ClearSodBodHighlights.desc = "責任ハイライト/オーバーレイのすべてのセパレータ―とバインディングの削除";
 
 
@@ -605,7 +605,7 @@ ORYX.I18N.TBPMSupport = {
 
 /** New Language Properties: 08.05.2009 */
 if(!ORYX.I18N.BPMN2XHTML) ORYX.I18N.BPMN2XHTML = {};
-ORYX.I18N.BPMN2XHTML.group = "エキスポート";
+ORYX.I18N.BPMN2XHTML.group = "Export";
 ORYX.I18N.BPMN2XHTML.XHTMLExport = "XHTML ドキュメントのエキスポート";
 
 /** New Language Properties: 09.05.2009 */
@@ -670,13 +670,13 @@ ORYX.I18N.Feedback.subjects = [
 
 /** New Language Properties: 11.05.2009 */
 if(!ORYX.I18N.BPMN2DTRPXMI) ORYX.I18N.BPMN2DTRPXMI = {};
-ORYX.I18N.BPMN2DTRPXMI.group = "エキスポート";
+ORYX.I18N.BPMN2DTRPXMI.group = "Export";
 ORYX.I18N.BPMN2DTRPXMI.DTRPXMIExport = "XMI (Design Thinking)へエキスポート";
 ORYX.I18N.BPMN2DTRPXMI.DTRPXMIExportDescription = "現在のモデルを XMI (ステンシルセット拡張 'BPMN サブセット Design Thinking' が必要)へエキスポート";
 
 /** New Language Properties: 14.05.2009 */
 if(!ORYX.I18N.RDFExport) ORYX.I18N.RDFExport = {};
-ORYX.I18N.RDFExport.group = "エキスポート";
+ORYX.I18N.RDFExport.group = "Export";
 ORYX.I18N.RDFExport.rdfExport = "RDF へエキスポート";
 ORYX.I18N.RDFExport.rdfExportDescription = "現在のモデルをResource Description Framework (RDF) で定義された XML シリアリゼーションへエキスポート";
 
@@ -864,7 +864,7 @@ ORYX.I18N.cpntoolsSupport.importLable = "インポート";
 ORYX.I18N.cpntoolsSupport.close = "閉じる";
 ORYX.I18N.cpntoolsSupport.wrongCPNFile = "正しい CPN ファイルが選択されていません。";
 ORYX.I18N.cpntoolsSupport.noPageSelection = "ページが選択されていません。";
-ORYX.I18N.cpntoolsSupport.group = "エキスポート";
+ORYX.I18N.cpntoolsSupport.group = "Export";
 ORYX.I18N.cpntoolsSupport.importProgress = "インポート中 ...";
 ORYX.I18N.cpntoolsSupport.exportProgress = "エキスポート中 ...";
 ORYX.I18N.cpntoolsSupport.exportDescription = "CPN ツールへエキスポート";
@@ -872,6 +872,6 @@ ORYX.I18N.cpntoolsSupport.importDescription = "CPN ツールからインポー�
 
 if(!ORYX.I18N.BPMN2YAWLMapper) ORYX.I18N.BPMN2YAWLMapper = {};
 
-ORYX.I18N.BPMN2YAWLMapper.group = "エキスポート";
+ORYX.I18N.BPMN2YAWLMapper.group = "Export";
 ORYX.I18N.BPMN2YAWLMapper.name = 'YAWL エキスポート';
 ORYX.I18N.BPMN2YAWLMapper.desc = 'このダイアグラムを YAWL へマッピングし、エキスポートしてください。"YAWL へマッピングするための BPMN サブセット" がロードされたかどうか確認してください。';

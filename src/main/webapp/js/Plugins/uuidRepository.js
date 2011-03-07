@@ -159,6 +159,7 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 		new Ajax.Request(ORYX.CONFIG.UUID_URL(), {
                 method: 'POST',
                 asynchronous: asynchronous,
+                contentType: "text/json; charset=UTF-8",
                 postBody: Ext.encode({data: serializedDOM, svg : svgDOM, uuid: ORYX.UUID, //rdf: rdf, 
                     profile: ORYX.PROFILE, savetype: asave}),
 				onSuccess : (function(transport) {

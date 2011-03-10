@@ -370,7 +370,10 @@ ORYX.Plugins.ShapeMenuPlugin = {
 					if(baseMorphInTargets) return; // continue with next target
 				}
 			}
-			
+			// make the shape menu contains at most 6 stencil buttons.
+			if (addedTargets.length >= ORYX.CONFIG.MAX_NUM_STENCIL_BUTTONS) {
+				return;
+			}
 			// if this is reached the button shall appear in the shape menu:
 			if(this.createdButtons[target.namespace() + target.type() + target.id()]) 
 				this.createdButtons[target.namespace() + target.type() + target.id()].prepareToShow();

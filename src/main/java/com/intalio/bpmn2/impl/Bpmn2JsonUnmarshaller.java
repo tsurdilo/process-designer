@@ -123,7 +123,6 @@ import org.osgi.framework.ServiceReference;
 
 import com.intalio.bpmn2.BpmnMarshallerHelper;
 import com.sun.tools.javac.parser.Parser.Factory;
-import com.sun.xml.internal.bind.AnyTypeAdapter;
 
 /**
  * @author Antoine Toulme

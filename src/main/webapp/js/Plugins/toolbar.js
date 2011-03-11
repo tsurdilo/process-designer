@@ -52,6 +52,7 @@ ORYX.Plugins.Toolbar = Clazz.extend({
 		this.buttons = [];
         this.facade.registerOnEvent(ORYX.CONFIG.EVENT_BUTTON_UPDATE, this.onButtonUpdate.bind(this));
         this.facade.registerOnEvent(ORYX.CONFIG.EVENT_STENCIL_SET_LOADED, this.onSelectionChanged.bind(this));
+        this.facade.registerOnEvent(ORYX.CONFIG.EVENT_TOOLBAR_REFRESH, this.onSelectionChanged.bind(this));
 	},
     
     /**

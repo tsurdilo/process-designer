@@ -73,6 +73,10 @@ ORYX.Core.Canvas = ORYX.Core.AbstractShape.extend({
 		this.rootNode.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 		this.rootNode.setAttribute("xmlns:svg", "http://www.w3.org/2000/svg");
 
+		// a div in editor for "drop down/timed" to render to.
+		ORYX.Editor.graft("http://www.w3.org/1999/xhtml", options.parentNode,
+			['div', {id: "msg_div", style:"position:absolute; width:250px"}]);
+
 		this._htmlContainer = ORYX.Editor.graft("http://www.w3.org/1999/xhtml", options.parentNode,
 			['div', {id: "oryx_canvas_htmlContainer", style:"position:absolute; top:5px"}]);
 		

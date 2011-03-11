@@ -337,6 +337,9 @@ ORYX.I18N.Save.failedThereWas = "There was a problem processing your request:";
 ORYX.I18N.Save.noRights = "You have no rights to save changes.";
 ORYX.I18N.Save.saving = "Saving";
 ORYX.I18N.Save.saveAsHint = "The process diagram is stored under:";
+ORYX.I18N.Save.successTitle = "Status";
+ORYX.I18N.Save.successMsg = "Save operation completed successfully.";
+ORYX.I18N.Save.savingMsg = "Please wait while saving...";
 
 if(!ORYX.I18N.File) ORYX.I18N.File = {};
 

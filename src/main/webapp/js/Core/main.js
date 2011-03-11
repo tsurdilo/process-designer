@@ -46,6 +46,52 @@ function init() {
 }
 
 /**
+ * HOOKS, allow crm access the inner iFrame functionalities
+ * 
+ */
+HOOKS = {
+    // called on object save. 
+    onSave: function() {
+        if (HOOKS.savePlugin) {
+            HOOKS.savePlugin.save();
+        }
+    },
+    // to determine whether canvas saving is finished, return ture for finished, false for not.
+    onAfterSave: function() {
+        if (HOOKS.savePlugin) {
+            if (HOOKS.savePlugin.isSaving) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    },
+    // return a boolean value: true if it's ok to close, false otherwise.
+    onClose: function() {
+        if (HOOKS.savePlugin && HOOKS.savePlugin.changeDifference && HOOKS.savePlugin.changeDifference > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    },
+    // adds a dirtyListener which will have two methods:
+    // {
+    //   function: isDirty() {}
+    //   function: setDirty() {}
+    // }
+    addDirtyListener: function(dirtyListener) {},
+    // adds a keepAlive listener to the editor
+    // the listener has a simple method to notify a keep alive event:
+    // {
+    //   function: notify()
+    // }
+    addKeepAliveListener: function(keepAliveListener) {},
+    
+    // UUIDRepositorySave Plugin
+    savePlugin: undefined
+};
+
+/**
    @namespace Global Oryx name space
    @name ORYX
 */
@@ -526,6 +572,9 @@ ORYX.Editor = {
 						var plugin		= new className(facade, value);
 						plugin.type		= value.name;
 						newPlugins.push( plugin );
+						if ("ORYX.Plugins.UUIDRepositorySave" == value.name) {
+							HOOKS.savePlugin = plugin;
+						}
 						plugin.engaged=true;
 					}
 				} catch(e) {

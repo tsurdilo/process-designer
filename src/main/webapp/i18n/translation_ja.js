@@ -337,6 +337,9 @@ ORYX.I18N.Save.failedThereWas = "要求を実行中に問題が発せしまし�
 ORYX.I18N.Save.noRights = "変更を保存する権限がありません。";
 ORYX.I18N.Save.saving = "保存中";
 ORYX.I18N.Save.saveAsHint = "プロセスダイアグラムが次に保存されています:";
+ORYX.I18N.Save.successTitle = "JA:Status";
+ORYX.I18N.Save.successMsg = "JA:Save operation completed successfully.";
+ORYX.I18N.Save.savingMsg = "JA:Please wait while saving...";
 
 if(!ORYX.I18N.File) ORYX.I18N.File = {};
 

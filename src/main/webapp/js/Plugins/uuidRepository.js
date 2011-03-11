@@ -53,19 +53,15 @@ Ext.Button.override({
 ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 	
     facade: undefined,
+    // true to enable the "Autosave" button, disable while autosaving
+    autosaveEnabled : true,
+    // true to enable the "Autosave" button, disable while autosaving
+    saveModal : undefined,
+    // let CRM save determine whether inner canvas saving is finished
+    isSaving : false,
 	
     construct: function(facade){
 		this.facade = facade;
-		this.facade.offer({
-			'name': ORYX.I18N.Save.save,
-			'functionality': this.save.bind(this),
-			'group': ORYX.I18N.Save.group,
-			'icon': ORYX.PATH + "images/disk.png",
-			'description': ORYX.I18N.Save.saveDesc,
-			'index': 1,
-			'minShape': 0,
-			'maxShape': 0
-		});
 		
 		//capability to set autosave on or off
 		if (ORYX.CONFIG.UUID_AUTOSAVE_DEFAULT === undefined) {
@@ -96,6 +92,7 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 		    }.bind(this),
 			'icon': autosaveicon,
 			'description': autosavetip,
+			'isEnabled': function(){ return this.autosaveEnabled }.bind(this),
 			'index': 2,
 			'minShape': 0,
 			'maxShape': 0
@@ -115,7 +112,7 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 		}.bind(this);
 		
 		// let's set autosave on.
-		this.autosaveFunction = function() { if (/*savePlugin.changeDifference != 0*/true) { this._save(this, true, true); }}.bind(this, autosavecfg);
+		this.autosaveFunction = function() { if (/*savePlugin.changeDifference != 0*/true) { this._save(this, true); }}.bind(this, autosavecfg);
 		this.setautosave(ORYX.CONFIG.UUID_AUTOSAVE_INTERVAL);
 	},
 	
@@ -142,15 +139,18 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 	 * Saves the current model.
 	 */
 	save: function() {
-		this._save(this, false, false);
+		this._save(this, false);
 	},
 	
 	/**
 	 * Saves data by calling the backend.
-	 * @param asynchronous whether saving should occur asynchronously
+	 * @param savePlugin
+	 * @param asave determine whether the function is invoked by autosave
+	 *              True: by autosave | False: by save
 	 */
-	_save: function(savePlugin, asynchronous, asave) {
-		this.showSaveStatus(savePlugin, asynchronous);
+	_save: function(savePlugin, asave) {
+		// show saving status, display a "loading" icon in "Autosave" button.
+		this.showSaveStatus(asave);
 		var svgDOM = DataManager.serialize(this.facade.getCanvas().getSVGRepresentation(true));
 		var serializedDOM = Ext.encode(this.facade.getJSON());
 		//var rdf = this.getRDFFromDOM();
@@ -158,11 +158,15 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 		// Send the request to the server.
 		new Ajax.Request(ORYX.CONFIG.UUID_URL(), {
                 method: 'POST',
-                asynchronous: asynchronous,
+                asynchronous: true,
                 contentType: "text/json; charset=UTF-8",
                 postBody: Ext.encode({data: serializedDOM, svg : svgDOM, uuid: ORYX.UUID, //rdf: rdf, 
                     profile: ORYX.PROFILE, savetype: asave}),
 				onSuccess : (function(transport) {
+					// end saving, the "loading" icon return to normal
+					this.hideSaveStatus(asave);
+					// success msg flag, true to show success dialog
+					var showSucessMsg = false;
 					response = transport.responseText;
 					if (response.length != 0) {
 						try {
@@ -174,6 +178,8 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 									type : ORYX.CONFIG.EVENT_LOADING_DISABLE
 								});
 								this.showMessages(jsonObj);
+							} else {
+								showSucessMsg = true;
 							}
 						} catch (err) {
 							ORYX.Log.error(err);
@@ -184,56 +190,68 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 							type : ORYX.CONFIG.EVENT_LOADING_STATUS,
 							text : ORYX.I18N.Save.saved
 						});
+						showSucessMsg = true;
+					}
+					if (showSucessMsg && !asave) {
+						// clear the dirty data flag after saving
+						this.changeDifference = 0;
+						Ext.example.msg(ORYX.I18N.Save.successTitle, ORYX.I18N.Save.successMsg);
 					}
 				}).bind(this),
 			onFailure: (function(transport) {
+				// end saving, the "loading" icon return to normal
+				this.hideSaveStatus(asave);
 				// raise loading disable event.
                 this.facade.raiseEvent({
                     type: ORYX.CONFIG.EVENT_LOADING_DISABLE
                 });
-
-	        // create a new Panel
-	        var panel = new Ext.Panel({
-	            frame: true,
-	            autoHeight: true,
-				html : '<table><tr><td class="x-table-layout-cell"><img src="/crm/img/alerts/error.png"/></td><td class="x-table-layout-cell">' + 
-				       ORYX.I18N.Save.failedMsg + '</td></tr></table>',
-				buttons : [ {
-					text : ORYX.I18N.Save.failedOKBtn,
-					handler : function() {
-						faildWin.hide();
-					}
-					},
-					{
-					text : ORYX.I18N.Save.failedDetailsBtn,
-					handler : function() {
-	                    var errWin=window.open('about:blank','_blank','menubar=no,toolbar=no,location=no,scrollbars=yes,resizable=yes,top=0,left=0,width='+
-	                               (screen.availWidth-10)+',height='+(screen.availHeight-100));
-	                    errWin.document.write('<h3>' + ORYX.I18N.Save.failedThereWas + '</h3>'+ transport.responseText);
-	                    errWin.document.close();				
-						faildWin.hide();
-					}
-					}
-				]
-	        })
-	
-	        // create save failed window
-			var faildWin = new Ext.Window({
-				title : ORYX.I18N.Save.failedTitle,
-				layout : 'fit',
-				frame: true,
-				width : 334,
-				modal : true,
-				closeAction : 'close',
-				plain : false,
-	            autoHeight: true,
-	            items: [panel]
-			});
-			faildWin.show(this);
-                
-				ORYX.Log.warn("Saving failed: " + transport.responseText);
-			}).bind(this),
+                // if it's autosaving, ignore errors
+                if (asave) {
+                    return;
+                }
+                // show the error message box while "save" erro not "autosave" error.
+                // create a new Panel
+                var panel = new Ext.Panel({
+                    frame: true,
+                    autoHeight: true,
+                    html : '<table><tr><td class="x-table-layout-cell"><img src="/crm/img/alerts/error.png"/></td><td class="x-table-layout-cell">' + 
+                           ORYX.I18N.Save.failedMsg + '</td></tr></table>',
+                    buttons : [ {
+                        text : ORYX.I18N.Save.failedOKBtn,
+                        handler : function() {
+                            faildWin.hide();
+                        }
+                        },
+                        {
+                        text : ORYX.I18N.Save.failedDetailsBtn,
+                        handler : function() {
+                            var errWin=window.open('about:blank','_blank','menubar=no,toolbar=no,location=no,scrollbars=yes,resizable=yes,top=0,left=0,width='+
+                                       (screen.availWidth-10)+',height='+(screen.availHeight-100));
+                            errWin.document.write('<h3>' + ORYX.I18N.Save.failedThereWas + '</h3>'+ transport.responseText);
+                            errWin.document.close();				
+                            faildWin.hide();
+                        }
+                        }
+                    ]
+                })
+                // create save failed window
+                var faildWin = new Ext.Window({
+                    title : ORYX.I18N.Save.failedTitle,
+                    layout : 'fit',
+                    frame: true,
+                    width : 334,
+                    modal : true,
+                    closeAction : 'close',
+                    plain : false,
+                    autoHeight: true,
+                    items: [panel]
+                });
+                faildWin.show(this);
+                ORYX.Log.warn("Saving failed: " + transport.responseText);
+            }).bind(this),
 			on403: (function(transport) {
+				// end saving, the "loading" icon return to normal
+				this.hideSaveStatus(asave);
 				// raise loading disable event.
                 this.facade.raiseEvent({
                     type: ORYX.CONFIG.EVENT_LOADING_DISABLE
@@ -244,31 +262,63 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 				ORYX.log.warn("Saving failed (403): " + transport.responseText);
 			}).bind(this)
 		});
-		this.hideSaveStatus(savePlugin, asynchronous);
 		return true;
 	},
 	
-	/**
-	 * Shows the saving status
-	 * @param asynchronous whether the save is synchronous or asynchronous.
-	 */
-	showSaveStatus: function(savePlugin, asynchronous) {
-		if (asynchronous) {
-			//show an icon and a message in the toolbar
-			autosavecfg.buttonInstance.setIcon(ORYX.PATH + "images/ajax-loader.gif");
-		}
-	},
+    /**
+     * Shows the saving status
+     * @param asave True: autosave | False: save
+     */
+    showSaveStatus: function(asave) {
+        if (asave) {
+            // disable the "Autoave" button.
+            this.autosaveEnabled = false;
+            //show an icon and a message in the toolbar
+            autosavecfg.buttonInstance.setIcon(ORYX.PATH + "images/ajax-loader.gif");
+            // raise event, make toolbar refresh.
+            this.facade.raiseEvent({type : ORYX.CONFIG.EVENT_TOOLBAR_REFRESH});
+        } else {
+            this.saveModal = top.Ext.MessageBox.show({
+                msg      : '<div style="color:#15428B"><br><b>' + ORYX.I18N.Save.savingMsg + '<b></div>',
+                closable : false,
+                width    : 275,
+                icon     : 'ext-mb-saving'
+            });
+        }
+        this.isSaving = true;
+    },
 	
 	/**
 	 * Shows the saving status
-	 * @param asynchronous whether the save is synchronous or asynchronous.
+	 * @param asave True: autosave | False: save
 	 */
-	hideSaveStatus: function(savePlugin, asynchronous) {
-		if (asynchronous) {
-			//show an icon and a message in the toolbar
-			autosavecfg.buttonInstance.setIcon(ORYX.PATH + "images/disk_multiple.png");
-		}
-	},
+    hideSaveStatus: function(asave) {
+        if (asave) {
+            if (this.autosaving) {
+                // disable the "Autoave" button.
+                this.autosaveEnabled = true;
+                // show an icon and a message in the toolbar
+                autosavecfg.buttonInstance.setIcon(ORYX.PATH 
+                    + "images/disk_multiple.png");
+            } else {
+                // disable the "Autoave" button.
+                this.autosaveEnabled = true;
+                // show an icon and a message in the toolbar
+                autosavecfg.buttonInstance.setIcon(ORYX.PATH 
+                    + "images/disk_multiple_disabled.png");
+            }
+            // raise event, make toolbar refresh.
+            this.facade.raiseEvent({
+                type : ORYX.CONFIG.EVENT_TOOLBAR_REFRESH
+            });
+        } else {
+            // remove the saving mask
+            if (this.saveModal) {
+                this.saveModal.hide();
+            }
+        }
+        this.isSaving = false;
+    },
 
 	/**
 	 * Shows the check error messages.
@@ -378,3 +428,55 @@ window.onOryxResourcesLoaded = function() {
 	// finally open the editor:
 	new ORYX.Editor(editor_parameters);
 };
+
+/***
+ * a popup dialog which fades out 1 second later after shows.
+ */
+Ext.example = function(){
+    var msgDiv;
+
+    function createBox(t, s){
+        var innerhtm;
+        if (t == undefined || t == '') {
+            innerhtm = ['<div class="x-box-ml"><div class="x-box-mr"><div class="x-box-mc">',
+            s, '</div></div></div>'].join('');
+        } else if (s == undefined || s == '') {
+            innerhtm = ['<div class="x-box-ml"><div class="x-box-mr"><div class="x-box-mc"><h3>',
+            t, '</h3></div></div></div>'].join('');
+        } else {
+            innerhtm = ['<div class="x-box-ml"><div class="x-box-mr"><div class="x-box-mc"><h3>',
+            t, '</h3>', s, '</div></div></div>'].join('');
+        }
+        return ['<div class="msg" style="position: relative">',
+            '<div class="x-box-tl"><div class="x-box-tr"><div class="x-box-tc"></div></div></div>',
+            innerhtm,
+            '<div class="x-box-bl"><div class="x-box-br"><div class="x-box-bc"></div></div></div>',
+            '</div>'].join('');
+    }
+    return {
+        msg : function(title, message){
+            // status msg showing DIV, 
+            msgDiv = Ext.get('msg_div');
+            // calc the position of Msg Div.
+            var scrollNode = msgDiv.parent().parent().parent().first();
+            var canvasScrollLeft = scrollNode.getScroll().left;
+            var canvasScrollTop = scrollNode.getScroll().top;
+            var canvasWidth = scrollNode.getWidth();
+            var msgPositionLeft = canvasWidth / 2 + canvasScrollLeft - 125;
+            var msgPostionTop = canvasScrollTop;
+
+            msgDiv.setStyle('top', msgPostionTop + 'px');
+            msgDiv.setStyle('left', msgPositionLeft + 'px');
+
+            var divHtml = createBox(title, message);
+            var m = Ext.DomHelper.append(msgDiv, {html: divHtml}, true);
+            m.slideIn('t').pause(1).ghost("t", {remove:true});
+        },
+        init : function(){
+            var lb = Ext.get('lib-bar');
+            if(lb){
+                lb.show();
+            }
+        }
+    };
+}();

@@ -664,7 +664,8 @@ ORYX.Plugins.PropertyWindow = {
 								fields: [{name: 'icon'},
 								         {name: 'title'},
 								         {name: 'value'}	],
-								         data : options // from states.js
+								         data : options, // from states.js
+								         sortInfo : {field: "title", direction: "ASC"}
 							});
 
 							// Set the grid Editor

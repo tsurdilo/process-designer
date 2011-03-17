@@ -417,10 +417,14 @@ window.onOryxResourcesLoaded = function() {
 						}
 					}
 					editorCallback(model);
+					// make the save button enabled after load finished
+					enableSaveButton();
 				},
 				onFailure: function(transport) {
 					ORYX.Log.error("Could not load the model for uuid " + ORYX.UUID);
 					editorCallback(null);
+					// make the save button enabled after load finished
+					enableSaveButton();
 				}
 	        });
 		};
@@ -429,7 +433,19 @@ window.onOryxResourcesLoaded = function() {
 	new ORYX.Editor(editor_parameters);
 };
 
-/***
+/**
+ * enable the Save button after editor finished loading
+ */
+function enableSaveButton() {
+    // get Ext.Component of Save button
+    var saveButton = top.Ext.getCmp(ORYX.UUID + 'sv');
+    // make it enabled if it's disabled
+    if (saveButton.disabled) {
+        saveButton.enable();
+    }
+}
+
+/**
  * a popup dialog which fades out 1 second later after shows.
  */
 Ext.example = function(){

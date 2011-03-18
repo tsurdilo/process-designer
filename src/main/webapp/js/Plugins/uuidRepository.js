@@ -152,7 +152,22 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 		// show saving status, display a "loading" icon in "Autosave" button.
 		this.showSaveStatus(asave);
 		var svgDOM = DataManager.serialize(this.facade.getCanvas().getSVGRepresentation(true));
-		var serializedDOM = Ext.encode(this.facade.getJSON());
+		// get the json and add properties label into
+		var json=this.facade.getJSON();
+		if(json.childShapes.length>0){
+			var namespace=json.stencilset.namespace;
+			var stencils=this.facade.getStencilSets()[namespace]._stencils;
+			json.childShapes.each(function(shape){
+				var stencil=stencils[namespace+shape.stencil.id];
+				shape.propertyNames=new Object();
+				stencil._properties.each(function(property){
+					property=property[1];
+					shape.propertyNames[property._jsonProp.id]=property._jsonProp.title
+				});
+				
+			});
+		}
+		//var serializedDOM = Ext.encode(this.facade.getJSON());
 		//var rdf = this.getRDFFromDOM();
 
 		// Send the request to the server.

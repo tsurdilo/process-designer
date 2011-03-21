@@ -168,6 +168,7 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 			});
 		}
 		//var serializedDOM = Ext.encode(this.facade.getJSON());
+		var serializedDOM = Ext.encode(json);
 		//var rdf = this.getRDFFromDOM();
 
 		// Send the request to the server.

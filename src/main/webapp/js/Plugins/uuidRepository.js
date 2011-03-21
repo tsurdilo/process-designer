@@ -154,7 +154,7 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 		var svgDOM = DataManager.serialize(this.facade.getCanvas().getSVGRepresentation(true));
 		// get the json and add properties label into
 		var json=this.facade.getJSON();
-		if(json.childShapes.length>0){
+		if(json.childShapes.length>0 && json.stencil && json.stencil.id == "PipeDiagram"){
 			var namespace=json.stencilset.namespace;
 			var stencils=this.facade.getStencilSets()[namespace]._stencils;
 			json.childShapes.each(function(shape){

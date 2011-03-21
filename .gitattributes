@@ -1,3 +1,4 @@
+*           text=auto
 *.java      text=auto
 *.xml       text=auto
 *.pom       text=auto
@@ -12,7 +13,6 @@
 *.htm       text=auto
 *.html      text=auto
 *.css       text=auto
-*.js        text=auto
 *.sh        eol=lf
 *.bat       eol=crlf
 *.cmd       eol=crlf

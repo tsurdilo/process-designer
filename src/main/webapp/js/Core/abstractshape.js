@@ -39,11 +39,9 @@ ORYX.Core.AbstractShape = ORYX.Core.UIObject.extend(
 	/**
 	 * Constructor
 	 */
-	construct: function(options, stencil) {
+	construct: function(options, stencil, resourceId) {
 		
 		arguments.callee.$.construct.apply(this, arguments);
-		
-		this.resourceId = this.id; //Id of resource in DOM
 		
 		// stencil reference
 		this._stencil = stencil;

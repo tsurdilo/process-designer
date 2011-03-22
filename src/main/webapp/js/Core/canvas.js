@@ -369,10 +369,7 @@ ORYX.Core.Canvas = ORYX.Core.AbstractShape.extend({
                 var ShapeClass = (stencil.type() == "node") ? ORYX.Core.Node : ORYX.Core.Edge;
                 var newShape = new ShapeClass(
                   {'eventHandlerCallback': eventHandler},
-                  stencil);
-                
-                // Set the resource id
-                newShape.resourceId = shape.resourceId;
+                  stencil, shape.resourceId);
                 
                 // Set parent to json object to be used later
                 // Due to the nested json structure, normally shape.parent is not set/ must not be set. 
@@ -387,7 +384,8 @@ ORYX.Core.Canvas = ORYX.Core.AbstractShape.extend({
                   object: newShape
                 };
             } catch(e) {
-                ORYX.Log.warn("LoadingContent: Stencil could not create.");
+                ORYX.Log.warn("LoadingContent: Stencil could not be created.");
+                ORYX.Log.warn(e);
             }
         }.bind(this);
         

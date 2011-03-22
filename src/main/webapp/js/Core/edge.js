@@ -52,8 +52,8 @@ ORYX.Core.Edge = {
      * @param {Object} options
      * @param {Stencil} stencil
      */
-    construct: function(options, stencil){
-        arguments.callee.$.construct.apply(this, arguments);
+    construct: function(options, stencil, resourceId) {
+        arguments.callee.$.construct.apply(this, arguments, resourceId);
         
         this.isMovable = true;
         this.isSelectable = true;

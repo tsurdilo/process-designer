@@ -36,7 +36,7 @@ ORYX.Core.Shape = {
 	/**
 	 * Constructor
 	 */
-	construct: function(options, stencil) {
+	construct: function(options, stencil, resourceId) {
 		// call base class constructor
 		arguments.callee.$.construct.apply(this, arguments);
 		

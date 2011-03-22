@@ -37,8 +37,10 @@ ORYX.Core.UIObject = {
 	/**
 	 * Constructor of the UIObject class.
 	 */
-	construct: function(options) {	
+	construct: function(options, stencil, resourceId) {	
 		
+		this.resourceId = resourceId;
+		this.id = resourceId;
 		this.isChanged = true;			//Flag, if UIObject has been changed since last update.
 		this.isResized = true;
 		this.isVisible = true;			//Flag, if UIObject's display attribute is set to 'inherit' or 'none'
@@ -46,7 +48,6 @@ ORYX.Core.UIObject = {
 		this.isResizable = false;		//Flag, if UIObject is resizable.
 		this.isMovable = false;			//Flag, if UIObject is movable.
 		
-		this.id = ORYX.Editor.provideId();	//get unique id
 		this.parent = undefined;		//parent is defined, if this object is added to another uiObject.
 		this.node = undefined;			//this is a reference to the SVG representation, either locally or in DOM.
 		this.children = [];				//array for all add uiObjects
@@ -132,7 +133,7 @@ ORYX.Core.UIObject = {
 	 * @return {String} Id of this UIObject
 	 */
 	getId: function() {
-		return this.id;
+		return this.resourceId;
 	},
 	
 	/**
@@ -297,6 +298,6 @@ ORYX.Core.UIObject = {
 		}
 	},
 	
-	toString: function() { return "UIObject " + this.id }
+	toString: function() { return "UIObject " + this.resourceId }
  };
  ORYX.Core.UIObject = Clazz.extend(ORYX.Core.UIObject);

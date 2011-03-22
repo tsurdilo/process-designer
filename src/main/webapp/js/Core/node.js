@@ -43,8 +43,8 @@ ORYX.Core.Node = {
      * @param options {Object} A container for arguments.
      * @param stencil {Stencil}
      */
-    construct: function(options, stencil){
-        arguments.callee.$.construct.apply(this, arguments);
+    construct: function(options, stencil, resourceId){
+        arguments.callee.$.construct.apply(this, arguments, resourceId);
         
         this.isSelectable = true;
         this.isMovable = true;

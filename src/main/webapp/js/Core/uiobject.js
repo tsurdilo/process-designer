@@ -37,9 +37,11 @@ ORYX.Core.UIObject = {
 	/**
 	 * Constructor of the UIObject class.
 	 */
-	construct: function(options, stencil, resourceId) {	
-		
-		this.resourceId = resourceId;
+	construct: function(options, stencil, resourceId) {
+	    if (!resourceId) {
+	        resourceId = ORYX.Editor.provideId();
+	    }
+	    this.resourceId = resourceId;
 		this.id = resourceId;
 		this.isChanged = true;			//Flag, if UIObject has been changed since last update.
 		this.isResized = true;

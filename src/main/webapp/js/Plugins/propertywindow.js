@@ -952,6 +952,11 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 			if (this.data == undefined) {
 				this.data = value;
 			}
+			var mappingObj = this.data.evalJSON();
+			if (mappingObj.totalCount > 0) {
+				var association = mappingObj.totalCount > 1 ? " associations" : " association";
+				this.setRawValue(mappingObj.totalCount + association);
+			}
 		}
 	},
 	

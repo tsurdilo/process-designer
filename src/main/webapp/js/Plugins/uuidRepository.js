@@ -57,8 +57,6 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
     autosaveEnabled : true,
     // true to enable the "Autosave" button, disable while autosaving
     saveModal : undefined,
-    // let CRM save determine whether inner canvas saving is finished
-    isSaving : false,
 	
     construct: function(facade){
 		this.facade = facade;
@@ -98,15 +96,14 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 			'maxShape': 0
 		};
 		this.facade.offer(autosavecfg);
-
+		
 		// ask before closing the window
-		this.changeDifference = 0;		
-		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_UNDO_EXECUTE, function(){ this.changeDifference++; });
-		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_EXECUTE_COMMANDS, function(){this.changeDifference++; });
-		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_UNDO_ROLLBACK, function(){this.changeDifference--; });
+		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_UNDO_EXECUTE, function(){ this.HOOKS.changeDifference++; });
+		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_EXECUTE_COMMANDS, function(){this.HOOKS.changeDifference++; });
+		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_UNDO_ROLLBACK, function(){this.HOOKS.changeDifference--; });
 		
 		window.onbeforeunload = function(){
-			if (this.changeDifference > 0){
+			if (HOOKS.changeDifference > 0){
 				return ORYX.I18N.Save.unsavedData;
 			}
 		}.bind(this);
@@ -136,19 +133,13 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 	},
 	
 	/**
-	 * Saves the current model.
-	 */
-	save: function() {
-		this._save(this, false);
-	},
-	
-	/**
 	 * Saves data by calling the backend.
 	 * @param savePlugin
 	 * @param asave determine whether the function is invoked by autosave
 	 *              True: by autosave | False: by save
+	 * @param onClose true if it needs to close the window after save success
 	 */
-	_save: function(savePlugin, asave) {
+	_save: function(savePlugin, asave, onClose) {
 		// show saving status, display a "loading" icon in "Autosave" button.
 		this.showSaveStatus(asave);
 		var svgDOM = DataManager.serialize(this.facade.getCanvas().getSVGRepresentation(true));
@@ -181,8 +172,6 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 				onSuccess : (function(transport) {
 					// end saving, the "loading" icon return to normal
 					this.hideSaveStatus(asave);
-					// success msg flag, true to show success dialog
-					var showSucessMsg = false;
 					response = transport.responseText;
 					if (response.length != 0) {
 						try {
@@ -194,8 +183,7 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 									type : ORYX.CONFIG.EVENT_LOADING_DISABLE
 								});
 								this.showMessages(jsonObj);
-							} else {
-								showSucessMsg = true;
+								return;
 							}
 						} catch (err) {
 							ORYX.Log.error(err);
@@ -206,12 +194,19 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 							type : ORYX.CONFIG.EVENT_LOADING_STATUS,
 							text : ORYX.I18N.Save.saved
 						});
-						showSucessMsg = true;
 					}
-					if (showSucessMsg && !asave) {
-						// clear the dirty data flag after saving
-						this.changeDifference = 0;
+					if (!asave) {
 						Ext.example.msg(ORYX.I18N.Save.successTitle, ORYX.I18N.Save.successMsg);
+						// clear the dirty data flag after saving
+						HOOKS.changeDifference = 0;
+						// clear the last dirty value
+						HOOKS.lastIframeValue = "";
+					}
+					// if the save function is invoked by "Save_n_Close" or "Window Close"
+					if (onClose) {
+						// close the window after saving succeed
+						var instanceWindow = top.Ext.getCmp(ORYX.UUID + "_win");
+						instanceWindow.initialConfig.tools[5].handler.call(null, instanceWindow.tools.close, instanceWindow);
 					}
 				}).bind(this),
 			onFailure: (function(transport) {
@@ -301,7 +296,6 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
                 icon     : 'ext-mb-saving'
             });
         }
-        this.isSaving = true;
     },
 	
 	/**
@@ -333,7 +327,6 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
                 this.saveModal.hide();
             }
         }
-        this.isSaving = false;
     },
 
 	/**

@@ -60,13 +60,44 @@ HOOKS = {
             HOOKS.savePlugin._save(this, false, onClose);
         }
     },
-    // return a boolean value: true if it's ok to close, false otherwise.
+    /**
+     * return a boolean value: true if it's ok to close, false otherwise.
+     * @type {Boolean}
+     */ 
     isDirty: function() {
         if (HOOKS.changeDifference == 0) {
             return false;
         } else {
             return true;
         }
+    },
+    
+    /**
+     * increase or decrease the dirty count.
+     * update last-click time of session
+     * @param isRedo true to increase the dirty count
+     *               false to decrease the dirty count
+     */
+    onCanvasChange : function(isRedo) {
+        if (isRedo) {
+            HOOKS.changeDifference++;
+        } else {
+            HOOKS.changeDifference--;
+        }
+
+        // communicate with CRM, update the sesson/@last-click time.
+        var paramArray = window.frameElement.src.split("session-id=");
+        var sessionId = paramArray.length > 1 ? paramArray[1] : "";
+        if (sessionId == "") {
+             return;
+        }
+        var lastclickServerUrl = window.location.protocol + "//" + window.location.host 
+                                + "/crm/services/js-lastclick-update.xsp";
+        new Ajax.Request(lastclickServerUrl, {
+            asynchronous: true,
+            method: 'post',
+            parameters: {sessionid : sessionId}
+        });
     },
     
     // UUIDRepositorySave Plugin

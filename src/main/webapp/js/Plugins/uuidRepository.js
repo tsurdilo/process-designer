@@ -98,9 +98,9 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 		this.facade.offer(autosavecfg);
 		
 		// ask before closing the window
-		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_UNDO_EXECUTE, function(){ this.HOOKS.changeDifference++; });
-		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_EXECUTE_COMMANDS, function(){this.HOOKS.changeDifference++; });
-		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_UNDO_ROLLBACK, function(){this.HOOKS.changeDifference--; });
+		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_UNDO_EXECUTE, function(){ this.HOOKS.onCanvasChange(true); });
+		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_EXECUTE_COMMANDS, function(){ this.HOOKS.onCanvasChange(true); });
+		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_UNDO_ROLLBACK, function(){ this.HOOKS.onCanvasChange(false); });
 		
 		window.onbeforeunload = function(){
 			if (HOOKS.changeDifference > 0){

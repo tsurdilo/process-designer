@@ -165,10 +165,21 @@ ORYX.Plugins.ShapeRepository = {
 
 		// assume we cannot execute if the "serializer" field is empty
 		var unserializable = stencil._jsonStencil.unserializable;
-		// if the shape is not executeable, make the color looks dim
-		var cssClass = !unserializable
-				? 'ShapeRepEntree'
-				: 'x-tree-node-disabled ShapeRepEntree';
+		// get Modeling Only attribute
+		var modelingOnly = stencil._jsonStencil.modelingonly;
+		
+		// css class for each shapes in the Tree-Entree
+		var cssClass;
+		
+		// if the shape is not executeable, make the color looks dim.
+		if (modelingOnly) {
+			cssClass = 'x-tree-node-italic ShapeRepEntree';
+		// if the shape is "Modeling Only", make the font as "Italic"
+		} else if (unserializable) {
+			cssClass = 'x-tree-node-disabled ShapeRepEntree';
+		} else {
+			cssClass = 'ShapeRepEntree';
+		}
 		// Create and add the Stencil to the Group
 		var newElement = new Ext.tree.TreeNode({
 				text:		stencil.title(), 		// Text of the stencil

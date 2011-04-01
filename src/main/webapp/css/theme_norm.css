@@ -671,3 +671,5 @@ input.text.disabled:hover, input.disabled:hover, select.disabled:hover, textarea
 * Removes the ugly dashed outline from all buttons in Firefox
 */
 button::-moz-focus-inner { border: 0; }
+
+.x-tree-node .x-tree-node-italic a span{font-style:italic!important;font-weight:bold!important;}

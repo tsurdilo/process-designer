@@ -1,0 +1,32 @@
+= Wapama
+The HTML5 modeler
+
+Wapama is an extensible web-based modeler supporting BPMN 2.0 natively.
+
+== A complete modeling application
+
+Wapama is a complete editor for modeling BPMN 2.0. Many other metamodels are supported, including BPMN 1.1, BPEL 2.0, or Petrinets.
+
+== HTML5 champion
+
+Wapama uses trusted web technologies to render and edit models. It is particularly leveraging SVG (Scalable Vector Graphics) for rendering, a HTML5 technology.
+
+== Create your own editor
+
+Reuse, customize or create your own buttons and toolbar items. All metamodels are simple JSON files defining shapes, properties and relationships.
+
+== Builds
+
+=== CI builds
+
+http://hudson.intalio.org/job/Process_Designer_CI_Build/
+
+=== Release builds
+
+http://hudson.intalio.org/job/Process_Designer_Release_Build/
+
+=== Download
+
+Get it as war, war for jboss or OSGi webapp bundle here:
+
+http://www.intalio.org/public/maven2/com/intalio/bpms/web/designer/

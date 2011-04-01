@@ -15,6 +15,12 @@ Wapama uses trusted web technologies to render and edit models. It is particular
 
 Reuse, customize or create your own buttons and toolbar items. All metamodels are simple JSON files defining shapes, properties and relationships.
 
+= Project management
+
+== Mailing list
+
+http://groups.google.com/group/wapama
+
 == Builds
 
 === CI builds

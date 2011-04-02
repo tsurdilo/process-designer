@@ -8,3 +8,4 @@ src/main/webapp/repository
 .settings
 .externalToolBuilders
 src/main/webapp/jsc/*.js
+_site

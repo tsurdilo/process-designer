@@ -6,42 +6,13 @@ require "dependencies.rb"
 
 require "json"
 
-=begin
-# In IRB, paste this script to change the versions of the resolved dependencies for the com.intalio.cloud.orbit dep's,
-# as Maven versions differ from bundle versions.
-require 'YAML'
-yaml = YAML.load(File.read("dependencies.yml"))
-yaml.each do |project| project[1]["dependencies"].collect! {|dep| if dep.match(/^com\.intalio\.cloud\.orbit:/)
-                                                                    arr = dep.split(":")
-                                                                    arr.pop
-                                                                    arr << "1.0.0.012"
-                                                                    arr.join(":")
-                                                                  else
-                                                                    dep
-                                                                  end
-                                                                }
-end
-File.open("dependencies.yml", "w") do |f| f.write YAML.dump(yaml) end
-=end
-
-ENV['OSGi'] = [ENV['ORBIT_SOURCES'], ENV['ORBIT_BINARIES'], ENV['OSGi']].compact.join ';'
-
-# Match to the right group by using a search on the fs.
-OSGi::GroupMatcher.instance.group_matchers << Proc.new {|id| 
-  if !(!ENV['ORBIT_SOURCES'].nil? && Dir[File.join(ENV['ORBIT_SOURCES'], "**", "*#{id}*")].empty?)
-    "com.intalio.cloud.orbit"
-  elsif !(!ENV['ORBIT_BINARIES'].nil? && Dir[File.join(ENV['ORBIT_BINARIES'], "**", "*#{id}*")].empty?)
-    "com.intalio.cloud.orbit-prefetched"
-  end
-}
-
 # Keep this structure to allow the build system to update version numbers.
 VERSION_NUMBER = "1.0.0.089-SNAPSHOT"
 
-desc "Process Designer"
+desc "Wapama Designer"
 define "designer" do
   project.version = VERSION_NUMBER
-  project.group = "com.intalio.bpms.web" 
+  project.group = "org.wapama" 
   
   compile.with WAR_LIBS, "junit:junit:jar:4.7"
   compile.options.source = "1.5"

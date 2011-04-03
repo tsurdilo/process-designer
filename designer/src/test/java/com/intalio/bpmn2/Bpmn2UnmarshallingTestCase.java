@@ -66,8 +66,8 @@ import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.junit.Test;
+import org.wapama.bpmn2.impl.Bpmn2JsonUnmarshaller;
 
-import com.intalio.bpmn2.impl.Bpmn2JsonUnmarshaller;
 
 
 /**

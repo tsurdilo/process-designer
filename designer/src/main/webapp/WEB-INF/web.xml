@@ -12,7 +12,7 @@
 		</display-name>
 		<servlet-name>EditorHandler</servlet-name>
 		<servlet-class>
-			org.oryxeditor.server.EditorHandler
+			org.wapama.web.EditorHandler
 		</servlet-class>
 	</servlet>
 	
@@ -20,7 +20,7 @@
 	   <display-name>UUID Based Repository</display-name>
 	   <servlet-name>UUIDBasedRepositoryServlet</servlet-name>
 	   <servlet-class>
-	       com.intalio.web.server.UUIDBasedRepositoryServlet
+	       org.wapama.web.server.UUIDBasedRepositoryServlet
 	   </servlet-class>
 	</servlet>
 	
@@ -28,7 +28,7 @@
 	   <display-name>Plugin Service Servlet</display-name>
 	   <servlet-name>PluginServiceServlet</servlet-name>
 	   <servlet-class>
-	       com.intalio.web.plugin.impl.PluginServiceServlet
+	       org.wapama.web.plugin.impl.PluginServiceServlet
 	   </servlet-class>
 	</servlet>
 	
@@ -36,7 +36,7 @@
 	   <display-name>StencilSet Service Servlet</display-name>
 	   <servlet-name>StencilSetServiceServlet</servlet-name>
 	   <servlet-class>
-	       com.intalio.web.stencilset.impl.StencilSetServiceServlet
+	       org.wapama.web.stencilset.impl.StencilSetServiceServlet
 	   </servlet-class>
 	</servlet>
 	
@@ -110,12 +110,12 @@
 	<!-- Pluggable filter -->
 	<filter>
 		<filter-name>Pluggable Filter</filter-name>
-		<filter-class>com.intalio.web.filter.impl.PluggableFilter</filter-class>
+		<filter-class>org.wapama.web.filter.impl.PluggableFilter</filter-class>
 	</filter>
 
     <filter>
         <filter-name>gzipFilter</filter-name>
-        <filter-class>com.intalio.web.filter.impl.GZIPFilter</filter-class>
+        <filter-class>org.wapama.web.filter.impl.GZIPFilter</filter-class>
     </filter>
     <!-- add filter for servlet. URL mapping may also be used. -->
 

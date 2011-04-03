@@ -25,11 +25,11 @@ http://groups.google.com/group/wapama
 
 === CI builds
 
-http://hudson.intalio.org/job/Process_Designer_CI_Build/
+http://hudson.intalio.org/job/Wapama_CI_Build/
 
 === Release builds
 
-http://hudson.intalio.org/job/Process_Designer_Release_Build/
+http://hudson.intalio.org/job/Wapama_Release_Build/
 
 === Download
 

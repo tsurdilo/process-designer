@@ -37,8 +37,6 @@ import com.intalio.web.preference.IDiagramPreferenceService;
 import com.intalio.web.profile.IDiagramProfileFactory;
 import com.intalio.web.profile.IDiagramProfileService;
 import com.intalio.web.profile.impl.ProfileServiceImpl;
-import com.intalio.web.repository.IUUIDBasedRepositoryService;
-import com.intalio.web.server.UUIDBasedRepositoryServlet;
 
 
 /**

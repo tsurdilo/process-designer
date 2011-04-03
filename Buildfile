@@ -23,14 +23,14 @@ define "wapama" do
   
     webContent = "WebContent/"
 
-    package(:bundle).include(_("src/main/webapp"), :as => webContent).exclude('WEB-INF/tomcat_web.xml')
-    package(:war).include(_("src/main/webapp"), :as => '.').exclude('WEB-INF/tomcat_web.xml')
-    package(:war, :classifier => "jboss").include(_("src/main/webapp"), :as => '.').exclude('WEB-INF/tomcat_web.xml')
+    package(:bundle).include(_("src/main/webapp"), :as => webContent)
+    package(:war).include(_("src/main/webapp"), :as => '.')
+    package(:war, :classifier => "jboss").include(_("src/main/webapp"), :as => '.')
     
     package(:war).libs = WAR_LIBS
     package(:war, :classifier => "jboss").libs = WAR_LIBS_JBOSS
   
-    package(:war, :classifier => "jboss").include(_('src/main/webapp/WEB-INF/tomcat_web.xml'), :as=>'WEB-INF/web.xml')
+    package(:war, :classifier => "jboss")
 
     read_m = ::Buildr::Packaging::Java::Manifest.parse(File.read(_("META-INF/MANIFEST.MF"))).main
     read_m["Jetty-WarFolderPath"] = webContent

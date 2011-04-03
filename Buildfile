@@ -42,10 +42,10 @@ define "wapama" do
   
   desc "Wapama distribution"
   define "distrib" do
-    file(_("../_site")).enhance do
-      system("git co gh-pages ; jekyll ; git co master")
+    file(_("target/doc/_site")).enhance do
+      system("git co gh-pages ; jekyll #{File.join(File.dirname(__FILE__), "distrib/target/doc")}; git co master")
     end
-    package(:zip).include _("../_site"), :as => "doc"
+    package(:zip).include _("target/doc/_site"), :as => "doc"
     package(:zip).include _("../LICENSE")
     package(:zip).include project("designer").package(:jar), :path => "distrib"
     package(:zip).include project("designer").package(:war), :path => "distrib"

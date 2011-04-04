@@ -4,8 +4,6 @@ require "buildr4osgi"
 require File.join(File.dirname(__FILE__), "repositories.rb")
 require File.join(File.dirname(__FILE__), "dependencies.rb")
 
-require "json"
-
 # Keep this structure to allow the build system to update version numbers.
 VERSION_NUMBER = "1.0.0.091-SNAPSHOT"
 
@@ -17,7 +15,7 @@ define "wapama" do
   desc "Wapama Editor"
   define "designer" do
 
-    compile.with WAR_LIBS, "junit:junit:jar:4.7"
+    compile.with WAR_LIBS, JUNIT
     compile.options.source = "1.5"
     compile.options.target = "1.5"
   

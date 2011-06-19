@@ -21,6 +21,13 @@
 			"definition":"bpmncosts/bpmncosts-2.0.json",
 			"extends":"http://b3mn.org/stencilset/bpmn2.0#"
 		},
+                {
+			"title":"BPMN KMR Extension",
+			"namespace":"http://oryx-editor.org/stencilsets/extensions/bpmnkmr-2.0#",
+			"description":"BPMN 2.0 extension for adding KMR's attributes and stencils",
+			"definition":"bpmnkmr/bpmnkmr-2.0.json",
+			"extends":"http://b3mn.org/stencilset/bpmn2.0#"
+		},
 		{
 			"title":"BPMN WikiRef Extension",
 			"namespace":"http://oryx-editor.org/stencilsets/extensions/bpmnwikirefs#",

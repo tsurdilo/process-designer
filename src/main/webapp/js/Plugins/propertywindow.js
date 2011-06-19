@@ -518,7 +518,7 @@ ORYX.Plugins.PropertyWindow = {
 				var refToViewFlag = false;
 
 				var editorClass = ORYX.FieldEditors[pair.type()];
-				 
+				
 				if (editorClass !== undefined) {
 					editorGrid = editorClass.init.bind(this, key, pair, icons, index)();
 					if (editorGrid == null) {
@@ -581,7 +581,7 @@ ORYX.Plugins.PropertyWindow = {
 							break;
 						case ORYX.CONFIG.TYPE_FLOAT:
 							// Set as an Editor for Float
-							var numberField = new Ext.form.NumberField({ allowBlank: pair.optional(), allowDecimals:true, msgTarget:'title', minValue: pair.min(), maxValue: pair.max()});
+							var numberField = new Ext.form.NumberField({allowBlank: pair.optional(), allowDecimals:true, msgTarget:'title', minValue: pair.min(), maxValue: pair.max()});
 							numberField.on('keyup', function(input, event) {
 								this.editDirectly(key, input.getValue());
 							}.bind(this));
@@ -593,7 +593,7 @@ ORYX.Plugins.PropertyWindow = {
 							// Set as a ColorPicker
 							// Ext1.0 editorGrid = new gEdit(new form.ColorField({ allowBlank: pair.optional(),  msgTarget:'title' }));
 
-							var editorPicker = new Ext.ux.ColorField({ allowBlank: pair.optional(),  msgTarget:'title', facade: this.facade });
+							var editorPicker = new Ext.ux.ColorField({allowBlank: pair.optional(),  msgTarget:'title', facade: this.facade});
 
 							/*this.facade.registerOnEvent(ORYX.CONFIG.EVENT_COLOR_CHANGE, function(option) {
 								this.editDirectly(key, option.value);
@@ -652,7 +652,7 @@ ORYX.Plugins.PropertyWindow = {
 							var currFormat = ORYX.I18N.PropertyWindow.dateFormat
 							if(!(attribute instanceof Date))
 								attribute = Date.parseDate(attribute, currFormat)
-								editorGrid = new Ext.Editor(new Ext.form.DateField({ allowBlank: pair.optional(), format:currFormat,  msgTarget:'title'}));
+								editorGrid = new Ext.Editor(new Ext.form.DateField({allowBlank: pair.optional(), format:currFormat,  msgTarget:'title'}));
 							break;
 
 						case ORYX.CONFIG.TYPE_TEXT:
@@ -671,7 +671,7 @@ ORYX.Plugins.PropertyWindow = {
 							// extended by Kerstin (start)
 						case ORYX.CONFIG.TYPE_COMPLEX:
 
-							var cf = new Ext.form.ComplexListField({ allowBlank: pair.optional()}, pair.complexItems(), key, this.facade);
+							var cf = new Ext.form.ComplexListField({allowBlank: pair.optional()}, pair.complexItems(), key, this.facade);
 							cf.on('dialogClosed', this.dialogClosed, {scope:this, row:index, col:1,field:cf});							
 							editorGrid = new Ext.Editor(cf);
 							break;
@@ -694,9 +694,13 @@ ORYX.Plugins.PropertyWindow = {
 							editorGrid = new Ext.Editor(editorInput);							
 							break;
 							// extended by Gerardo (End)
+                                                 case "guvnorruleeditor":
+							var editor = new Ext.form.GuvnorPopupEditor();
 
+							editorGrid = new Ext.Editor(editor);
+                                                    break;
 						default:
-							var editorInput = new Ext.form.TextField({ allowBlank: pair.optional(),  msgTarget:'title', maxLength:pair.length(), enableKeyEvents: true});
+							var editorInput = new Ext.form.TextField({allowBlank: pair.optional(),  msgTarget:'title', maxLength:pair.length(), enableKeyEvents: true});
 						editorInput.on('keyup', function(input, event) {
 							this.editDirectly(key, input.getValue());
 						}.bind(this));
@@ -765,7 +769,7 @@ ORYX.Plugins.PropertyWindow = {
 	
 	hideMoreAttrs: function(panel) {
 		// TODO: Implement the case that the canvas has no attributes
-		if (this.properties.length <= 0){ return }
+		if (this.properties.length <= 0){return}
 		
 		// collapse the "more attr" group
 		this.grid.view.toggleGroup(this.grid.view.getGroupId(this.properties[0][0]), false);
@@ -980,7 +984,7 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 			var editor;
 			
 			if (type == ORYX.CONFIG.TYPE_STRING) {
-				editor = new Ext.form.TextField({ allowBlank : this.items[i].optional(), width : width});
+				editor = new Ext.form.TextField({allowBlank : this.items[i].optional(), width : width});
 			} else if (type == ORYX.CONFIG.TYPE_CHOICE) {				
 				var items = this.items[i].items();
 				var select = ORYX.Editor.graft("http://www.w3.org/1999/xhtml", parent, ['select', {style:'display:none'}]);
@@ -990,12 +994,12 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 				});				
 				
 				editor = new Ext.form.ComboBox(
-					{ typeAhead: true, triggerAction: 'all', transform:select, lazyRender:true,  msgTarget:'title', width : width});			
+					{typeAhead: true, triggerAction: 'all', transform:select, lazyRender:true,  msgTarget:'title', width : width});			
 			} else if (type == ORYX.CONFIG.TYPE_BOOLEAN) {
-				editor = new Ext.form.Checkbox( { width : width } );
+				editor = new Ext.form.Checkbox( {width : width} );
 			} else if (type == "xpath") {
 				//TODO set the xpath type as string, same editor as string.
-				editor = new Ext.form.TextField({ allowBlank : this.items[i].optional(), width : width});
+				editor = new Ext.form.TextField({allowBlank : this.items[i].optional(), width : width});
 			}
 					
 			cols.push({
@@ -1215,7 +1219,7 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 
 Ext.form.ComplexTextField = Ext.extend(Ext.form.TriggerField,  {
 
-	defaultAutoCreate : {tag: "textarea", rows:1, style:"height:16px;overflow:hidden;" },
+	defaultAutoCreate : {tag: "textarea", rows:1, style:"height:16px;overflow:hidden;"},
 
     /**
      * If the trigger was clicked a dialog has to be opened
@@ -1292,4 +1296,83 @@ Ext.form.ComplexTextField = Ext.extend(Ext.form.TriggerField,  {
 		grid.focus( false, 100 );
 		
 	}
+});
+
+Ext.form.GuvnorPopupEditor = Ext.extend(Ext.form.TriggerField,  {
+
+    defaultAutoCreate : {
+        tag: "textarea", 
+        rows:1, 
+        style:"height:16px;overflow:hidden;"
+    },
+
+    /**
+     * If the trigger was clicked a dialog has to be opened
+     * to enter the values for the complex property.
+     */
+    onTriggerClick : function(){
+		
+        if(this.disabled){
+            return;
+        }	
+
+        var _width = document.body.clientWidth - 20;
+        var _height = document.body.clientHeight - 20;
+
+        //Guvnor url
+        var guvnorURL= "/drools-guvnor/org.drools.guvnor.Guvnor/standaloneEditorServlet";
+        
+        //Guvnor editor parameters
+        var guvnorParameters = [];
+        guvnorParameters.push({name:"client", value: 'oryx'});
+        guvnorParameters.push({name:"packageName", value: 'mortgages'});
+        guvnorParameters.push({name:"categoryName", value: 'Home Mortgage'});
+        guvnorParameters.push({name:"hideRuleRHS", value: 'true'});
+        guvnorParameters.push({name:"hideRuleAttributes", value: 'true'});
+        guvnorParameters.push({name:"brlSource", value: '<rule><name>Condition Constraint</name><modelVersion>1.0</modelVersion><attributes></attributes><metadataList/><lhs></lhs><rhs></rhs></rule>'});
+        
+        if (guvnorParameters.length > 0){
+            var i = 0;
+            var separator = "";
+            guvnorURL += "?";
+            for (i = 0; i < guvnorParameters.length; i++){
+                var p = guvnorParameters[i];
+                var uriComponent= separator + p.name+"="+encodeURIComponent(p.value);
+                if (separator == ""){
+                    separator = "&amp;"; // %26
+                }
+                
+                guvnorURL += uriComponent;
+            }
+        }
+
+        var MIF = new Ext.ux.ManagedIFrame({
+            autoCreate:{
+                id:'dynamicIframe1',
+                cls:'x-window-body',
+                width:_width,
+                height:_height,
+                src:guvnorURL
+            }
+        });
+
+        
+        var w=new Ext.Window({
+            layout      : 'fit',
+            width       : _width,
+            height      : _height,
+            closeAction :'close',
+            plain       : true,
+            modal       : true,
+            title       : 'Title',
+            autoScroll  : true,
+            resizable: true,
+            body:       MIF
+        });
+        
+        
+        
+        w.show();
+        
+    }
 });

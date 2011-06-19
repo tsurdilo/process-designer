@@ -30,5 +30,5 @@
     <stencilsetextension
       namespace="http://oryx-editor.org/stencilsets/extensions/bpmncosts-2.0#" />
     <externalloadurl protocol="http" host="localhost:8080" subdomain="drools-guvnor/org.drools.guvnor.Guvnor/oryxeditor" usr="admin" pwd="admin"/>
-  </profile>
+  </profile>  
 </profiles>

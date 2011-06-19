@@ -1,0 +1,58 @@
+{
+    "title":"BPMN KMR Extension",
+    "namespace":"http://oryx-editor.org/stencilsets/extensions/bpmnkmr-2.0#",
+    "description":"BPMN 2.0 extension for adding KMR's attributes and stencils",
+    "extends":"http://b3mn.org/stencilset/bpmn2.0#",
+    "stencils":[
+            
+    {
+        "type" : "node",
+        "id" : "KMRRuleDecisionNode",
+        "title" : "Rule Decision Node",
+        "groups" : ["KMR"],
+        "position" : -4,
+        "description" : "Add some description here!",
+        "view" : "../../extensions/bpmnkmr/view/RuleDecisionNode.svg",
+        "icon" : "../../extensions/bpmnkmr/icons/RuleDecisionNode.png,"/*
+        "layout":[{
+            "type":"layout.bpmn2_0.choreography.task"
+        }]*/,
+        "properties" : [
+        {
+            "id":"name",
+            "type":"String",
+            "title":"Name",
+            "value":"",
+            "description":"The descriptive name of the choreography task.",
+            "description_de":"Bezeichnung des Choreographie-Tasks.",
+            "readonly":false,
+            "optional":true,
+            "length":"",
+            "wrapLines" : true,
+            "refToView":"text_name"	
+        },
+        {
+            "id":"documentation",
+            "type":"Text",
+            "title":"Documentation",
+            "title_de":"Dokumentation",
+            "value":"",
+            "description":"This attribute is used to annotate the BPMN element, such as descriptions and other documentation.",
+            "description_de":"Der Modellierer kann weiteren Text zur Dokumentation des BPMN-Elementes einfügen.",
+            "readonly":false,
+            "optional":true,
+            "length":"",
+            "wrapLines":true,
+            "popular":true
+        }
+        ],
+        "roles" : [
+        "all",
+        "sequence_start",
+        "to_task_event"
+        ]
+    }
+            
+    ],
+    "properties": []
+}

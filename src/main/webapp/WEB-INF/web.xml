@@ -161,6 +161,10 @@
 		<servlet-class>
 			org.oryxeditor.server.EditorHandler
 		</servlet-class>
+                <init-param>
+			<param-name>designer.dev</param-name>
+			<param-value>true</param-value>
+		</init-param>
 	</servlet>
 	
 	<!--servlet>
@@ -422,6 +426,10 @@
           <param-name>factoryName</param-name> 
           <param-value>default</param-value>
        </init-param>
+       <init-param>
+                <param-name>debug</param-name>
+                <param-value>1</param-value>
+        </init-param>
 	</servlet>
 	
 	<servlet>

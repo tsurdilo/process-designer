@@ -695,10 +695,15 @@ ORYX.Plugins.PropertyWindow = {
 							break;
 							// extended by Gerardo (End)
                                                  case "guvnorruleeditor":
-							var editor = new Ext.form.GuvnorPopupEditor();
-
+							var editor = new Ext.form.GuvnorPopupEditor(function(_value){
+                                                            this.editDirectly(key, _value);
+                                                        }.bind(this));
+                                                        
+                                                        //Guvnor's iframe needs a global object to stablish communication with.
+                                                        guvnorPopupEditor = editor;
+                                                        
 							editorGrid = new Ext.Editor(editor);
-                                                    break;
+                                                        break;
 						default:
 							var editorInput = new Ext.form.TextField({allowBlank: pair.optional(),  msgTarget:'title', maxLength:pair.length(), enableKeyEvents: true});
 						editorInput.on('keyup', function(input, event) {
@@ -1298,81 +1303,247 @@ Ext.form.ComplexTextField = Ext.extend(Ext.form.TriggerField,  {
 	}
 });
 
-Ext.form.GuvnorPopupEditor = Ext.extend(Ext.form.TriggerField,  {
+var guvnorPopupEditor;
+Ext.form.GuvnorPopupEditor = function(_onSave){
 
-    defaultAutoCreate : {
-        tag: "textarea", 
-        rows:1, 
-        style:"height:16px;overflow:hidden;"
-    },
+    var brlCommentString = "#-#"
 
-    /**
+    var brlValue = "";
+    
+    var drlValue = "";
+    
+    var onSave = _onSave;
+
+    Ext.form.GuvnorPopupEditor.superclass.constructor.call(this,{
+        defaultAutoCreate : {
+            tag: "textarea", 
+            rows:1, 
+            style:"height:16px;overflow:hidden;"
+        },
+
+        /**
      * If the trigger was clicked a dialog has to be opened
      * to enter the values for the complex property.
      */
-    onTriggerClick : function(){
+        onTriggerClick : function(){
 		
-        if(this.disabled){
-            return;
-        }	
+            if(this.disabled){
+                return;
+            }	
 
-        var _width = document.body.clientWidth - 20;
-        var _height = document.body.clientHeight - 20;
+            var _width = document.body.clientWidth - 20;
+            var _height = document.body.clientHeight - 20;
 
-        //Guvnor url
-        var guvnorURL= "/drools-guvnor/org.drools.guvnor.Guvnor/standaloneEditorServlet";
+            //Guvnor url
+            var _guvnorURL= "/drools-guvnor/org.drools.guvnor.Guvnor/standaloneEditorServlet";
         
-        //Guvnor editor parameters
-        var guvnorParameters = [];
-        guvnorParameters.push({name:"client", value: 'oryx'});
-        guvnorParameters.push({name:"packageName", value: 'mortgages'});
-        guvnorParameters.push({name:"categoryName", value: 'Home Mortgage'});
-        guvnorParameters.push({name:"hideRuleRHS", value: 'true'});
-        guvnorParameters.push({name:"hideRuleAttributes", value: 'true'});
-        guvnorParameters.push({name:"brlSource", value: '<rule><name>Condition Constraint</name><modelVersion>1.0</modelVersion><attributes></attributes><metadataList/><lhs></lhs><rhs></rhs></rule>'});
+            //Guvnor editor parameters
+            var _guvnorParameters = [];
+            _guvnorParameters.push({
+                name:"client", 
+                value: 'oryx'
+            });
+            _guvnorParameters.push({
+                name:"packageName", 
+                value: 'mortgages'
+            });
+            _guvnorParameters.push({
+                name:"categoryName", 
+                value: 'Home Mortgage'
+            });
+            _guvnorParameters.push({
+                name:"hideRuleRHS", 
+                value: 'true'
+            });
+            _guvnorParameters.push({
+                name:"hideRuleAttributes", 
+                value: 'true'
+            });
         
-        if (guvnorParameters.length > 0){
-            var i = 0;
-            var separator = "";
-            guvnorURL += "?";
-            for (i = 0; i < guvnorParameters.length; i++){
-                var p = guvnorParameters[i];
-                var uriComponent= separator + p.name+"="+encodeURIComponent(p.value);
-                if (separator == ""){
-                    separator = "&amp;"; // %26
-                }
+            if (brlValue == ""){
+                _guvnorParameters.push({
+                    name:"brlSource", 
+                    value: '<rule><name>Condition Constraint</name><modelVersion>1.0</modelVersion><attributes></attributes><metadataList/><lhs></lhs><rhs></rhs></rule>'
+                });
+            }else{
+                _guvnorParameters.push({
+                    name:"brlSource", 
+                    value: brlValue
+                });
+            }
+        
+        
+            if (_guvnorParameters.length > 0){
+                var i = 0;
+                var separator = "";
+                _guvnorURL += "?";
+                for (i = 0; i < _guvnorParameters.length; i++){
+                    var p = _guvnorParameters[i];
+                    var uriComponent= separator + p.name+"="+encodeURIComponent(p.value);
+                    if (separator == ""){
+                        separator = "&amp;"; // %26
+                    }
                 
-                guvnorURL += uriComponent;
+                    _guvnorURL += uriComponent;
+                }
             }
+        
+            var w=new Ext.Window({
+                id          : 'guvnorWindow',
+                layout      : 'fit',
+                width       : _width,
+                height      : _height,
+                closeAction :'close',
+                plain       : true,
+                modal       : true,
+     
+                title       : 'Title',
+                autoScroll  : true,
+                resizable: true,
+                html: '<iframe id="guvnorFrame" name="guvnorFrame" width="'+_width+'" height="'+_height+'"  onload="attachCallbacksToGuvnor();" src="'+_guvnorURL+'"></iframe>'
+            });
+        
+            w.show();
+        },
+    
+        encodeBRL : function(){
+            var _value = "";
+            
+            //process the brl part
+            if (brlValue){
+                //split the brl into single lines
+                var brlLines = brlValue.split("\n");
+                for (var i=0; i < brlLines.length; i++) {
+                    var brlLine = brlLines[i];
+
+                    //encode its content to avoid forbidden xml elements
+                    brlLine = encodeURIComponent(brlLine);
+                    
+                    //comment the line: jbpm will ignore this brl.
+                    brlLine = brlCommentString + brlLine;
+                    
+                    //append the line to the final value
+                    _value += brlLine + "\n";
+                }
+            }
+            
+            return _value;
+        },
+        
+        trimDRL : function(){
+            var _value = ""
+            
+            //we only need the RHS of the rule
+            if (drlValue){
+                var validLine = false;
+                var drlLines = drlValue.split("\n");
+                for (var i=0; i < drlLines.length; i++) {
+                    var drlLine = drlLines[i];
+                    
+                    //trim
+                    drlLine = drlLine.replace(/^\s+/, '').replace(/\s+$/, '');
+                    
+                    if (drlLine == "then"){
+                        //stop the loop
+                        break;
+                    }
+                    
+                    if (validLine){
+                        _value += drlLine + "\n";
+                    }
+                    
+                    if (drlLine == "when"){
+                        validLine = true
+                    }
+                    
+                }
+            }
+            
+            return _value;
+        },
+        
+        getValue : function(){
+            var value = "";
+            
+            //process the brl part
+            value += this.encodeBRL();
+            
+            value += "\n";
+            
+            //process the drl part
+            value += this.trimDRL();
+            
+            //alert (value);
+            return value;
+        },
+        
+        closeGuvnorWindow : function (){
+            Ext.getCmp('guvnorWindow').close();
+        },
+
+        guvnorSaveAndCloseButtonCallback : function (){
+            top.frames['guvnorFrame'].guvnorEditorObject.getBRL(function(brl){
+                this.setBRLValue(brl);
+
+                top.frames['guvnorFrame'].guvnorEditorObject.getDRL(function(drl){
+                    this.setDRLValue(drl);
+
+                    this.closeGuvnorWindow();
+                    
+                    if (onSave){
+                        onSave(this.getValue());
+                    }
+                }.bind(this));
+
+            }.bind(this));
+        },
+
+        guvnorCancelButtonCallback : function(){
+            this.closeGuvnorWindow();
+        },
+    
+        setValue : function(value){
+            drlValue = "";
+            brlValue = "";
+            
+            //only the BRL part is important
+            var brlCommentPattern = new RegExp("^"+brlCommentString+".*");
+            var lines = value.split("\n");
+            for (var i=0; i < lines.length; i++) {
+                var line = lines[i];
+                
+                if (line.match(brlCommentPattern)){
+                    brlValue += decodeURIComponent(line.substring(brlCommentString.length))+"\n"; 
+                }
+            }
+            
+        },
+        
+        getDRLValue : function(){
+            return drlValue;
+        },
+    
+        setDRLValue : function(drl){
+            drlValue = drl;
+        },
+        
+        getBRLValue : function(){
+            return brlValue;
+        },
+    
+        setBRLValue : function(brl){
+            brlValue = brl;
         }
+    });
+}
 
-        var MIF = new Ext.ux.ManagedIFrame({
-            autoCreate:{
-                id:'dynamicIframe1',
-                cls:'x-window-body',
-                width:_width,
-                height:_height,
-                src:guvnorURL
-            }
-        });
+Ext.extend(Ext.form.GuvnorPopupEditor,Ext.form.TriggerField,{});
 
-        
-        var w=new Ext.Window({
-            layout      : 'fit',
-            width       : _width,
-            height      : _height,
-            closeAction :'close',
-            plain       : true,
-            modal       : true,
-            title       : 'Title',
-            autoScroll  : true,
-            resizable: true,
-            body:       MIF
-        });
-        
-        
-        
-        w.show();
-        
+function attachCallbacksToGuvnor(){
+    if (!top.frames['guvnorFrame'].guvnorEditorObject){
+        setTimeout('this.attachCallbacksToGuvnor()', 1000);
+        return;
     }
-});
+    top.frames['guvnorFrame'].guvnorEditorObject.registerAfterSaveAndCloseButtonCallbackFunction(guvnorPopupEditor.guvnorSaveAndCloseButtonCallback.bind(guvnorPopupEditor));
+    top.frames['guvnorFrame'].guvnorEditorObject.registerAfterCancelButtonCallbackFunction(guvnorPopupEditor.guvnorCancelButtonCallback.bind(guvnorPopupEditor));
+}

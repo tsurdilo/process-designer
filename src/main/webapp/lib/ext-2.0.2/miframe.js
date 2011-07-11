@@ -160,41 +160,41 @@
         } else {
             config = args[0] || args[1] || {};
 
-//            el = config.autoCreate ? Ext.get(Ext.DomHelper.append(
-//                    config.autoCreate.parent || Ext.getBody(), Ext.apply({
-//                        tag : 'iframe',
-//                        frameborder : 0,
-//                        src : (Ext.isIE && Ext.isSecure)? Ext.SSL_SECURE_URL: 'about:blank'
-//                    }, config.autoCreate)))
-//                    : null;
+            el = config.autoCreate ? Ext.get(Ext.DomHelper.append(
+                    config.autoCreate.parent || Ext.getBody(), Ext.apply({
+                        tag : 'iframe',
+                        frameborder : 0,
+                        src : (Ext.isIE && Ext.isSecure)? Ext.SSL_SECURE_URL: 'about:blank'
+                    }, config.autoCreate)))
+                    : null;
 
 
 ///<DELETE>
 
-    el = null;
-    if (config.autoCreate){
-	
-	var dest = null;
-
-	if (config.autoCreate.parent){
-		dest = config.autoCreate.parent;
-        } else{
-		dest = Ext.getBody();
-	}
-
-	var src = (Ext.isIE && Ext.isSecure)? Ext.SSL_SECURE_URL: 'about:blank';
-
-	var applyResult = Ext.apply({
-                        tag : 'iframe',
-                        frameborder : 0,
-                        src : src
-                    }, config.autoCreate);
-
-	var eel = Ext.DomHelper.append(dest, applyResult);
-
-	el = Ext.get(eel);
-
-    }
+//    el = null;
+//    if (config.autoCreate){
+//	
+//	var dest = null;
+//
+//	if (config.autoCreate.parent){
+//		dest = config.autoCreate.parent;
+//        } else{
+//		dest = Ext.getBody();
+//	}
+//
+//	var src = (Ext.isIE && Ext.isSecure)? Ext.SSL_SECURE_URL: 'about:blank';
+//
+//	var applyResult = Ext.apply({
+//                        tag : 'iframe',
+//                        frameborder : 0,
+//                        src : src
+//                    }, config.autoCreate);
+//
+//	var eel = Ext.DomHelper.append(dest, applyResult);
+//
+//	el = Ext.get(eel);
+//
+//    }
 
 //</DELETE>
 

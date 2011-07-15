@@ -6091,7 +6091,7 @@
 					"title":"ConditionType",
 					"title_de":"Bedingungstyp",
 					"value":"None",
-					"description":"Determine the typ of the flow object.",
+					"description":"Determine the type of the flow object.",
 					"description_de":"Legt den Typ des Flussobjekts fest.",
 					"readonly":false,
 					"optional":false,
@@ -6122,7 +6122,7 @@
 				},
 				{
 					"id":"conditionexpression",
-					"type":"String",
+					"type":"GuvnorRuleEditor",
 					"title":"Condition Expression",
 					"title_de":"Bedingungsausdruck",
 					"value":"",
@@ -6135,15 +6135,30 @@
 				},
 				{
 					"id":"conditionexpressionlanguage",
-					"type":"String",
+					"type":"Choice",
 					"title":"Condition Expression Language",
 					"title_de":"Bedingungsausdruck Sprache",
-					"value":"",
+					"value":"http://www.jboss.org/drools/rule",
 					"description":"",
 					"readonly":false,
 					"optional":true,
-					"length":"",
-					"wrapLines":true
+                                        "items": [
+						{
+							"id":"rule",
+							"title":"Rule",
+							"value":"http://www.jboss.org/drools/rule"
+						},
+						{
+							"id":"java",
+							"title":"Java",
+							"value":"http://www.java.com/java"
+						},
+						{
+							"id":"xpath",
+							"title":"XPath",
+							"value":"http://www.w3.org/1999/XPath"
+						}
+					]
 				},
 				{
 					"id":"isimmediate",

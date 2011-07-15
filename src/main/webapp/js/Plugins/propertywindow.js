@@ -1335,7 +1335,7 @@ Ext.form.GuvnorPopupEditor = function(_onSave){
             var _height = document.body.clientHeight - 20;
 
             //Guvnor url
-            var _guvnorURL= "/drools-guvnor/org.drools.guvnor.Guvnor/standaloneEditorServlet";
+            var _guvnorURL= ORYX.CONFIG.GUVNOR_EDITOR_URL;
         
             //Guvnor editor parameters
             var _guvnorParameters = [];
@@ -1345,19 +1345,19 @@ Ext.form.GuvnorPopupEditor = function(_onSave){
             });
             _guvnorParameters.push({
                 name:"packageName", 
-                value: 'mortgages'
+                value: ORYX.CONFIG.GUVNOR_PACKAGE
             });
             _guvnorParameters.push({
                 name:"categoryName", 
-                value: 'Home Mortgage'
+                value: ORYX.CONFIG.GUVNOR_CATEGORY
             });
             _guvnorParameters.push({
                 name:"hideRuleRHS", 
-                value: 'true'
+                value: ''+ORYX.CONFIG.GUVNOR_HIDE_RHS
             });
             _guvnorParameters.push({
                 name:"hideRuleAttributes", 
-                value: 'true'
+                value: ''+ORYX.CONFIG.GUVNOR_HIDE_ATTRIBUTES
             });
         
             if (brlValue == ""){

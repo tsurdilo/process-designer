@@ -160,16 +160,16 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
                 method: 'POST',
                 asynchronous: asynchronous,
                 postBody: Ext.encode({data: serializedDOM, svg : svgDOM, uuid: ORYX.UUID, rdf: rdf, profile: ORYX.PROFILE, savetype: asave}),
-			onSuccess: (function(transport) {
-				//show saved status
-				this.facade.raiseEvent({
-						type:ORYX.CONFIG.EVENT_LOADING_STATUS,
-						text:ORYX.I18N.Save.saved
-					});
-			}).bind(this),
-			onFailure: (function(transport) {
-				// raise loading disable event.
-                this.facade.raiseEvent({
+                onSuccess: (function(transport) {
+                    //show saved status
+                    this.facade.raiseEvent({
+                            type:ORYX.CONFIG.EVENT_LOADING_STATUS,
+                            text:ORYX.I18N.Save.saved
+                    });
+                }).bind(this),
+                onFailure: (function(transport) {
+                    // raise loading disable event.
+                    this.facade.raiseEvent({
                     type: ORYX.CONFIG.EVENT_LOADING_DISABLE
                 });
 

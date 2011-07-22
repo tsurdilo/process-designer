@@ -1372,6 +1372,28 @@ Ext.form.GuvnorPopupEditor = function(_onSave){
                 });
             }
         
+            //use the imports of the process as valid fact types
+            var _json = ORYX.EDITOR.getJSON();
+            if (_json.properties.imports && _json.properties.imports != ""){
+                var _imports= _json.properties.imports.split(",");
+                for (var i=0; i < _imports.length; i++) {
+                    var _import = _imports[i];
+                    
+                    //Guvnor only uses the short Name of the class and not the
+                    //FQN
+                    var _parts = _import.split(".");
+                    if (_parts.length > 1){
+                        _import = _parts[_parts.length -1];
+                    }
+                    
+                    _import = _import.replace(/^\s+/, '').replace(/\s+$/, '');
+                    
+                    _guvnorParameters.push({
+                        name:"validFactType", 
+                        value: _import
+                    });
+                }
+            }
         
             if (_guvnorParameters.length > 0){
                 var i = 0;
@@ -1387,7 +1409,7 @@ Ext.form.GuvnorPopupEditor = function(_onSave){
                     _guvnorURL += uriComponent;
                 }
             }
-        
+            
             var w=new Ext.Window({
                 id          : 'guvnorWindow',
                 layout      : 'fit',

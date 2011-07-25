@@ -6,21 +6,11 @@
   <version>1.0.0.049-SNAPSHOT</version>
   <packaging>war</packaging>
   <dependencies>
-    <!-- These dependencies make Wapama work -->
-    <!--
-    This version is used in Wapama
+    <!-- These dependencies make Wapama work -->    
     <dependency>
       <groupId>org.eclipse</groupId>
       <artifactId>org.eclipse.bpmn2</artifactId>
-      <version>0.7.0.20100826221953</version>
-    </dependency>
-    This version is patched and used by the process-designer. TODO: build and deploy the changes to a repository
-    so others can build easily.
-    -->
-    <dependency>
-      <groupId>org.eclipse</groupId>
-      <artifactId>org.eclipse.bpmn2</artifactId>
-      <version>0.7.0.000-JBOSS-SNAPSHOT</version>
+      <version>0.7.0.003</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse</groupId>
@@ -164,7 +154,31 @@
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
       <version>2.7.1</version>
-    </dependency>            
+    </dependency>
+      <dependency>
+          <groupId>antlr</groupId>
+          <artifactId>stringtemplate</artifactId>
+          <version>3.0</version>
+          <type>jar</type>
+      </dependency>
+      <dependency>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+          <version>2.0.1</version>
+          <type>jar</type>
+      </dependency>
+      <dependency>
+          <groupId>org.drools</groupId>
+          <artifactId>drools-core</artifactId>
+          <version>5.3.0-SNAPSHOT</version>
+          <type>jar</type>
+      </dependency>
+      <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-flow-builder</artifactId>
+          <version>5.2.0-SNAPSHOT</version>
+          <type>jar</type>
+      </dependency>
   </dependencies>  
 
   <build>
@@ -203,19 +217,16 @@
   
   <repositories>
     <repository>
-      <id>jboss-public-repository-group</id>
-      <name>JBoss Public Maven Repository Group</name>
-      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </snapshots>
+      <id>JBOSS</id>
+      <name>JBoss Repository</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public</url>
     </repository>
+    <repository>
+      <id>JBOSS-THIRDPARTY</id>
+      <name>JBoss Repository Third Party</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-uploads</url>
+    </repository>
+
     <repository>
       <id>intalio</id>
       <url>http://www.intalio.org/public/maven2/</url>
@@ -229,6 +240,9 @@
         <updatePolicy>never</updatePolicy>
       </snapshots>
     </repository>    
-  </repositories>  
+  </repositories>
+    <properties>
+        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
+    </properties>
 </project>
 

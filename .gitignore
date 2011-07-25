@@ -1,5 +1,4 @@
 build
-dist
 **/**/.DS_Store
 reports
 .DS_Store
@@ -10,3 +9,4 @@ src/main/webapp/repository
 src/main/webapp/jsc/*.js
 .project
 .classpath
+nbactions.xml

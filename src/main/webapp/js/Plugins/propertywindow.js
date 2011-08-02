@@ -1504,10 +1504,10 @@ Ext.form.GuvnorPopupEditor = function(_onSave){
         },
 
         guvnorSaveAndCloseButtonCallback : function (){
-            top.frames['guvnorFrame'].guvnorEditorObject.getBRL(function(brl){
+            getGuvnorFrame(top).guvnorEditorObject.getBRL(function(brl){
                 this.setBRLValue(brl);
 
-                top.frames['guvnorFrame'].guvnorEditorObject.getDRL(function(drl){
+                getGuvnorFrame(top).guvnorEditorObject.getDRL(function(drl){
                     this.setDRLValue(drl);
 
                     this.closeGuvnorWindow();
@@ -1562,10 +1562,25 @@ Ext.form.GuvnorPopupEditor = function(_onSave){
 Ext.extend(Ext.form.GuvnorPopupEditor,Ext.form.TriggerField,{});
 
 function attachCallbacksToGuvnor(){
-    if (!top.frames['guvnorFrame'].guvnorEditorObject){
+    if (!getGuvnorFrame(top).guvnorEditorObject){
         setTimeout('this.attachCallbacksToGuvnor()', 1000);
         return;
     }
-    top.frames['guvnorFrame'].guvnorEditorObject.registerAfterSaveAndCloseButtonCallbackFunction(guvnorPopupEditor.guvnorSaveAndCloseButtonCallback.bind(guvnorPopupEditor));
-    top.frames['guvnorFrame'].guvnorEditorObject.registerAfterCancelButtonCallbackFunction(guvnorPopupEditor.guvnorCancelButtonCallback.bind(guvnorPopupEditor));
+    getGuvnorFrame(top).guvnorEditorObject.registerAfterSaveAndCloseButtonCallbackFunction(guvnorPopupEditor.guvnorSaveAndCloseButtonCallback.bind(guvnorPopupEditor));
+    getGuvnorFrame(top).guvnorEditorObject.registerAfterCancelButtonCallbackFunction(guvnorPopupEditor.guvnorCancelButtonCallback.bind(guvnorPopupEditor));
+}
+
+function getGuvnorFrame(context){
+    if (context.frames["guvnorFrame"]){
+        return context.frames["guvnorFrame"];
+    }
+    
+    for (var i=0; i < context.frames.length; i++){
+        var frm = getGuvnorFrame(context.frames[i]);
+        if (frm){
+            return frm;
+        }
+    }
+    
+    return null;
 }

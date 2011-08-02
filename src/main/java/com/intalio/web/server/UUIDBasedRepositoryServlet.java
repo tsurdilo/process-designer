@@ -140,6 +140,8 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
             resp.setStatus(200);
             resp.getWriter().print(output.toString());
         } else {
+            String data = req.getParameter("data");
+            /*
             BufferedReader reader = req.getReader();
             StringWriter reqWriter = new StringWriter();
             char[] buffer = new char[4096];
@@ -149,6 +151,7 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
             }
         
             String data = reqWriter.toString();
+             */
             try {
                 JSONObject jsonObject = new JSONObject(data);
             

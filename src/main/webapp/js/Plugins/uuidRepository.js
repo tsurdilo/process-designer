@@ -159,7 +159,7 @@ ORYX.Plugins.UUIDRepositorySave = ORYX.Plugins.AbstractPlugin.extend({
 		new Ajax.Request(ORYX.CONFIG.UUID_URL(), {
                 method: 'POST',
                 asynchronous: asynchronous,
-                postBody: Ext.encode({data: serializedDOM, svg : svgDOM, uuid: ORYX.UUID, rdf: rdf, profile: ORYX.PROFILE, savetype: asave}),
+                parameters: {'data' : Ext.encode({data: serializedDOM, svg : svgDOM, uuid: ORYX.UUID, rdf: rdf, profile: ORYX.PROFILE, savetype: asave})},
 			onSuccess: (function(transport) {
 				//show saved status
 				this.facade.raiseEvent({
@@ -327,7 +327,7 @@ ORYX.Plugins.UUIDRepositoryDummySave = ORYX.Plugins.AbstractPlugin.extend({
 		new Ajax.Request(ORYX.CONFIG.UUID_URL(), {
                 method: 'POST',
                 asynchronous: asynchronous,
-                postBody: Ext.encode({data: serializedDOM, svg : svgDOM, uuid: ORYX.UUID, rdf: rdf, profile: ORYX.PROFILE, savetype: asave}),
+                parameters: {"data": Ext.encode({data: serializedDOM, svg : svgDOM, uuid: ORYX.UUID, rdf: rdf, profile: ORYX.PROFILE, savetype: asave})},
 			onSuccess: (function(transport) {
 				//show saved status
 				this.facade.raiseEvent({

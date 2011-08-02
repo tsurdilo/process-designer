@@ -10,5 +10,3 @@ src/main/webapp/repository
 src/main/webapp/jsc/*.js
 .project
 .classpath
-/nbproject/private/
-/nbproject/

@@ -1528,7 +1528,6 @@ Ext.form.GuvnorPopupEditor = function(_onSave){
             drlValue = "";
             brlValue = "";
             
-            //only the BRL part is important
             var brlCommentPattern = new RegExp("^"+brlCommentString+".*");
             var lines = value.split("\n");
             for (var i=0; i < lines.length; i++) {
@@ -1536,6 +1535,8 @@ Ext.form.GuvnorPopupEditor = function(_onSave){
                 
                 if (line.match(brlCommentPattern)){
                     brlValue += decodeURIComponent(line.substring(brlCommentString.length))+"\n"; 
+                }else{
+                    drlValue += line + "\n";
                 }
             }
             

@@ -360,6 +360,8 @@
 		<plugin source="dragTracker/poolDragTracker.js" name="ORYX.Plugins.DragTracker.PoolDragTracker" />
 			
 	</plugins>
+        
+        <plugin name="ORYX.Plugins.MouseOverLabelPlugin" source="mouseOverLabel.js"/>
 	
 	
 	<properties>

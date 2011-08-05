@@ -19,6 +19,74 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
+ * 
+ * 
+ * This plugin displays a label when the mouse enters a stencil element 
+ * in the edition canvas. The label is hidden when the mouse moves out the
+ * element.  
+ * The text for the label can be defined as a hardoced text, can be bound to  
+ * a property of the element or you can provide a function to get it.
+ * 
+ * HOW to USE the MouseOverLabel PLUGIN:
+ * 
+ * This plugin is configured using a new "mouseOverLabelConfig" attribute in
+ * stencil's definition:
+ * 
+ * i.e:
+ *  {
+ *      "type"  :               "node",
+ *	"id"    :		"Exclusive_Databased_Gateway",
+ *	"title" :		"Data-based Exclusive (XOR) Gateway",
+ *	"title_de" : 		"Daten-basiertes exklusives Gateway",
+ *	"description" :		"...",
+ *	"description_de" :	"...",
+ *	"groups" : 		["Gateways"],
+ *	"view" : 		"gateway/exclusive.databased.svg",
+ *	"icon" : 		"gateway/exclusive.databased.png",
+ *      
+ *      "mouseOverLabelConfig" : {
+ *          "showOutgoingConnectionsLabel" : true,
+ *          //"text"    : "Gateway Node"        //Fixed string 
+ *          //"text"    : "@ConditionType"      //Property binding                            
+ *          "text"      : function(uiObject){ 
+ *              return "Some Text";
+ *          }
+ *       },
+ *       
+ *      "properties" :	[  
+ *          {
+ *              "id":"ConditionType",
+ *		"type":"Choice",
+ *		"title":"ConditionType",
+ *		"title_de":"Bedingungstyp",
+ *		"value":"None",
+ *		...
+ *          }
+ *      ]
+ *  } 
+ *  
+ *  The "mouseOverLabelConfig" configuration object have these attributes:
+ *  
+ *  Key                             Mandatory   Default     Description
+ *  ===========================================================================
+ *  showOutgoingConnectionsLabel    false       false       If true, show the labels
+ *                                                          of its outgoing connection
+ *                                                          elements.
+ *  text                            false       undefined   Defines the text shown
+ *                                                          in the label. If this
+ *                                                          attribute is not 
+ *                                                          defined, or its value
+ *                                                          is an empty string, 
+ *                                                          no label is shown.
+ *                                                          The value of this 
+ *                                                          attribute can be
+ *                                                          a hardoced string,
+ *                                                          a string starting
+ *                                                          with '@' (property
+ *                                                          binding) or a 
+ *                                                          function.
+ *                                                                                                           
+ * 
  **/
 
 if(!ORYX.Plugins) {
@@ -35,26 +103,12 @@ ORYX.Plugins.MouseOverLabelPlugin = {
 
     handleMouseOver: function(event, uiObj) {
         if (uiObj && uiObj instanceof ORYX.Core.Shape){
-            //TODO: is there a better way to get "mouseOverText" attribute?
-            var mouseOverText = uiObj._stencil._jsonStencil.mouseOverText;
-            if (mouseOverText){
-                var text = this._getLabelText(mouseOverText, uiObj);
-                if (text && text.replace(/^\s+/, '').replace(/\s+$/, '')){
-                    this._showLabel(uiObj, text);
-                }
-            }
+            
+            //mouseOverText attribute
+            this._processMouseOverTextAttribute(uiObj);
 
-            var showLabelsOnOutgoingConnections = uiObj._stencil._jsonStencil.showLabelsOnOutgoingConnections;
-            if (showLabelsOnOutgoingConnections){
-                if (uiObj.outgoing.length > 0){
-                    uiObj.outgoing.each(function(el){
-				// Checks if the node is a Shape
-				if(el instanceof ORYX.Core.Shape){
-                                    this.handleMouseOver(null, el);
-                                }
-			}.bind(this));
-                }
-            }
+            //showLabelsOnOutgoingConnections
+            this._processShowLabelsOnOutgoingConnections(uiObj, true);
 
         }
     },
@@ -63,19 +117,66 @@ ORYX.Plugins.MouseOverLabelPlugin = {
         this._hideLabel(uiObj);
     },
     
-    _getLabelText: function(value, uiObj){
+    _processMouseOverTextAttribute: function(uiObj){
+        var text = this._getLabelText(uiObj);
+        if (text){
+            this._showLabel(uiObj, text);
+        }
+    },
+    
+    _processShowLabelsOnOutgoingConnections: function(uiObj, show){
+        if (!uiObj._stencil || !uiObj._stencil._jsonStencil || !uiObj._stencil._jsonStencil.mouseOverLabelConfig){
+            return;
+        }
+        var showOutgoingConnectionsLabel = uiObj._stencil._jsonStencil.mouseOverLabelConfig.showOutgoingConnectionsLabel;
+        if (showOutgoingConnectionsLabel){
+            if (uiObj.outgoing.length > 0){
+                //show/hide the label of each of the outgoing connections
+                uiObj.outgoing.each(function(el){
+                    // Checks if the node is a Shape
+                    if(el instanceof ORYX.Core.Shape){
+                        if (show){
+                            this._processMouseOverTextAttribute(el);
+                        } else{
+                            this._hideLabel(el);
+                        }
+                    }
+                }.bind(this));
+            }
+        }
+    },
+    
+    _getLabelText: function(uiObj){
+        if (!uiObj._stencil || !uiObj._stencil._jsonStencil || !uiObj._stencil._jsonStencil.mouseOverLabelConfig){
+            return;
+        }
+        //TODO: is there a better way to get "mouseOverText" attribute?
+        var mouseOverText = uiObj._stencil._jsonStencil.mouseOverLabelConfig.text;
+        
+        if (!mouseOverText){
+            return undefined;
+        }
+        
+        var text = undefined;
+        
         //We need to show plain text? Or to evaluate the value as an
         //expression?
-        if (typeof(value) == "function") {
-            return value(uiObj);
-        } else if(value.charAt(0) == '@'){
+        if (typeof(mouseOverText) == "function") {
+            text = mouseOverText(uiObj);
+        } else if(mouseOverText.charAt(0) == '@'){
             //we need to show an attribute of the shape
-            var propertyId = value.substr(1);
-            return uiObj.properties["oryx-"+propertyId];
+            var propertyId = mouseOverText.substr(1);
+            text = uiObj.properties["oryx-"+propertyId];
         } else{
             //Just plain text
-            return value;
+            text = mouseOverText;
         }
+        
+        
+        if (!text || text.replace(/^\s+/, '').replace(/\s+$/, '') == ""){
+            return undefined;
+        }
+        return text;
     },
     
     _showLabel: function(element, text){
@@ -92,6 +193,10 @@ ORYX.Plugins.MouseOverLabelPlugin = {
     },
     
     _hideLabel: function(element){
+        //hide labels of outgoing connections (if needed)
+        this._processShowLabelsOnOutgoingConnections(element,false);
+        
+        //hide its own label
         var tip = Ext.getCmp("mouseOverLabelTip-"+element.id);
         if (tip){
             tip.hide();

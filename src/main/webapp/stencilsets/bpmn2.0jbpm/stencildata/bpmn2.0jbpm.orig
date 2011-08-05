@@ -3387,7 +3387,9 @@
 			"groups" : 			["Gateways"],
 			"view" : 			"gateway/exclusive.databased.svg",
 			"icon" : 			"gateway/exclusive.databased.png",
-                        "showLabelsOnOutgoingConnections" : true,
+                        "mouseOverLabelConfig" : {
+                            "showOutgoingConnectionsLabel" : true
+                        },
 			"propertyPackages" :[
 				"baseAttributes",
 				"flowElement",
@@ -6085,14 +6087,17 @@
 				"all",
 				"ConnectingObjectsMorph"
 			],
-                        //"mouseOverText" : "hi",
-                        
-                        "mouseOverText" : function(uiObject){ 
-                                            var text = uiObject.properties["oryx-conditionexpression"]; 
-                                            var editor = new Ext.form.GuvnorPopupEditor(null);
-                                            editor.setValue(text);
-                                            return editor.getDRLValue().replace(/(\r\n|[\r\n])/g, "<br />");
-                        },                        
+                        "mouseOverLabelConfig" : {
+                            "showOutgoingConnectionsLabel" : false, //default
+                            //"text" : "hi"             //Fixed string 
+                            //"text" : "@conditionexpressionlanguage"   //Property binding                            
+                            "text"    : function(uiObject){ 
+                                var text = uiObject.properties["oryx-conditionexpression"]; 
+                                var editor = new Ext.form.GuvnorPopupEditor(null);
+                                editor.setValue(text);
+                                return editor.getDRLValue().replace(/(\r\n|[\r\n])/g, "<br />");
+                            }
+                        },
 			"properties":[
 				{
 					"id":"ConditionType",

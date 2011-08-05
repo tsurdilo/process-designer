@@ -6144,7 +6144,6 @@
 					"readonly":false,
 					"optional":true,
 					"length":"",
-					"refToView":"condition",
 					"wrapLines":true
 				},
 				{
@@ -6155,7 +6154,7 @@
 					"value":"http://www.jboss.org/drools/rule",
 					"description":"",
 					"readonly":false,
-					"optional":true,
+					"optional":true,                                        
                                         "items": [
 						{
 							"id":"rule",

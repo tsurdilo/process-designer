@@ -338,6 +338,16 @@
 					"optional":true
 				},
 				{
+					"id":"globals",
+					"type":"Text",
+					"title":"Globals",
+					"title_de":"Globals",
+					"value":"",
+					"description":"Comma-separated globals",
+					"readonly":false,
+					"optional":true
+				},
+				{
 					"id":"id",
 					"type":"String",
 					"title":"id",
@@ -2731,6 +2741,26 @@
 					"title_de":"Task Name",
 					"value":"",
 					"description":"Task Name",
+					"readonly":false,
+					"optional":true
+				},
+				{
+					"id":"interface",
+					"type":"String",
+					"title":"Interface",
+					"title_de":"Interface",
+					"value":"",
+					"description":"Interface",
+					"readonly":false,
+					"optional":true
+				},
+				{
+					"id":"operation",
+					"type":"String",
+					"title":"Operation",
+					"title_de":"Operation",
+					"value":"",
+					"description":"Operation",
 					"readonly":false,
 					"optional":true
 				},
@@ -6172,6 +6202,17 @@
 							"value":"http://www.w3.org/1999/XPath"
 						}
 					]
+				},
+				{
+					"id":"priority",
+					"type":"Integer",
+					"title":"Priority",
+					"title_de":"Priority",
+					"value":"",
+					"description":"priority",
+					"readonly":false,
+					"optional":true,
+					"min":"1"
 				},
 				{
 					"id":"isimmediate",

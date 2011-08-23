@@ -64,6 +64,7 @@ import org.eclipse.bpmn2.EventBasedGateway;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.Expression;
+import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
@@ -85,6 +86,7 @@ import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.PotentialOwner;
@@ -115,6 +117,11 @@ import org.eclipse.dd.dc.Bounds;
 import org.eclipse.dd.dc.Point;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.ecore.util.FeatureMap;
+import org.jbpm.bpmn2.emfextmodel.EmfextmodelPackage;
+import org.jbpm.bpmn2.emfextmodel.GlobalType;
+import org.jbpm.bpmn2.emfextmodel.ImportType;
+import org.jbpm.bpmn2.emfextmodel.OnEntryScriptType;
+import org.jbpm.bpmn2.emfextmodel.OnExitScriptType;
 
 import com.intalio.web.profile.IDiagramProfile;
 
@@ -275,10 +282,45 @@ public class Bpmn2JsonMarshaller {
 	                    if(entry.getEStructuralFeature().getName().equals("version")) {
                             props.put("version", entry.getValue());
                         }
+	                }
+	                
+	                // process imports and globals extension elements
+	                if(((Process) rootElement).getExtensionValues() != null && ((Process) rootElement).getExtensionValues().size() > 0) {
+	                    String importsStr = "";
+	                    String globalsStr = "";
+	                    for(ExtensionAttributeValue extattrval : ((Process) rootElement).getExtensionValues()) {
+	                        FeatureMap extensionElements = extattrval.getValue();
+	                
+	                        @SuppressWarnings("unchecked")
+	                        List<ImportType> importExtensions = (List<ImportType>) extensionElements
+	                                                             .get(EmfextmodelPackage.Literals.DOCUMENT_ROOT__IMPORT, true);
+	                
+	                        @SuppressWarnings("unchecked")
+	                        List<GlobalType> globalExtensions = (List<GlobalType>) extensionElements
+	                                                          .get(EmfextmodelPackage.Literals.DOCUMENT_ROOT__GLOBAL, true);
 	                    
-	                    if(entry.getEStructuralFeature().getName().equals("import")) {
-                            props.put("imports", entry.getValue());
-                        }
+	                        for(ImportType importType : importExtensions) {
+	                            importsStr += importType.getName();
+	                            importsStr += ",";
+	                        }
+	                        
+	                        for(GlobalType globalType : globalExtensions) {
+	                            globalsStr += (globalType.getIdentifier() + ":" + globalType.getType());
+	                            globalsStr += ",";
+	                        }
+	                    }
+	                    if(importsStr.length() > 0) {
+	                        if(importsStr.endsWith(",")) {
+	                            importsStr = importsStr.substring(0, importsStr.length() - 1);
+	                        }
+	                        props.put("imports", importsStr);
+	                    }
+	                    if(globalsStr.length() > 0) {
+	                        if(globalsStr.endsWith(",")) {
+	                            globalsStr = globalsStr.substring(0, globalsStr.length() - 1);
+	                        }
+	                        props.put("globals", globalsStr);
+	                    }
 	                }
 	                
 	                marshallProperties(props, generator);
@@ -380,7 +422,7 @@ public class Bpmn2JsonMarshaller {
     	}
         generator.writeArrayFieldStart("childShapes");
         for (FlowElement flowElement: process.getFlowElements()) {
-        	marshallFlowElement(flowElement, plane, generator, 0, 0, preProcessingData, lanesetInfo);
+        	marshallFlowElement(flowElement, plane, generator, 0, 0, preProcessingData, lanesetInfo, def);
         }
         generator.writeEndArray();
     }
@@ -567,7 +609,7 @@ public class Bpmn2JsonMarshaller {
         }
     }
     
-    private void marshallFlowElement(FlowElement flowElement, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Map<String, List<String>> lanesetInfo) throws JsonGenerationException, IOException {
+    private void marshallFlowElement(FlowElement flowElement, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Map<String, List<String>> lanesetInfo, Definitions def) throws JsonGenerationException, IOException {
     	generator.writeStartObject();
     	generator.writeObjectField("resourceId", flowElement.getId());
     	
@@ -590,7 +632,7 @@ public class Bpmn2JsonMarshaller {
     	} else if (flowElement instanceof BoundaryEvent) {
     		marshallBoundaryEvent((BoundaryEvent) flowElement, plane, generator, xOffset, yOffset);
     	} else if (flowElement instanceof Task) {
-    		marshallTask((Task) flowElement, plane, generator, xOffset, yOffset, preProcessingData, lanesetInfo);
+    		marshallTask((Task) flowElement, plane, generator, xOffset, yOffset, preProcessingData, lanesetInfo, def);
     	} else if (flowElement instanceof SequenceFlow) {
     		marshallSequenceFlow((SequenceFlow) flowElement, plane, generator, xOffset, yOffset);
     	} else if (flowElement instanceof ParallelGateway) {
@@ -607,9 +649,9 @@ public class Bpmn2JsonMarshaller {
     		marshallCallActivity((CallActivity) flowElement, plane, generator, xOffset, yOffset);
     	} else if (flowElement instanceof SubProcess) {
     	    if(flowElement instanceof AdHocSubProcess) {
-    	        marshallSubProcess((AdHocSubProcess) flowElement, plane, generator, xOffset, yOffset, preProcessingData, lanesetInfo);
+    	        marshallSubProcess((AdHocSubProcess) flowElement, plane, generator, xOffset, yOffset, preProcessingData, lanesetInfo, def);
     	    } else {
-    	        marshallSubProcess((SubProcess) flowElement, plane, generator, xOffset, yOffset, preProcessingData, lanesetInfo);
+    	        marshallSubProcess((SubProcess) flowElement, plane, generator, xOffset, yOffset, preProcessingData, lanesetInfo, def);
     	    }
     	} else if (flowElement instanceof DataObject) {
     		marshallDataObject((DataObject) flowElement, plane, generator, xOffset, yOffset);
@@ -747,7 +789,7 @@ public class Bpmn2JsonMarshaller {
     	}
     }
     
-    private void marshallTask(Task task, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Map<String, List<String>> lanesetInfo) throws JsonGenerationException, IOException {
+    private void marshallTask(Task task, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Map<String, List<String>> lanesetInfo, Definitions def) throws JsonGenerationException, IOException {
         Map<String, Object> properties = new LinkedHashMap<String, Object>();
     	String taskType = "None";
     	if (task instanceof BusinessRuleTask) {
@@ -766,6 +808,27 @@ public class Bpmn2JsonMarshaller {
     		taskType = "Script";
     	} else if (task instanceof ServiceTask) {
     		taskType = "Service";
+    		ServiceTask serviceTask = (ServiceTask) task;
+    		if(serviceTask.getOperationRef() != null) {
+    		    Operation oper = serviceTask.getOperationRef();
+    		    if(oper.getName() != null) {
+    		        properties.put("operation", oper.getName());
+    		    }
+    		    if(def != null) {
+    		        List<RootElement> roots = def.getRootElements();
+    		        for(RootElement root : roots) {
+    		            if(root instanceof Interface) {
+    		                Interface inter = (Interface) root;
+    		                List<Operation> interOperations = inter.getOperations();
+    		                for(Operation interOper : interOperations) {
+    		                    if(interOper.getId().equals(oper.getId())) {
+    		                        properties.put("interface", inter.getName());
+    		                    }
+    		                }
+    		            }
+    		        }
+    		    }
+    		}
     	} else if (task instanceof ManualTask) {
     		taskType = "Manual";
     	} else if (task instanceof UserTask) {
@@ -966,6 +1029,74 @@ public class Bpmn2JsonMarshaller {
         }
         properties.put("assignments", assignmentString);
         
+        // on-entry and on-exit actions
+        if(task.getExtensionValues() != null && task.getExtensionValues().size() > 0) {
+            
+            String onEntryStr = "";
+            String onExitStr = "";
+            for(ExtensionAttributeValue extattrval : task.getExtensionValues()) {
+            
+                FeatureMap extensionElements = extattrval.getValue();
+        
+                @SuppressWarnings("unchecked")
+                List<OnEntryScriptType> onEntryExtensions = (List<OnEntryScriptType>) extensionElements
+                                                     .get(EmfextmodelPackage.Literals.DOCUMENT_ROOT__ON_ENTRY_SCRIPT, true);
+        
+                @SuppressWarnings("unchecked")
+                List<OnExitScriptType> onExitExtensions = (List<OnExitScriptType>) extensionElements
+                                                  .get(EmfextmodelPackage.Literals.DOCUMENT_ROOT__ON_EXIT_SCRIPT, true);
+            
+                for(OnEntryScriptType onEntryScript : onEntryExtensions) {
+                    onEntryStr += onEntryScript.getScript();
+                    onEntryStr += ",";
+                
+                    if(onEntryScript.getScriptFormat() != null) {
+                        String format = onEntryScript.getScriptFormat();
+                        String formatToWrite = "";
+                        if(format.equals("http://www.java.com/java")) {
+                            formatToWrite = "java";
+                        } else if(format.equals("http://www.mvel.org/2.0")) {
+                            formatToWrite = "mvel";
+                        } else {
+                            formatToWrite = "java";
+                        }
+                        properties.put("script_language", formatToWrite);
+                    }
+                }
+                
+                for(OnExitScriptType onExitScript : onExitExtensions) {
+                    onExitStr += onExitScript.getScript();
+                    onExitStr += ",";
+                    
+                    if(onExitScript.getScriptFormat() != null) {
+                        String format = onExitScript.getScriptFormat();
+                        String formatToWrite = "";
+                        if(format.equals("http://www.java.com/java")) {
+                            formatToWrite = "java";
+                        } else if(format.equals("http://www.mvel.org/2.0")) {
+                            formatToWrite = "mvel";
+                        } else {
+                            formatToWrite = "java";
+                        }
+                        if(properties.get("script_language") != null) {
+                            properties.put("script_language", formatToWrite);
+                        }
+                    }
+                }
+            }
+            if(onEntryStr.length() > 0) {
+                if(onEntryStr.endsWith(",")) {
+                    onEntryStr = onEntryStr.substring(0, onEntryStr.length() - 1);
+                }
+                properties.put("onentryactions", onEntryStr);
+            }
+            if(onExitStr.length() > 0) {
+                if(onExitStr.endsWith(",")) {
+                    onExitStr = onExitStr.substring(0, onExitStr.length() - 1);
+                }
+                properties.put("onexitactions", onExitStr);
+            }
+        }
         
         // marshall the node out
         if(isCustomElement((String) properties.get("taskname"), preProcessingData)) {
@@ -1098,7 +1229,7 @@ public class Bpmn2JsonMarshaller {
 	    generator.writeEndObject();
 	}
     
-    private void marshallSubProcess(SubProcess subProcess, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Map<String, List<String>> lanesetInfo) throws JsonGenerationException, IOException {
+    private void marshallSubProcess(SubProcess subProcess, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Map<String, List<String>> lanesetInfo, Definitions def) throws JsonGenerationException, IOException {
         Map<String, Object> properties = new LinkedHashMap<String, Object>();
 		properties.put("name", subProcess.getName());
 	    marshallProperties(properties, generator);
@@ -1112,7 +1243,7 @@ public class Bpmn2JsonMarshaller {
 	    generator.writeArrayFieldStart("childShapes");
 	    Bounds bounds = ((BPMNShape) findDiagramElement(plane, subProcess)).getBounds();
 	    for (FlowElement flowElement: subProcess.getFlowElements()) {
-	    	marshallFlowElement(flowElement, plane, generator, (int) (xOffset + bounds.getX()), (int) (yOffset + bounds.getY()), preProcessingData, lanesetInfo);
+	    	marshallFlowElement(flowElement, plane, generator, (int) (xOffset + bounds.getX()), (int) (yOffset + bounds.getY()), preProcessingData, lanesetInfo, def);
 	    }
 	    generator.writeEndArray();
 	    generator.writeArrayFieldStart("outgoing");
@@ -1150,9 +1281,46 @@ public class Bpmn2JsonMarshaller {
     	}
     	Expression conditionExpression = sequenceFlow.getConditionExpression();
     	if (conditionExpression instanceof FormalExpression) {
-    		properties.put("conditionexpression", ((FormalExpression) conditionExpression).getBody());
-    		properties.put("conditionexpressionlanguage", ((FormalExpression) conditionExpression).getLanguage());
+    	    if(((FormalExpression) conditionExpression).getBody() != null) {
+    	        properties.put("conditionexpression", ((FormalExpression) conditionExpression).getBody());
+    	    }
+    	    if(((FormalExpression) conditionExpression).getLanguage() != null) {
+    	        String cd = ((FormalExpression) conditionExpression).getLanguage();
+    	        String cdStr = "";
+    	        if(cd.equalsIgnoreCase("http://www.java.com/java")) {
+    	            cdStr = "java";
+    	        } else if(cd.equalsIgnoreCase("http://www.jboss.org/drools/rule")) {
+    	            cdStr = "drools";
+    	        } else if(cd.equalsIgnoreCase("http://www.mvel.org/2.0")) {
+    	            cdStr = "mvel";
+    	        } else {
+    	            // default to mvel
+    	            cdStr = "mvel";
+    	        }
+    	        properties.put("conditionexpressionlanguage", cdStr);
+    	    } 
     	}
+    	// priority value
+    	Iterator<FeatureMap.Entry> iter = sequenceFlow.getAnyAttribute().iterator();
+        while(iter.hasNext()) {
+            FeatureMap.Entry entry = iter.next();
+            if(entry.getEStructuralFeature().getName().equals("priority")) {
+                String priorityStr = (String) entry.getValue();
+                if(priorityStr != null) {
+                    try {
+                        Integer priorityInt = Integer.parseInt(priorityStr);
+                        if(priorityInt >= 1) {
+                            properties.put("priority", entry.getValue());
+                        } else {
+                            System.out.println("Priority must be equal or greater than 1.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Priority must be a number.");
+                    }
+                }
+            }
+        }
+    	
         marshallProperties(properties, generator);
         generator.writeObjectFieldStart("stencil");
         generator.writeObjectField("id", "SequenceFlow");

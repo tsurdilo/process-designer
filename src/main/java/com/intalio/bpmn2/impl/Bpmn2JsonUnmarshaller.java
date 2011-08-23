@@ -64,6 +64,7 @@ import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.EscalationEventDefinition;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
@@ -74,6 +75,7 @@ import org.eclipse.bpmn2.GlobalTask;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
+import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
@@ -81,6 +83,7 @@ import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.Monitoring;
+import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.PotentialOwner;
 import org.eclipse.bpmn2.Process;
@@ -90,6 +93,7 @@ import org.eclipse.bpmn2.ResourceAssignmentExpression;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.StartEvent;
@@ -110,13 +114,22 @@ import org.eclipse.dd.dc.DcFactory;
 import org.eclipse.dd.dc.Point;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature.Internal;
 import org.eclipse.emf.ecore.impl.EAttributeImpl;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
+import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl.SimpleFeatureMapEntry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
+import org.jbpm.bpmn2.emfextmodel.EmfextmodelFactory;
+import org.jbpm.bpmn2.emfextmodel.EmfextmodelPackage;
+import org.jbpm.bpmn2.emfextmodel.GlobalType;
+import org.jbpm.bpmn2.emfextmodel.ImportType;
+import org.jbpm.bpmn2.emfextmodel.OnEntryScriptType;
+import org.jbpm.bpmn2.emfextmodel.OnExitScriptType;
+import org.jbpm.bpmn2.emfextmodel.impl.EmfextmodelPackageImpl;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.InvalidSyntaxException;
@@ -152,6 +165,7 @@ public class Bpmn2JsonUnmarshaller {
     
     public Bpmn2JsonUnmarshaller() {
         _helpers = new ArrayList<BpmnMarshallerHelper>();
+        EmfextmodelPackageImpl.init();
         // load the helpers to place them in field
         if (getClass().getClassLoader() instanceof BundleReference) {
             BundleContext context = ((BundleReference) getClass().getClassLoader()).
@@ -198,6 +212,7 @@ public class Bpmn2JsonUnmarshaller {
             reconnectFlows();
             createDiagram(def);
             revisitGateways(def);
+            revisitServiceTasks(def);
             revisitMessages(def);
             revisitCatchEvents(def);
             revisitThrowEvents(def);
@@ -509,6 +524,59 @@ public class Bpmn2JsonUnmarshaller {
                     }
                 }
             }
+        }
+    }
+    
+    private void revisitServiceTasks(Definitions def) {
+        List<RootElement> rootElements =  def.getRootElements();
+        List<Interface> toAddInterfaces = new ArrayList<Interface>();
+        List<Message> toAddMessages = new ArrayList<Message>();
+        for(RootElement root : rootElements) {
+            if(root instanceof Process) {
+                Process process = (Process) root;
+                List<FlowElement> flowElements =  process.getFlowElements();
+                for(FlowElement fe : flowElements) {
+                    if(fe instanceof ServiceTask) {
+                        Iterator<FeatureMap.Entry> iter = fe.getAnyAttribute().iterator();
+                        String serviceInterface = null;
+                        String serviceOperation = null;
+                        while(iter.hasNext()) {
+                            FeatureMap.Entry entry = iter.next();
+                            if(entry.getEStructuralFeature().getName().equals("servicetaskinterface")) {
+                                serviceInterface = (String) entry.getValue();
+                            }
+                            if(entry.getEStructuralFeature().getName().equals("servicetaskoperation")) {
+                                serviceOperation = (String) entry.getValue();
+                            }
+                        }
+                        Interface newInterface = Bpmn2Factory.eINSTANCE.createInterface();
+                        if(serviceInterface != null) {
+                            newInterface.setName(serviceInterface);
+                            newInterface.setId(fe.getId() + "_ServiceInterface");
+                        }
+                        if(serviceOperation != null) {
+                            Operation oper = Bpmn2Factory.eINSTANCE.createOperation();
+                            oper.setId(fe.getId() + "_ServiceOperation");
+                            oper.setName(serviceOperation);
+                            
+                            Message message = Bpmn2Factory.eINSTANCE.createMessage();
+                            message.setId(fe.getId() + "_InMessage");
+                            toAddMessages.add(message);
+                            
+                            oper.setInMessageRef(message);
+                            newInterface.getOperations().add(oper);
+                            ((ServiceTask) fe).setOperationRef(oper);
+                        }
+                        toAddInterfaces.add(newInterface);
+                    }
+                }
+            }
+        }
+        for(Interface i : toAddInterfaces) {
+            def.getRootElements().add(i);
+        }
+        for(Message m : toAddMessages) {
+            def.getRootElements().add(m);
         }
     }
     
@@ -950,6 +1018,9 @@ public class Bpmn2JsonUnmarshaller {
         }
         if (baseElement instanceof ScriptTask) {
             applyScriptTaskProperties((ScriptTask) baseElement, properties);
+        }
+        if (baseElement instanceof ServiceTask) {
+            applyServiceTaskProperties((ServiceTask) baseElement, properties);
         }
         if (baseElement instanceof Gateway) {
             applyGatewayProperties((Gateway) baseElement, properties);
@@ -1414,13 +1485,38 @@ public class Bpmn2JsonUnmarshaller {
             process.setMonitoring(monitoring);
         }
         
+        // import extension elements
         if(properties.get("imports") != null && properties.get("imports").length() > 0) {
-            ExtendedMetaData metadata = ExtendedMetaData.INSTANCE;
-            EAttributeImpl importsElement = (EAttributeImpl) metadata.demandFeature(
-                    "http://www.jboss.org/drools", "import", false   , false);
-            EStructuralFeatureImpl.SimpleFeatureMapEntry extensionEntry = new EStructuralFeatureImpl.SimpleFeatureMapEntry(importsElement,
-                    properties.get("imports"));
-            process.getAnyAttribute().add(extensionEntry);
+            String[] allImports = properties.get("imports").split( ",\\s*" );
+            for(String importStr : allImports) {
+                ImportType importType = EmfextmodelFactory.eINSTANCE.createImportType();
+                importType.setName(importStr);
+                
+                ExtensionAttributeValue extensionElement = Bpmn2Factory.eINSTANCE.createExtensionAttributeValue();
+                process.getExtensionValues().add(extensionElement);
+                FeatureMap.Entry extensionElementEntry = new SimpleFeatureMapEntry(
+                        (Internal) EmfextmodelPackage.Literals.DOCUMENT_ROOT__IMPORT, importType);
+                extensionElement.getValue().add(extensionElementEntry);
+            }
+        }
+        
+        // globals extension elements
+        if(properties.get("globals") != null && properties.get("globals").length() > 0) {
+            String[] allGlobals = properties.get("globals").split( ",\\s*" );
+            for(String globalStr : allGlobals) {
+                String[] globalParts = globalStr.split( ":\\s*" ); // identifier:type
+                if(globalParts.length == 2) {
+                    GlobalType globalType = EmfextmodelFactory.eINSTANCE.createGlobalType();
+                    globalType.setIdentifier(globalParts[0]);
+                    globalType.setType(globalParts[1]);
+                
+                    ExtensionAttributeValue extensionElement = Bpmn2Factory.eINSTANCE.createExtensionAttributeValue();
+                    process.getExtensionValues().add(extensionElement);
+                    FeatureMap.Entry extensionElementEntry = new SimpleFeatureMapEntry(
+                            (Internal) EmfextmodelPackage.Literals.DOCUMENT_ROOT__GLOBAL, globalType);
+                    extensionElement.getValue().add(extensionElementEntry);
+                }
+            }
         }
     }
 
@@ -1449,6 +1545,26 @@ public class Bpmn2JsonUnmarshaller {
         }
         scriptTask.setScript(properties.get("script"));
         scriptTask.setScriptFormat(properties.get("script_language"));
+    }
+    
+    public void applyServiceTaskProperties(ServiceTask serviceTask,  Map<String, String> properties) {
+        if(properties.get("interface") != null) {
+            serviceTask.setImplementation("Other");
+            ExtendedMetaData metadata = ExtendedMetaData.INSTANCE;
+            EAttributeImpl extensionAttribute = (EAttributeImpl) metadata.demandFeature(
+                    "http://www.jboss.org/drools", "servicetaskinterface", false, false);
+            EStructuralFeatureImpl.SimpleFeatureMapEntry extensionEntry = new EStructuralFeatureImpl.SimpleFeatureMapEntry(extensionAttribute,
+                    properties.get("interface"));
+            serviceTask.getAnyAttribute().add(extensionEntry); 
+        }
+        if(properties.get("operation") != null) {
+            ExtendedMetaData metadata = ExtendedMetaData.INSTANCE;
+            EAttributeImpl extensionAttribute = (EAttributeImpl) metadata.demandFeature(
+                    "http://www.jboss.org/drools", "servicetaskoperation", false, false);
+            EStructuralFeatureImpl.SimpleFeatureMapEntry extensionEntry = new EStructuralFeatureImpl.SimpleFeatureMapEntry(extensionAttribute,
+                    properties.get("operation"));
+            serviceTask.getAnyAttribute().add(extensionEntry);
+        }
     }
 
     private void applyLaneProperties(Lane lane, Map<String, String> properties) {
@@ -1703,7 +1819,57 @@ public class Bpmn2JsonUnmarshaller {
                     }
                 }
             }  
-          
+        }
+        
+        // process on-entry and on-exit actions as custom elements
+        if(properties.get("onentryactions") != null && properties.get("onentryactions").length() > 0) {
+            String[] allActions = properties.get("onentryactions").split( ",\\s*" );
+            for(String action : allActions) {
+                OnEntryScriptType onEntryScript = EmfextmodelFactory.eINSTANCE.createOnEntryScriptType();
+                onEntryScript.setScript(action);
+                
+                String scriptLanguage = "";
+                if(properties.get("script_language").equals("java")) {
+                    scriptLanguage = "http://www.java.com/java";
+                } else if(properties.get("script_language").equals("mvel")) {
+                    scriptLanguage = "http://www.mvel.org/2.0";
+                } else {
+                    // default to java
+                    scriptLanguage = "http://www.java.com/java";
+                }
+                onEntryScript.setScriptFormat(scriptLanguage); 
+                
+                ExtensionAttributeValue extensionElement = Bpmn2Factory.eINSTANCE.createExtensionAttributeValue();
+                task.getExtensionValues().add(extensionElement);
+                FeatureMap.Entry extensionElementEntry = new SimpleFeatureMapEntry(
+                        (Internal) EmfextmodelPackage.Literals.DOCUMENT_ROOT__ON_ENTRY_SCRIPT, onEntryScript);
+                extensionElement.getValue().add(extensionElementEntry);
+            }
+        }
+        
+        if(properties.get("onexitactions") != null && properties.get("onexitactions").length() > 0) {
+            String[] allActions = properties.get("onexitactions").split( ",\\s*" );
+            for(String action : allActions) {
+                OnExitScriptType onExitScript = EmfextmodelFactory.eINSTANCE.createOnExitScriptType();
+                onExitScript.setScript(action);
+                
+                String scriptLanguage = "";
+                if(properties.get("script_language").equals("java")) {
+                    scriptLanguage = "http://www.java.com/java";
+                } else if(properties.get("script_language").equals("mvel")) {
+                    scriptLanguage = "http://www.mvel.org/2.0";
+                } else {
+                    // default to java
+                    scriptLanguage = "http://www.java.com/java";
+                }
+                onExitScript.setScriptFormat(scriptLanguage); 
+                
+                ExtensionAttributeValue extensionElement = Bpmn2Factory.eINSTANCE.createExtensionAttributeValue();
+                task.getExtensionValues().add(extensionElement);
+                FeatureMap.Entry extensionElementEntry = new SimpleFeatureMapEntry(
+                        (Internal) EmfextmodelPackage.Literals.DOCUMENT_ROOT__ON_EXIT_SCRIPT, onExitScript);
+                extensionElement.getValue().add(extensionElementEntry);
+            }
         }
     }
     
@@ -1720,25 +1886,6 @@ public class Bpmn2JsonUnmarshaller {
                 task.getResources().add(po);
             }
         }
-        
-        if(properties.get("onentryactions") != null && properties.get("onentryactions").length() > 0) {
-            ExtendedMetaData metadata = ExtendedMetaData.INSTANCE;
-            EAttributeImpl onEntryElement = (EAttributeImpl) metadata.demandFeature(
-                    "http://www.jboss.org/drools", "onEntry-script", false, false);
-            EStructuralFeatureImpl.SimpleFeatureMapEntry extensionEntry = new EStructuralFeatureImpl.SimpleFeatureMapEntry(onEntryElement,
-                    properties.get("onentryactions"));
-            task.getAnyAttribute().add(extensionEntry);
-        }
-        
-        if(properties.get("onexitactions") != null && properties.get("onexitactions").length() > 0) {
-            ExtendedMetaData metadata = ExtendedMetaData.INSTANCE;
-            EAttributeImpl onExitElement = (EAttributeImpl) metadata.demandFeature(
-                    "http://www.jboss.org/drools", "onExit-script", false   , false);
-            EStructuralFeatureImpl.SimpleFeatureMapEntry extensionEntry = new EStructuralFeatureImpl.SimpleFeatureMapEntry(onExitElement,
-                    properties.get("onexitactions"));
-            task.getAnyAttribute().add(extensionEntry);
-        }
-        
         if(properties.get("script_language") != null && properties.get("script_language").length() > 0) {
             String scriptLanguage = "";
             if(properties.get("script_language").equals("java")) {
@@ -1787,14 +1934,26 @@ public class Bpmn2JsonUnmarshaller {
                     languageStr = "http://www.jboss.org/drools/rule";
                 } else if(properties.get("conditionexpressionlanguage").equals("mvel")) {
                     languageStr = "http://www.mvel.org/2.0";
+                } else if(properties.get("conditionexpressionlanguage").equals("java")) {
+                    languageStr = "http://www.java.com/java";
                 } else {
-                    // default to drools
-                    languageStr = "http://www.jboss.org/drools/rule";
+                    // default to mvel
+                    languageStr = "http://www.mvel.org/2.0";
                 }
                 expr.setLanguage(languageStr);
             }
             sequenceFlow.setConditionExpression(expr);
         }
+        
+        if (properties.get("priority") != null && !"".equals(properties.get("priority"))) {
+            ExtendedMetaData metadata = ExtendedMetaData.INSTANCE;
+            EAttributeImpl priorityElement = (EAttributeImpl) metadata.demandFeature(
+                    "http://www.jboss.org/drools", "priority", false   , false);
+            EStructuralFeatureImpl.SimpleFeatureMapEntry extensionEntry = new EStructuralFeatureImpl.SimpleFeatureMapEntry(priorityElement,
+                    properties.get("priority"));
+            sequenceFlow.getAnyAttribute().add(extensionEntry);
+        }
+        
         if (properties.get("monitoring") != null && !"".equals(properties.get("monitoring"))) {
             Monitoring monitoring = Bpmn2Factory.eINSTANCE.createMonitoring();
             monitoring.getDocumentation().add(createDocumentation(properties.get("monitoring")));

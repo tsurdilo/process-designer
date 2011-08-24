@@ -410,7 +410,7 @@
 	   </servlet-class>
        <init-param>
           <param-name>factoryName</param-name> 
-          <param-value>default</param-value>
+          <param-value>jbpm</param-value>
        </init-param>
 	</servlet>
   
@@ -444,7 +444,7 @@
 	   </servlet-class>
        <init-param>
           <param-name>defaultName</param-name> 
-          <param-value>bpmn2.0</param-value>
+          <param-value>bpmn2.0jbpm</param-value>
        </init-param>
 	</servlet>
 	

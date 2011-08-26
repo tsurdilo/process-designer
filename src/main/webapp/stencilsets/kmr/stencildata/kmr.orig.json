@@ -2709,8 +2709,8 @@
                     "title" : 		"Model Entity",
                     "groups" : 		["Model"],
                     "description" :     "A Model Entity",
-                    "view" :			"artifact/text.annotation.svg",
-                    "icon" :		"artifact/text.annotation.png",
+                    "view" :			"model/model.svg",
+                    "icon" :		"model/model.png",
                     "propertyPackages" : [
 				"baseAttributes",
 				"flowElement",

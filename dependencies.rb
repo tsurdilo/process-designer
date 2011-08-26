@@ -52,7 +52,7 @@ WAR_LIBS = ["org.json:json:jar:20090211", "jbpt:jbpt:jar:0.1.0", "commons-collec
   "org.mvel:mvel2:jar:2.1-SNAPSHOT", "org.jbpm:jbpm-flow-builder:jar:5.2.0-SNAPSHOT", "org.jbpm:jbpm-bpmn2-emfextmodel:jar:5.2.0-SNAPSHOT", 
   "org.drools:drools-core:jar:5.2.0-SNAPSHOT",
   "org.antlr:stringtemplate:jar:3.2.1",
-  "org.eclipse:osgi:jar:3.5.0.v20090520", "avalon-framework:avalon-framework:jar:4.1.4", YUICOMPRESSOR] | BPMN2_LIBS | BATIK_LIBS
+  "org.eclipse:osgi:jar:3.5.0.v20090520", "avalon-framework:avalon-framework:jar:4.1.4", "org.apache.abdera:abdera-client:jar:1.1.1" , YUICOMPRESSOR] | BPMN2_LIBS | BATIK_LIBS
 
 WAR_LIBS_JBOSS = ["org.json:json:jar:20090211", "jbpt:jbpt:jar:0.1.0", "commons-collections:commons-collections:jar:3.2.1",
   "commons-configuration:commons-configuration:jar:1.6", "org.jdom:jdom:jar:1.1", "org.apache.velocity:velocity:jar:1.6.4",

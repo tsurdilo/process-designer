@@ -29,7 +29,6 @@ import com.intalio.bpmn2.impl.Bpmn2JsonUnmarshaller;
 import com.intalio.web.plugin.IDiagramPlugin;
 import com.intalio.web.plugin.impl.PluginServiceImpl;
 import com.intalio.web.profile.IDiagramProfile;
-import java.util.ArrayList;
 
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Bpmn2Package;
@@ -40,12 +39,12 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 
 
 /**
- * The implementation of the jBPM profile for Process Designer.
- * @author Tihomir Surdilovic
+ * The implementation of the KMR profile for Process Designer.
+ * @author Esteban Aliverti
  */
 public class KmrProfileImpl implements IDiagramProfile {
     
-    private static Logger _logger = LoggerFactory.getLogger(KmrProfileImpl.class);
+    private static Logger _logger = LoggerFactory.getLogger(JbpmProfileImpl.class);
     
     private Map<String, IDiagramPlugin> _plugins = new LinkedHashMap<String, IDiagramPlugin>();
 
@@ -67,7 +66,7 @@ public class KmrProfileImpl implements IDiagramProfile {
     }
 
     public String getTitle() {
-        return "KMR Process Designer";
+        return "KMR Designer";
     }
 
     public String getStencilSet() {
@@ -75,7 +74,7 @@ public class KmrProfileImpl implements IDiagramProfile {
     }
 
     public Collection<String> getStencilSetExtensions() {
-        return new ArrayList<String>(){{add("extensions/bpmnkmr/bpmnkmr-2.0.json");}};
+        return Collections.emptyList();
     }
 
     public Collection<String> getPlugins() {
@@ -84,7 +83,6 @@ public class KmrProfileImpl implements IDiagramProfile {
     
     private void initializeLocalPlugins(ServletContext context) {
         Map<String, IDiagramPlugin> registry = PluginServiceImpl.getLocalPluginsRegistry(context);
-        //we read the default.xml file and make sense of it.
         FileInputStream fileStream = null;
         try {
             try {
@@ -114,18 +112,46 @@ public class KmrProfileImpl implements IDiagramProfile {
                     } else if ("externalloadurl".equals(reader.getLocalName())) {
                         for (int i = 0 ; i < reader.getAttributeCount() ; i++) {
                             if ("protocol".equals(reader.getAttributeLocalName(i))) {
+                                String extProtocol = reader.getAttributeValue(i);
+                                if(!isEmpty(extProtocol)) {
+                                    _externalLoadProtocol = extProtocol;
+                                } else {
+                                    _logger.info("Invalid protocol specified");
+                                }
                                 _externalLoadProtocol = reader.getAttributeValue(i);
                             }
                             if ("host".equals(reader.getAttributeLocalName(i))) {
-                                _externalLoadHost = reader.getAttributeValue(i);
+                                String exthost = reader.getAttributeValue(i);
+                                if(!isEmpty(exthost)) {
+                                    _externalLoadHost = exthost;
+                                } else {
+                                   _logger.info("Invalid host specified");
+                                }
                             }
                             if ("subdomain".equals(reader.getAttributeLocalName(i))) {
-                                _externalLoadSubdomain = reader.getAttributeValue(i);
+                                String extsub = reader.getAttributeValue(i);
+                                if(!isEmpty(extsub)) {
+                                    if(extsub.startsWith("/")) {
+                                        extsub = extsub.substring(1);
+                                    } 
+                                    if(extsub.endsWith("/")) {
+                                        extsub = extsub.substring(0,extsub.length() - 1);
+                                    }
+                                    _externalLoadSubdomain = extsub;
+                                } else {
+                                    _logger.info("Invalid subdomain specified");
+                                }
                             }
                             if ("usr".equals(reader.getAttributeLocalName(i))) {
-                                _usr = reader.getAttributeValue(i);
+                                String extUsr = reader.getAttributeValue(i);
+                                if(!isEmpty(extUsr)) {
+                                    _usr = extUsr;
+                                } else {
+                                    _logger.info("Invalid usr specified");
+                                }
                             }
                             if ("pwd".equals(reader.getAttributeLocalName(i))) {
+                                // allow any value for pwd
                                 _pwd = reader.getAttributeValue(i);
                             }
                         }
@@ -225,15 +251,27 @@ public class KmrProfileImpl implements IDiagramProfile {
     }
 
     public String getStencilSetURL() {
-        return "/designer/stencilsets/bpmn2.0jbpm/bpmn2.0jbpm.json";
+        return "/designer/stencilsets/kmr/kmr.json";
     }
 
     public String getStencilSetNamespaceURL() {
-        return "http://b3mn.org/stencilset/bpmn2.0#";
+        return "http://b3mn.org/stencilset/kmr-1.0#";
     }
 
     public String getStencilSetExtensionURL() {
-        return "http://oryx-editor.org/stencilsets/extensions/bpmnkmr-2.0#";
+        return "http://oryx-editor.org/stencilsets/extensions/bpmncosts-2.0#";
+    }
+    
+    private boolean isEmpty(final CharSequence str) {
+        if ( str == null || str.length() == 0 ) {
+            return true;
+        }
+        for ( int i = 0, length = str.length(); i < length; i++ ){
+            if ( str.charAt( i ) != ' ' ) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 

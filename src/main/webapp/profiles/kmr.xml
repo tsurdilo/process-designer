@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <profiles>
-  <profile name="kmr" stencilset="bpmn2.0jbpm">
+  <profile name="kmr" stencilset="kmr">
     <plugin name="ORYX.Plugins.Toolbar" />
     <plugin name="ORYX.Plugins.UUIDRepositoryDummySave" />
     <plugin name="ORYX.Plugins.MouseOverLabelPlugin" />
@@ -28,8 +28,6 @@
     <!-- lane layouter -->
     <plugin name="ORYX.Plugins.DragTracker.LaneDragTracker" />
     <plugin name="ORYX.Plugins.DragTracker.PoolDragTracker" />
-    <stencilsetextension
-      namespace="http://oryx-editor.org/stencilsets/extensions/bpmnkmr-2.0#" />
     <externalloadurl protocol="http" host="localhost:8080" subdomain="drools-guvnor/org.drools.guvnor.Guvnor/oryxeditor" usr="admin" pwd="admin"/>
   </profile>
 </profiles>

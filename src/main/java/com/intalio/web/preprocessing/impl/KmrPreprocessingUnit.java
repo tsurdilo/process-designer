@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -63,15 +64,28 @@ import sun.misc.BASE64Encoder;
 import com.intalio.web.preprocessing.IDiagramPreprocessingUnit;
 import com.intalio.web.profile.IDiagramProfile;
 import com.intalio.web.profile.impl.ExternalInfo;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Collections;
+import javax.xml.namespace.QName;
+import org.apache.abdera.Abdera;
+import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.ExtensibleElement;
+import org.apache.abdera.model.Feed;
+import org.apache.abdera.protocol.Response.ResponseType;
+import org.apache.abdera.protocol.client.AbderaClient;
+import org.apache.abdera.protocol.client.ClientResponse;
+import org.apache.abdera.protocol.client.RequestOptions;
 
 /**
- * JbpmPreprocessingUnit - preprocessing unit for the jbpm profile
+ * KmrPreprocessingUnit - preprocessing unit for the jbpm profile
  * 
- * @author Tihomir Surdilovic
+ * @author Esteban Aliverti
  */
-public class JbpmPreprocessingUnit implements IDiagramPreprocessingUnit {
+public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
     private static final Logger _logger = 
-        Logger.getLogger(JbpmPreprocessingUnit.class);
+        Logger.getLogger(KmrPreprocessingUnit.class);
     public final static String STENCILSET_PATH = "stencilsets";
     public static final String WORKITEM_DEFINITION_EXT = "wid";
     
@@ -81,12 +95,13 @@ public class JbpmPreprocessingUnit implements IDiagramPreprocessingUnit {
     private String outData = "";
     private String workitemSVGFilePath;
     private String origWorkitemSVGFile;
+    private IDiagramProfile profile;
     
-    public JbpmPreprocessingUnit(ServletContext servletContext) {
+    public KmrPreprocessingUnit(ServletContext servletContext) {
         stencilPath = servletContext.getRealPath("/" + STENCILSET_PATH);
-        origStencilFilePath = stencilPath + "/bpmn2.0jbpm/stencildata/" + "bpmn2.0jbpm.orig";
-        stencilFilePath = stencilPath + "/bpmn2.0jbpm/" + "bpmn2.0jbpm.json";
-        workitemSVGFilePath = stencilPath  + "/bpmn2.0jbpm/view/activity/workitems/";
+        origStencilFilePath = stencilPath + "/kmr/stencildata/" + "kmr.orig.json";
+        stencilFilePath = stencilPath + "/kmr/" + "kmr.json";
+        workitemSVGFilePath = stencilPath  + "/kmr/view/activity/workitems/";
         origWorkitemSVGFile = workitemSVGFilePath + "workitem.orig";
     }
     
@@ -101,6 +116,12 @@ public class JbpmPreprocessingUnit implements IDiagramPreprocessingUnit {
     
     public void preprocess(HttpServletRequest req, HttpServletResponse res, IDiagramProfile profile) {
         String uuid = req.getParameter("uuid");
+        String[] wsUuids = req.getParameterValues("wsUuid");
+        
+        this.profile = profile;
+        
+        List<String> wsUuidsList = wsUuids==null?new ArrayList<String>():Arrays.asList(wsUuids); 
+        
         outData = "";
         // check with guvnor to see what packages exist
         List<String> packageNames = findPackages(uuid, profile);
@@ -118,15 +139,25 @@ public class JbpmPreprocessingUnit implements IDiagramPreprocessingUnit {
                 evaluateWorkDefinitions(workDefinitions, entry.getValue());
             }
         }
+        
         // set the out parameter
         for(Map.Entry<String, WorkDefinitionImpl> definition : workDefinitions.entrySet()) {
             outData += definition.getValue().getName() + ",";
         }
+        
+        //get the available classes according to the passed working-sets
+        List<String> workingSetsClassNames = new ArrayList(getWorkingSetsClasses(wsUuidsList, packageNames, profile));
+        Collections.sort(workingSetsClassNames);
+        
+        
         // parse the profile json to include config data
         try {
             // parse the orig stencil data with workitem definitions
             StringTemplate workItemTemplate = new StringTemplate(readFile(origStencilFilePath));
             workItemTemplate.setAttribute("workitemDefs", workDefinitions);
+            
+            workItemTemplate.setAttribute("workingSetsClassNames", workingSetsClassNames);
+            
             // delete stencil data json if exists
             deletefile(stencilFilePath);
             // copy our results as the stencil json data
@@ -391,5 +422,142 @@ public class JbpmPreprocessingUnit implements IDiagramPreprocessingUnit {
         output.write(content);
         output.close();
         _logger.info("Created file:" + file);
+    }
+
+    private Set<String> getWorkingSetsClasses(List<String> wsUuids, List<String> packageNames, IDiagramProfile profile) {
+        
+        Set<String> result = new HashSet<String>();
+        
+        if (wsUuids == null || wsUuids.isEmpty()){
+            return result;
+        }
+        
+        //beacuse REST API is not based in UUIDs, I need to get all packages,
+        //from each package get all the WS and try to see if the WS with
+        //the provided UUID is there
+        for (String packageName : packageNames) {
+            
+        
+            String baseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile) +
+            "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"));
+
+            String workingSetsURL = baseURL + "/rest/packages/"+packageName+"/assets?format=workingset";
+
+            Abdera abdera = new Abdera();
+            AbderaClient client = new AbderaClient(abdera);
+
+            RequestOptions options = this.createBaseOptions(client);
+            options.setAccept("application/atom+xml");
+
+            ClientResponse resp = client.get(workingSetsURL, options);
+
+            if (resp.getType() != ResponseType.SUCCESS){
+                throw new IllegalStateException("Error occurred when retrieving Working Sets from package: "+resp.getStatusText());
+            }
+
+            Document<Feed> document = resp.getDocument();
+
+            //Convert from UUIDs to entry
+            List<Entry> workingSetEntries = new ArrayList<Entry>();
+            for (Entry entry : document.getRoot().getEntries()) {
+                //get the UUID
+                ExtensibleElement metadataExtension = entry.getExtension(new QName("", "metadata"));
+                String uuid = ((ExtensibleElement)metadataExtension.getExtension(new QName("","uuid"))).getSimpleExtension(new QName("","value"));
+
+                if (wsUuids.contains(uuid)){
+                    workingSetEntries.add(entry);
+                }
+            }
+
+            if (workingSetEntries.isEmpty()){
+                // the WSs don't belong to this package. Next please...
+                continue;
+            }
+            
+            //All the Working-Sets UUID should have its corresponding name...
+            //And because all the WS must be in the same package we can
+            //do this:
+            if (wsUuids.size() != workingSetEntries.size()){
+                _logger.warn("Couldn't find all the requiered working-sets.");
+            }
+
+            //for each working-set we need to get the classes names they define
+            for (Entry workingSetEntry : workingSetEntries) {
+                    result.addAll(this.getClassNamesFromWorkingSetEntry(workingSetEntry));
+            }
+            
+            break;
+        }
+        return result;
+    }
+    
+    private Set<String> getClassNamesFromWorkingSetEntry(Entry workingSetEntry){
+        Set<String> result = new HashSet<String>();
+        
+        //get the url of WS's binary content
+        String binaryURL = workingSetEntry.getContentSrc().toString();
+        
+        if (binaryURL == null || binaryURL.isEmpty()){
+            throw new IllegalArgumentException("Working Set Entry doesn't have any binary URL");
+        }
+            
+        //Invoke Guvnor to get the content of the WS.
+        Abdera abdera = new Abdera();
+        AbderaClient client = new AbderaClient(abdera);
+
+        RequestOptions options = this.createBaseOptions(client);
+        options.setAccept("application/octet-stream"); //even if we know is xml
+
+        ClientResponse resp = client.get(binaryURL, options);
+
+        if (resp.getType() != ResponseType.SUCCESS){
+            throw new IllegalStateException("Error occurred when retrieving Working Sets '"+workingSetEntry.getTitle()+"' Content: "+resp.getStatusText());
+        }
+        
+        try {
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            XMLStreamReader reader = factory.createXMLStreamReader(resp.getInputStream());
+            
+            boolean parsingValidFacts = false;
+            
+            while (reader.hasNext()) {
+                switch (reader.next()){
+                    case XMLStreamReader.START_ELEMENT:
+                        if ("validFacts".equals(reader.getLocalName())) {
+                            parsingValidFacts = true;
+                        }
+                        if ("string".equals(reader.getLocalName()) && parsingValidFacts) {
+                            result.add(reader.getElementText());
+                        }
+                        break;
+                    case XMLStreamReader.END_ELEMENT:
+                        parsingValidFacts = false;
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            // we dont want to barf..just log that error happened
+            _logger.error(e.getMessage());
+        } 
+        
+        return result;
+    }
+    
+    /**
+     * Creates default RequestOptions with authentication attribute (if needed).
+     * @return 
+     */
+    private RequestOptions createBaseOptions(AbderaClient client){
+
+        RequestOptions options = client.getDefaultRequestOptions();
+        
+        if(profile.getUsr() != null && profile.getUsr().trim().length() > 0 && profile.getPwd() != null && profile.getPwd().trim().length() > 0) {
+            BASE64Encoder enc = new sun.misc.BASE64Encoder();
+            String userpassword = profile.getUsr() + ":" + profile.getPwd();
+            String encodedAuthorization = enc.encode( userpassword.getBytes() );
+            options.setAuthorization("Basic "+ encodedAuthorization);
+        }
+        
+        return options;
     }
 }

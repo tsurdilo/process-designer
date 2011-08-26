@@ -2664,18 +2664,21 @@
                                 "readonly": false,
                                 "optional": false,
                                 "popular" : true,
+                                "refToView":"",
                                 "items": [
                                         $workingSetsClassNames:{cn| 
                                             \{
                                                 "id":"$cn$",
                                                 "title":"$cn$",
-                                                "value":"$cn$"
+                                                "value":"$cn$",
+                                                "refToView":"$cn$"
                                             \},
                                         }$
                                         {
                                                 "id":"None",
                                                 "title":"None",
-                                                "value":"None"
+                                                "value":"None",
+                                                "refToView":"None"
                                         }
                                 ]
                         }
@@ -2701,117 +2704,51 @@
 		
                 //Model
                 {
-                    "type" : 			"node",
-                    "id":                       "Model",
-                    "title" : 			"Model Entity",
-                    "groups" : 			["Model"],
-                    "description" :             "A Model Entity",
-                    "view" :			"dataobject/data.object.svg",
-			"icon" :		"dataobject/data.object.png",
-                    "propertyPackages" :[
+                    "type" : 		"node",
+                    "id":               "Model",
+                    "title" : 		"Model Entity",
+                    "groups" : 		["Model"],
+                    "description" :     "A Model Entity",
+                    "view" :			"artifact/text.annotation.svg",
+                    "icon" :		"artifact/text.annotation.png",
+                    "propertyPackages" : [
 				"baseAttributes",
 				"flowElement",
-				"activity",
-				"task",
-				"loopcharacteristics",
-				"properties",
-				"iospecification",
+				"artifact",
                                 "modelEntity"
 			],
-			"roles" : 			[
-				"all",
-				"sequence_start",
-				"sequence_end",
-				"from_task_event",
-				"to_task_event",
-				"FromEventbasedGateway",
-				"messageflow_start",
-				"messageflow_end",
-				"fromtoall",
-				"ActivitiesMorph"
-			],
-			"properties": [
+			"properties" : 		[
 				{
-					"id":"ruleFlowGroup",
+					"id":"text",
 					"type":"String",
-					"title":"Ruleflow Group",
-					"title_de":"Ruleflow Gruppe",
+					"title":"Text",
 					"value":"",
-					"description":"ruleFlowGroup",
+					"description":"",
 					"readonly":false,
-					"optional":true
+					"optional":true,
+					"refToView":"text",
+					"length":"",
+					"wrapLines":true
 				},
 				{
-					"id":"onEntryActions",
-					"type":"Text",
-					"title":"On Entry Actions",
-					"title_de":"On Entry Actions",
-					"value":"",
-					"description":"on entry actions",
-					"readonly":false,
-					"optional":true
-				},
-				{
-					"id":"onExitActions",
-					"type":"Text",
-					"title":"On Exit Actions",
-					"title_de":"On Exit Actions",
-					"value":"",
-					"description":"on exit actions",
-					"readonly":false,
-					"optional":true
-				},
-				{
-					"id":"taskName",
+					"id":"artifacttype",
 					"type":"String",
-					"title":"Task Name",
-					"title_de":"Task Name",
-					"value":"",
-					"description":"Task Name",
-					"readonly":false,
-					"optional":true
-				},
-				{
-					"id":"interface",
-					"type":"String",
-					"title":"Interface",
-					"title_de":"Interface",
-					"value":"",
-					"description":"Interface",
-					"readonly":false,
-					"optional":true
-				},
-				{
-					"id":"operation",
-					"type":"String",
-					"title":"Operation",
-					"title_de":"Operation",
-					"value":"",
-					"description":"Operation",
-					"readonly":false,
-					"optional":true
-				},
-				{
-					"id":"lanes",
-					"type":"String",
-					"title":"Lanes",
-					"title_de":"Lanes",
-					"value":"",
-					"description":"Comma-separated lane names",
-					"readonly":false,
-					"optional":true
-				},
-				{
-					"id":"actors",
-					"type":"String",
-					"title":"Actors",
-					"title_de":"Actors",
-					"value":"",
-					"description":"Comma-separated list of actors",
-					"readonly":false,
-					"optional":true
+					"title":"ArtifactType",
+					"title_de":"Artefakttyp",
+					"value":"Annotation",
+					"description":"",
+					"readonly":true,
+					"optional":false,
+					"length":""
 				}
+			],
+			"roles": [
+				"all",
+				//"from_artifact",
+				//"to_artifact",
+                                //"TextAnnotationMorph"
 			]
+                    
                 },
                 
 		// start custom workitems
@@ -4379,6 +4316,14 @@
 					{
 						"from" : "TextAnnotation",
 						"to" : "fromtoall"
+					},
+                                        {
+						"from" : "fromtoall",
+						"to" : ["Model"]
+					},
+					{
+						"from" : "Model",
+						"to" : ["fromtoall"]
 					},
 					{
 						"from" : "Message",

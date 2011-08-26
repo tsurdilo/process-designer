@@ -695,7 +695,14 @@ ORYX.Plugins.PropertyWindow = {
 							break;
 							// extended by Gerardo (End)
                                                  case "guvnorruleeditor":
-							var editor = new Ext.form.GuvnorPopupEditor(function(_value){
+                                                     
+                                                     if (this.shapeSelection.shapes.length != 1){
+                                                         //not possible to edit the value of more than
+                                                         //one node at the same time
+                                                         var editorInput = new Ext.form.TextField({value:'No editable', disabled:true});
+                                                         editorGrid = new Ext.Editor(editorInput);
+                                                     }else{
+                                                        var editor = new Ext.form.GuvnorPopupEditor(this.shapeSelection.shapes[0], function(_value){
                                                             this.editDirectly(key, _value);
                                                         }.bind(this));
                                                         
@@ -703,7 +710,8 @@ ORYX.Plugins.PropertyWindow = {
                                                         guvnorPopupEditor = editor;
                                                         
 							editorGrid = new Ext.Editor(editor);
-                                                        break;
+                                                     }
+                                                     break;
 						default:
 							var editorInput = new Ext.form.TextField({allowBlank: pair.optional(),  msgTarget:'title', maxLength:pair.length(), enableKeyEvents: true});
 						editorInput.on('keyup', function(input, event) {
@@ -1304,7 +1312,7 @@ Ext.form.ComplexTextField = Ext.extend(Ext.form.TriggerField,  {
 });
 
 var guvnorPopupEditor;
-Ext.form.GuvnorPopupEditor = function(_onSave){
+Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
 
     var brlCommentString = "#-#"
 
@@ -1313,6 +1321,8 @@ Ext.form.GuvnorPopupEditor = function(_onSave){
     var drlValue = "";
     
     var onSave = _onSave;
+    
+    var srcShape = _srcShape;
 
     Ext.form.GuvnorPopupEditor.superclass.constructor.call(this,{
         defaultAutoCreate : {
@@ -1373,6 +1383,7 @@ Ext.form.GuvnorPopupEditor = function(_onSave){
             }
         
             //use the imports of the process as valid fact types
+            /*
             var _json = ORYX.EDITOR.getJSON();
             if (_json.properties.imports && _json.properties.imports != ""){
                 var _imports= _json.properties.imports.split(",");
@@ -1394,7 +1405,34 @@ Ext.form.GuvnorPopupEditor = function(_onSave){
                     });
                 }
             }
-        
+            */
+           
+           //get the available Classes from the node's path
+           if (srcShape){
+               
+               //could be that someone tried to edit more than one shape at 
+               //a time -> NO!
+               if (srcShape instanceof Array){
+                    alert ("This attribute can't be edited for more than one node at a time");
+                    return;
+               }
+               
+               
+               var _modelEntitiesInPath = collectNodesInPath(srcShape, 'Model Entity');
+
+               if (!_modelEntitiesInPath || _modelEntitiesInPath.length == 0){
+                   alert ("You must define at least 1 Model Entity in your process!");
+                   return;
+               }
+
+               _modelEntitiesInPath.each(function(_modelEntity){
+                   _guvnorParameters.push({
+                        name:"validFactType", 
+                        value: _modelEntity.properties['oryx-modelentity']
+                    });
+               });
+           }
+           
             if (_guvnorParameters.length > 0){
                 var i = 0;
                 var separator = "";
@@ -1584,4 +1622,24 @@ function getGuvnorFrame(context){
     }
     
     return null;
+}
+
+function collectNodesInPath(srcNode, nodeTitle){
+    
+    if (!srcNode.incoming || srcNode.incoming.length == 0){
+        return [];
+    }
+    
+    var foundNodes = [];
+    srcNode.incoming.each(function(incomingNode){
+        if (incomingNode._stencil._jsonStencil.title == nodeTitle){
+            foundNodes.push(incomingNode);
+        }
+        
+        //inspect children 
+        foundNodes = foundNodes.concat(collectNodesInPath(incomingNode, nodeTitle));
+        
+    });
+    
+    return foundNodes;
 }

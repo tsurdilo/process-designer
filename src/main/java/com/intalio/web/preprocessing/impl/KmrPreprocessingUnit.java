@@ -21,19 +21,13 @@
 ****************************************/
 package com.intalio.web.preprocessing.impl;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,7 +58,6 @@ import sun.misc.BASE64Encoder;
 import com.intalio.web.preprocessing.IDiagramPreprocessingUnit;
 import com.intalio.web.profile.IDiagramProfile;
 import com.intalio.web.profile.impl.ExternalInfo;
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collections;
 import javax.xml.namespace.QName;
@@ -95,6 +88,8 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
     private String outData = "";
     private String workitemSVGFilePath;
     private String origWorkitemSVGFile;
+    private String modelSVGFilePath;
+    private String origModelSVGFile;
     private IDiagramProfile profile;
     
     public KmrPreprocessingUnit(ServletContext servletContext) {
@@ -103,6 +98,8 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         stencilFilePath = stencilPath + "/kmr/" + "kmr.json";
         workitemSVGFilePath = stencilPath  + "/kmr/view/activity/workitems/";
         origWorkitemSVGFile = workitemSVGFilePath + "workitem.orig";
+        modelSVGFilePath = stencilPath  + "/kmr/view/model/dynamic/";
+        origModelSVGFile = modelSVGFilePath + "model.orig";
     }
     
     public String getOutData() {
@@ -124,29 +121,31 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         
         outData = "";
         // check with guvnor to see what packages exist
-        List<String> packageNames = findPackages(uuid, profile);
+        List<String> packageNames = findPackages(profile);
         
-        // figure out which package our uuid belongs in and get back the list of configs
-        Map<String, List<String>> workitemConfigInfo = findWorkitemInfoForUUID(uuid, packageNames, profile);
+        //get the package where the asset with the given UUID is defined
+        String packageName = findPackageForProcessUUID(uuid, packageNames);
         
-        // get the contents of each of the configs
-        Map<String, String> workItemsContent = getWorkitemConfigContent(workitemConfigInfo, profile);
+        //Get back the list of WI configs names and content of the given package
+        Map<String, List<WorkDefinitionImpl>> workitemConfigInfo = findWorkitemInfoForPackage(packageName);
         
-        // evaluate all configs
+        // set the out parameter and create workDefinitions
         Map<String, WorkDefinitionImpl> workDefinitions = new HashMap<String, WorkDefinitionImpl>();
-        for(Map.Entry<String, String> entry : workItemsContent.entrySet()) {
-            if(entry.getValue().trim().length() > 0) {
-                evaluateWorkDefinitions(workDefinitions, entry.getValue());
+        for(Map.Entry<String, List<WorkDefinitionImpl>> definition : workitemConfigInfo.entrySet()) {
+            
+            for (WorkDefinitionImpl workDefinitionImpl : definition.getValue()) {
+                //concatenate outData
+                outData += workDefinitionImpl.getName() + ",";
+                
+                //convert from List<WorkDefinitionImpl> to Map<String,WorkDefinitionImpl>
+                //so it can be used in template
+                workDefinitions.put(workDefinitionImpl.getName(), workDefinitionImpl);
             }
-        }
-        
-        // set the out parameter
-        for(Map.Entry<String, WorkDefinitionImpl> definition : workDefinitions.entrySet()) {
-            outData += definition.getValue().getName() + ",";
+            
         }
         
         //get the available classes according to the passed working-sets
-        List<String> workingSetsClassNames = new ArrayList(getWorkingSetsClasses(wsUuidsList, packageNames, profile));
+        List<String> workingSetsClassNames = new ArrayList(getWorkingSetsClasses(packageName, wsUuidsList, profile));
         Collections.sort(workingSetsClassNames);
         
         
@@ -165,12 +164,15 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         } catch( Exception e ) {
             _logger.error("Failed to setup workitems : " + e.getMessage());
         }
-        // create and parse the view svg to include config data
-        createAndParseViewSVG(workDefinitions);
+        // create and parse the view svg to include WorkItem data
+        createAndParseWorkItemSVGs(workDefinitions);
+        
+        // create and parse the view svg to include Model data
+        createAndParseModelSVGs(packageName, workingSetsClassNames);
     }
     
     @SuppressWarnings("unchecked")
-    private void createAndParseViewSVG(Map<String, WorkDefinitionImpl> workDefinitions) {
+    private void createAndParseWorkItemSVGs(Map<String, WorkDefinitionImpl> workDefinitions) {
         // first delete all existing workitem svgs
         Collection<File> workitemsvgs = FileUtils.listFiles(new File(workitemSVGFilePath), new String[] { "svg" }, true);
         if(workitemsvgs != null) {
@@ -190,8 +192,40 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         } 
     }
     
+    @SuppressWarnings("unchecked")
+    private void createAndParseModelSVGs(String packageName, List<String> workingSetsClassNames) {
+        
+        String baseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile) +
+            "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"));
+        
+        String baseIconURL = baseURL + "/rest/packages/"+packageName+"/assets/";
+        
+        // first delete all existing model svgs
+        Collection<File> modelsvgs = FileUtils.listFiles(new File(modelSVGFilePath), new String[] { "svg" }, true);
+        if(modelsvgs != null) {
+            for(File modelsvg : modelsvgs) {
+                deletefile(modelsvg);
+            }
+        }
+        try {
+            StringTemplate modelTemplate = new StringTemplate(readFile(origModelSVGFile));
+            for (String className : workingSetsClassNames) {
+                modelTemplate.setAttribute("modelClassName", className);
+                modelTemplate.setAttribute("modelClassNameIconURL", baseIconURL+className+".ICON/binary");
+                String fileToWrite = modelSVGFilePath + className + ".svg";
+                createAndWriteToFile(fileToWrite, modelTemplate.toString());
+                modelTemplate.reset();
+            }
+        } catch (Exception e) {
+            _logger.error("Failed to setup model svg images : " + e.getMessage());
+        } 
+    }
+    
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void evaluateWorkDefinitions(Map<String, WorkDefinitionImpl> workDefinitions, String content) {
+    private List<WorkDefinitionImpl> evaluateWorkDefinitionContent(String content) {
+        
+        List<WorkDefinitionImpl> result = new ArrayList<WorkDefinitionImpl>();
+                
         List<Map<String, Object>> workDefinitionsMaps = (List<Map<String, Object>>) MVEL.eval(content, new HashMap());
         
         for (Map<String, Object> workDefinitionMap : workDefinitionsMaps) {
@@ -228,220 +262,54 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
                 if(workDefinitionMap.get("dependencies") != null) {
                     workDefinition.setDependencies(((List<String>) workDefinitionMap.get("dependencies")).toArray(new String[0]));
                 }
-                workDefinitions.put(workDefinition.getName(), workDefinition);
+                result.add(workDefinition);
             }
         }
+        
+        return result;
     }
     
-    private Map<String, String> getWorkitemConfigContent(Map<String, List<String>> configInfo, IDiagramProfile profile) {
-        Map<String, String> resultsMap = new HashMap<String, String>();
-        if(configInfo.size() > 0) {
-            for(Map.Entry<String, List<String>> entry : configInfo.entrySet()) {
-                String packageName = entry.getKey();
-                List<String> configNames = entry.getValue();
-                if(configNames != null) {
-                    for(String configName : configNames) {
-                        String configURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile) +
-                        "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/")) +
-                        "/rest/packages/" + packageName + "/assets/" + configName + "/source/";
-                
-                        try {
-                            InputStream in = getInputStreamForURL(configURL, profile);
-                            StringWriter writer = new StringWriter();
-                            IOUtils.copy(in, writer, "UTF-8");
-                            resultsMap.put(configName, writer.toString());
-                        } catch (Exception e) {
-                            // we dont want to barf..just log that error happened
-                            _logger.error(e.getMessage());
-                        } 
-                    }
-                }
-            }
-        }
-        return resultsMap;
-    }
-    
-    private InputStream getInputStreamForURL(String urlLocation, IDiagramProfile profile) throws Exception{
-        // pretend we are mozilla
-        URL url = new URL(urlLocation);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    private String getWorkitemConfigContent(String packageName, String configInfoName) {
+        String content = "";
+        
+        String baseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile) +
+            "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"));
+        
+        String widURL = baseURL + "/rest/packages/"+packageName+"/assets/"+configInfoName+"/source";
 
-        connection.setRequestMethod("GET");
-        connection
-                .setRequestProperty(
-                        "User-Agent",
-                        "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.16) Gecko/20110319 Firefox/3.6.16");
-        connection
-                .setRequestProperty("Accept",
-                        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-        connection.setRequestProperty("Accept-Language", "en-us,en;q=0.5");
-        connection.setRequestProperty("Accept-Encoding", "gzip,deflate");
-        connection.setRequestProperty("charset", "UTF-8");
-        connection.setReadTimeout(5 * 1000);
-        
-        if(profile.getUsr() != null && profile.getUsr().trim().length() > 0 && profile.getPwd() != null && profile.getPwd().trim().length() > 0) {
-            BASE64Encoder enc = new sun.misc.BASE64Encoder();
-            String userpassword = profile.getUsr() + ":" + profile.getPwd();
-            String encodedAuthorization = enc.encode( userpassword.getBytes() );
-            connection.setRequestProperty("Authorization", "Basic "+ encodedAuthorization);
-        }
-        
-        connection.connect();
-        
-        BufferedReader sreader = new BufferedReader(new InputStreamReader(
-                connection.getInputStream(), "UTF-8"));
-        StringBuilder stringBuilder = new StringBuilder();
+        Abdera abdera = new Abdera();
+        AbderaClient client = new AbderaClient(abdera);
 
-        String line = null;
-        while ((line = sreader.readLine()) != null) {
-            stringBuilder.append(line + "\n");
-        }
-        
-        return new ByteArrayInputStream(stringBuilder.toString()
-                .getBytes("UTF-8"));
-    }
-    
-    private Map<String, List<String>> findWorkitemInfoForUUID(String uuid, List<String> packageNames, IDiagramProfile profile) {
-        boolean gotPackage = false;
-        String pkg = "";
-        Map<String, List<String>> packageConfigs = new HashMap<String, List<String>>();
-        for(String nextPackage : packageNames) {
-            String packageAssetURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile) +
-            "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/")) +
-            "/rest/packages/" + nextPackage + "/assets/";
-            packageConfigs.put(nextPackage, new ArrayList<String>());
-            
-            try {
-                XMLInputFactory factory = XMLInputFactory.newInstance();
-                XMLStreamReader reader = factory.createXMLStreamReader(getInputStreamForURL(packageAssetURL, profile));
+        RequestOptions options = this.createBaseOptions(client);
+        options.setAccept("text/plain"); //even if we know is json
 
-                String format = "";
-                String title = "";  
-                while (reader.hasNext()) {
-                    int next = reader.next();
-                    if (next == XMLStreamReader.START_ELEMENT) {
-                        if ("format".equals(reader.getLocalName())) {
-                            format = reader.getElementText();
-                        } 
-                        if ("title".equals(reader.getLocalName())) {
-                            title = reader.getElementText();
-                        }
-                        if ("uuid".equals(reader.getLocalName())) {
-                            String eleText = reader.getElementText();
-                            if(uuid.equals(eleText)) {
-                                pkg = nextPackage;
-                                gotPackage = true;
-                            }
-                        }
-                        
-                        if ("asset".equals(reader.getLocalName())) {
-                            if(format.equals(WORKITEM_DEFINITION_EXT)) {
-                                packageConfigs.get(nextPackage).add(title);
-                                title = "";
-                                format = "";
-                            }
-                        }
-                    }
-                }
-                if(format.equals("wid")) {
-                    packageConfigs.get(nextPackage).add(title);
-                }
-            } catch (Exception e) {
-                // we dont want to barf..just log that error happened
-                _logger.error(e.getMessage());
-            } 
-            if(gotPackage) {
-                // noo need to loop through rest of packages really
-                break;
-            }
+        ClientResponse resp = client.get(widURL, options);
+
+        if (resp.getType() != ResponseType.SUCCESS){
+            throw new IllegalStateException("Error occurred when retrieving Work Item Config from package: "+resp.getStatusText());
         }
-        Map<String, List<String>> returnData = new HashMap<String, List<String>>();
-        returnData.put(pkg, packageConfigs.get(pkg));
-        return returnData;
-    }
-    
-    private List<String> findPackages(String uuid, IDiagramProfile profile) {
-        List<String> packages = new ArrayList<String>();
-        String packagesURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile) +
-        "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/")) +
-        "/rest/packages/";
+
         try {
-            XMLInputFactory factory = XMLInputFactory.newInstance();
-            XMLStreamReader reader = factory.createXMLStreamReader(getInputStreamForURL(packagesURL, profile));
-            while (reader.hasNext()) {
-                if (reader.next() == XMLStreamReader.START_ELEMENT) {
-                    if ("title".equals(reader.getLocalName())) {
-                        packages.add(reader.getElementText());
-                    }
-                }
-            }
+            InputStream in = resp.getInputStream();
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(in, writer, "UTF-8");
+            content = writer.toString();
         } catch (Exception e) {
             // we dont want to barf..just log that error happened
             _logger.error(e.getMessage());
         } 
-        return packages;
+        
+        return content; 
     }
-    
-    private String readFile(String pathname) throws IOException {
-        StringBuilder fileContents = new StringBuilder();
-        Scanner scanner = new Scanner(new File(pathname));
-        String lineSeparator = System.getProperty("line.separator");
-        try {
-            while(scanner.hasNextLine()) {        
-                fileContents.append(scanner.nextLine() + lineSeparator);
-            }
-            return fileContents.toString();
-        } finally {
-            scanner.close();
-        }
-    }
-    
-    private void deletefile(String file) {
-        File f = new File(file);
-        boolean success = f.delete();
-        if (!success){
-            _logger.info("Unable to delete file :" + file);
-        } else {
-            _logger.info("Successfully deleted file :" + file);
-        }
-    }
-    
-    private void deletefile(File f) {
-        String fname = f.getAbsolutePath();
-        boolean success = f.delete();
-        if (!success){
-            _logger.info("Unable to delete file :" + fname);
-        } else {
-            _logger.info("Successfully deleted file :" + fname);
-        }
-    }
-    
-    private void createAndWriteToFile(String file, String content) throws Exception {
-        Writer output = null;
-        output = new BufferedWriter(new FileWriter(file));
-        output.write(content);
-        output.close();
-        _logger.info("Created file:" + file);
-    }
+         
+    private String findPackageForProcessUUID(String uuid, List<String> packageNames){
 
-    private Set<String> getWorkingSetsClasses(List<String> wsUuids, List<String> packageNames, IDiagramProfile profile) {
-        
-        Set<String> result = new HashSet<String>();
-        
-        if (wsUuids == null || wsUuids.isEmpty()){
-            return result;
-        }
-        
-        //beacuse REST API is not based in UUIDs, I need to get all packages,
-        //from each package get all the WS and try to see if the WS with
-        //the provided UUID is there
-        for (String packageName : packageNames) {
-            
-        
-            String baseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile) +
+        String baseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile) +
             "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"));
-
-            String workingSetsURL = baseURL + "/rest/packages/"+packageName+"/assets?format=workingset";
+        
+        for(String nextPackage : packageNames) {
+            //The UUID must be of a bpmn2 asset
+            String processesURL = baseURL + "/rest/packages/"+nextPackage+"/assets?format=bpmn2";
 
             Abdera abdera = new Abdera();
             AbderaClient client = new AbderaClient(abdera);
@@ -449,45 +317,147 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
             RequestOptions options = this.createBaseOptions(client);
             options.setAccept("application/atom+xml");
 
-            ClientResponse resp = client.get(workingSetsURL, options);
+            ClientResponse resp = client.get(processesURL, options);
 
             if (resp.getType() != ResponseType.SUCCESS){
-                throw new IllegalStateException("Error occurred when retrieving Working Sets from package: "+resp.getStatusText());
+                throw new IllegalStateException("Error occurred when retrieving Processes from package: "+resp.getStatusText());
             }
 
             Document<Feed> document = resp.getDocument();
-
-            //Convert from UUIDs to entry
-            List<Entry> workingSetEntries = new ArrayList<Entry>();
+            
+            //check the UUID of the returned assets to see if the one we 
+            //are looking for is in this package
             for (Entry entry : document.getRoot().getEntries()) {
-                //get the UUID
                 ExtensibleElement metadataExtension = entry.getExtension(new QName("", "metadata"));
-                String uuid = ((ExtensibleElement)metadataExtension.getExtension(new QName("","uuid"))).getSimpleExtension(new QName("","value"));
-
-                if (wsUuids.contains(uuid)){
-                    workingSetEntries.add(entry);
+                String assetUuid = ((ExtensibleElement)metadataExtension.getExtension(new QName("","uuid"))).getSimpleExtension(new QName("","value"));
+                if (uuid.equals(assetUuid)){
+                    return nextPackage;
                 }
             }
-
-            if (workingSetEntries.isEmpty()){
-                // the WSs don't belong to this package. Next please...
-                continue;
-            }
-            
-            //All the Working-Sets UUID should have its corresponding name...
-            //And because all the WS must be in the same package we can
-            //do this:
-            if (wsUuids.size() != workingSetEntries.size()){
-                _logger.warn("Couldn't find all the requiered working-sets.");
-            }
-
-            //for each working-set we need to get the classes names they define
-            for (Entry workingSetEntry : workingSetEntries) {
-                    result.addAll(this.getClassNamesFromWorkingSetEntry(workingSetEntry));
-            }
-            
-            break;
         }
+        
+        throw new IllegalArgumentException("Couldn't find asset's package!");
+    }
+    
+    /**
+     * Return a Map of &lt;WorkItem title, List<WorkItemDefinition>&gt; for each of
+     * the WorkItem definitions present in the package
+     * @param packageName
+     * @return 
+     */
+    private Map<String, List<WorkDefinitionImpl>> findWorkitemInfoForPackage(String packageName) {
+        String baseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile) +
+            "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"));
+        
+        String widsURL = baseURL + "/rest/packages/"+packageName+"/assets?format="+WORKITEM_DEFINITION_EXT;
+        
+        Abdera abdera = new Abdera();
+        AbderaClient client = new AbderaClient(abdera);
+
+        RequestOptions options = this.createBaseOptions(client);
+        options.setAccept("application/atom+xml");
+
+        ClientResponse resp = client.get(widsURL, options);
+
+        if (resp.getType() != ResponseType.SUCCESS){
+            throw new IllegalStateException("Error occurred when retrieving Work Item definitions from package: "+resp.getStatusText());
+        }
+
+        Document<Feed> document = resp.getDocument();
+
+        Map<String,List<WorkDefinitionImpl>> result = new HashMap<String, List<WorkDefinitionImpl>>();
+        for (Entry entry : document.getRoot().getEntries()) {
+            //get the content of the wid
+            String content = this.getWorkitemConfigContent(packageName, entry.getTitle());
+            
+            //convert the content to WorkDefinitionImpl
+            List<WorkDefinitionImpl> definition = evaluateWorkDefinitionContent(content);
+            
+            result.put(entry.getTitle(),definition);
+        }
+        
+        return result;
+    }
+    
+    private List<String> findPackages(IDiagramProfile profile) {
+        List<String> packages = new ArrayList<String>();
+        
+        String packagesURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile) +
+        "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/")) +
+        "/rest/packages/";
+        
+        Abdera abdera = new Abdera();
+        AbderaClient client = new AbderaClient(abdera);
+
+        RequestOptions options = this.createBaseOptions(client);
+        
+        ClientResponse resp = client.get(packagesURL, options);
+        
+        if (resp.getType() != ResponseType.SUCCESS) {
+            throw new IllegalStateException("Couldn't get list of packages from Guvnor");
+        }
+            
+            
+        Document<Feed> document = resp.getDocument();
+        for (Entry entry : document.getRoot().getEntries()) {
+            packages.add(entry.getTitle());
+        }
+
+        return packages;
+        
+    }
+    
+    private Set<String> getWorkingSetsClasses(String packageName, List<String> wsUuids, IDiagramProfile profile) {
+        
+        Set<String> result = new HashSet<String>();
+        
+        if (wsUuids == null || wsUuids.isEmpty()){
+            return result;
+        }
+        
+        String baseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile) +
+        "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"));
+
+        String workingSetsURL = baseURL + "/rest/packages/"+packageName+"/assets?format=workingset";
+
+        Abdera abdera = new Abdera();
+        AbderaClient client = new AbderaClient(abdera);
+
+        RequestOptions options = this.createBaseOptions(client);
+        options.setAccept("application/atom+xml");
+
+        ClientResponse resp = client.get(workingSetsURL, options);
+
+        if (resp.getType() != ResponseType.SUCCESS){
+            throw new IllegalStateException("Error occurred when retrieving Working Sets from package: "+resp.getStatusText());
+        }
+
+        Document<Feed> document = resp.getDocument();
+
+        //Convert from UUIDs to entry
+        List<Entry> workingSetEntries = new ArrayList<Entry>();
+        for (Entry entry : document.getRoot().getEntries()) {
+            //get the UUID
+            ExtensibleElement metadataExtension = entry.getExtension(new QName("", "metadata"));
+            String uuid = ((ExtensibleElement)metadataExtension.getExtension(new QName("","uuid"))).getSimpleExtension(new QName("","value"));
+
+            if (wsUuids.contains(uuid)){
+                workingSetEntries.add(entry);
+            }
+        }
+
+        //All the Working-Sets UUID should have its corresponding name...
+        //And because all the WS must be in the same package we can
+        //do this:
+        if (wsUuids.size() != workingSetEntries.size()){
+            _logger.warn("Couldn't find all the requiered working-sets.");
+        }
+
+        //for each working-set we need to get the classes names they define
+        for (Entry workingSetEntry : workingSetEntries) {
+                result.addAll(this.getClassNamesFromWorkingSetEntry(workingSetEntry));
+        }
+            
         return result;
     }
     
@@ -559,5 +529,48 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         }
         
         return options;
+    }
+    
+    
+    private String readFile(String pathname) throws IOException {
+        StringBuilder fileContents = new StringBuilder();
+        Scanner scanner = new Scanner(new File(pathname));
+        String lineSeparator = System.getProperty("line.separator");
+        try {
+            while(scanner.hasNextLine()) {        
+                fileContents.append(scanner.nextLine() + lineSeparator);
+            }
+            return fileContents.toString();
+        } finally {
+            scanner.close();
+        }
+    }
+    
+    private void deletefile(String file) {
+        File f = new File(file);
+        boolean success = f.delete();
+        if (!success){
+            _logger.info("Unable to delete file :" + file);
+        } else {
+            _logger.info("Successfully deleted file :" + file);
+        }
+    }
+    
+    private void deletefile(File f) {
+        String fname = f.getAbsolutePath();
+        boolean success = f.delete();
+        if (!success){
+            _logger.info("Unable to delete file :" + fname);
+        } else {
+            _logger.info("Successfully deleted file :" + fname);
+        }
+    }
+    
+    private void createAndWriteToFile(String file, String content) throws Exception {
+        Writer output = null;
+        output = new BufferedWriter(new FileWriter(file));
+        output.write(content);
+        output.close();
+        _logger.info("Created file:" + file);
     }
 }

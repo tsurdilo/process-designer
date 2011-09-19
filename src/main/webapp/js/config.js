@@ -301,8 +301,8 @@ ORYX.CONFIG.PANEL_RIGHT_COLLAPSED = true;
 ORYX.CONFIG.PANEL_LEFT_COLLAPSED = true;
 
 /* Guvnor Popup Editor */
-ORYX.CONFIG.GUVNOR_EDITOR_URL       =   "/drools-guvnor/org.drools.guvnor.Guvnor/standaloneEditorServlet";
-ORYX.CONFIG.GUVNOR_PACKAGE          =   "mortgages";
-ORYX.CONFIG.GUVNOR_CATEGORY         =   "Home Mortgage";
-ORYX.CONFIG.GUVNOR_HIDE_RHS         =   true;
-ORYX.CONFIG.GUVNOR_HIDE_ATTRIBUTES  =   true;
+ORYX.CONFIG.GUVNOR_EDITOR_URL           =   "/drools-guvnor/org.drools.guvnor.Guvnor/standaloneEditorServlet";
+ORYX.CONFIG.GUVNOR_PACKAGE              =   "mortgages";
+ORYX.CONFIG.GUVNOR_CATEGORY             =   "Home Mortgage";
+ORYX.CONFIG.GUVNOR_HIDE_RHS             =   true;
+ORYX.CONFIG.GUVNOR_HIDE_ATTRIBUTES      =   true;

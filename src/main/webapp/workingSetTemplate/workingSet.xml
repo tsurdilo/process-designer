@@ -1,0 +1,28 @@
+<org.drools.guvnor.client.rpc.WorkingSetConfigData>
+  <constraints class="linked-list">
+    $data:{d|  
+    <org.drools.ide.common.client.factconstraints.config.SimpleConstraintConfigurationImpl>
+      <args/>
+      <constraintName>MandatoryFieldConstraint</constraintName>
+      <factType>$d.validFact$</factType>
+      <fieldName>$d.factField$</fieldName>
+    </org.drools.ide.common.client.factconstraints.config.SimpleConstraintConfigurationImpl>
+    <org.drools.ide.common.client.factconstraints.config.SimpleConstraintConfigurationImpl>
+      <args>
+        <entry>
+          <string>matches</string>
+          <string>$d.matchesString$</string>
+        </entry>
+      </args>
+      <constraintName>Matches</constraintName>
+      <factType>$d.validFact$</factType>
+      <fieldName>$d.factField$</fieldName>
+    </org.drools.ide.common.client.factconstraints.config.SimpleConstraintConfigurationImpl>
+    }$
+  </constraints>
+  <validFacts>
+    $data:{d|  
+    <string>$d.validFact$</string>
+    }$
+  </validFacts>
+</org.drools.guvnor.client.rpc.WorkingSetConfigData>

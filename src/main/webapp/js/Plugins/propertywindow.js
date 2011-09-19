@@ -1351,7 +1351,7 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
             var _guvnorParameters = [];
             _guvnorParameters.push({
                 name:"client", 
-                value: 'oryx'
+                value: ''
             });
             _guvnorParameters.push({
                 name:"packageName", 
@@ -1418,19 +1418,77 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
                }
                
                
-               var _modelEntitiesInPath = collectNodesInPath(srcShape, 'Model Entity');
-
+               var _modelEntitiesInPath = collectNodesInPath(srcShape, new RegExp("ModelEntity"));
+               _modelEntitiesInPath = _modelEntitiesInPath.concat(collectNodesInPath(srcShape, new RegExp("Model_")));
+               
                if (!_modelEntitiesInPath || _modelEntitiesInPath.length == 0){
                    alert ("You must define at least 1 Model Entity in your process!");
                    return;
                }
 
+               var errors = [];
+
+               //convert each Model Entity into Working Set config data
+               //and add it to the request parameter
+               var _workingSetConfigData = [];
                _modelEntitiesInPath.each(function(_modelEntity){
-                   _guvnorParameters.push({
-                        name:"validFactType", 
-                        value: _modelEntity.properties['oryx-modelentity']
-                    });
+                   var _validFact = _modelEntity.properties['oryx-modelentity'];
+                   var _factField = _modelEntity.properties['oryx-fieldconstraint'];
+                   var _matchesString = _modelEntity.properties['oryx-constraintvalue'];
+                   
+                   if (!_validFact){
+                       errors.push("Fact Name is mandatory!");
+                       return;
+                   }
+                   if (!_factField){
+                       errors.push("You must specify a field for '"+_validFact+"' Model Entity");
+                       return;
+                   }
+                   if (!_matchesString){
+                       errors.push("You must specify a value for '"+_validFact+"."+_factField+"' Model Entity");
+                       return;
+                   }
+                   
+                   _workingSetConfigData.push("{"+_validFact+"--@--"+_factField+"--@--"+_matchesString+"}");
+                    
                });
+
+               if (errors.length > 0){
+                   this.showErrors(errors);
+                   return;
+               }
+
+               //get working-set definition for the model entities found in path
+               var workingSetXML = "";
+               
+               new Ajax.Request("/designer/workingSet", {
+			asynchronous: false,
+			method: 'POST',
+                        parameters: {
+                            "action": "createWorkingSetWithMandatoryConstraint",
+                            "config": _workingSetConfigData
+                        },
+			onSuccess: function(transport){
+				workingSetXML = transport.responseText;
+			}.bind(this),
+			onFailure: (function(transport){
+				errors.push("Error getting Working Set Definition: "+transport.responseText);
+			}).bind(this)
+		});
+
+                if (errors.length > 0){
+                    this.showErrors(errors);
+                    return;
+                }
+                
+                alert (workingSetXML);
+                
+                //add Working Set XML to request
+                _guvnorParameters.push({
+                    name: "workingSetXMLDefinitions", 
+                    value: workingSetXML
+                });
+
            }
            
             if (_guvnorParameters.length > 0){
@@ -1464,6 +1522,16 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
             });
         
             w.show();
+        },
+        
+        showErrors : function (errors){
+            var msg = "Errors:";
+            
+            errors.each(function(error){
+                msg += "\n\t"+error;
+            });
+            
+            alert(msg);
         },
     
         encodeBRL : function(){
@@ -1624,7 +1692,7 @@ function getGuvnorFrame(context){
     return null;
 }
 
-function collectNodesInPath(srcNode, nodeTitle){
+function collectNodesInPath(srcNode, nodeStencilId){
     
     if (!srcNode.incoming || srcNode.incoming.length == 0){
         return [];
@@ -1632,12 +1700,12 @@ function collectNodesInPath(srcNode, nodeTitle){
     
     var foundNodes = [];
     srcNode.incoming.each(function(incomingNode){
-        if (incomingNode._stencil._jsonStencil.title == nodeTitle){
+        if (incomingNode._stencil._jsonStencil.id.match(nodeStencilId)){
             foundNodes.push(incomingNode);
         }
         
         //inspect children 
-        foundNodes = foundNodes.concat(collectNodesInPath(incomingNode, nodeTitle));
+        foundNodes = foundNodes.concat(collectNodesInPath(incomingNode, nodeStencilId));
         
     });
     

@@ -2664,18 +2664,21 @@
                                 "readonly": false,
                                 "optional": false,
                                 "popular" : true,
+                                "refToView":"",
                                 "items": [
                                         $workingSetsClassNames:{cn| 
                                             \{
                                                 "id":"$cn$",
                                                 "title":"$cn$",
-                                                "value":"$cn$"
+                                                "value":"$cn$",
+                                                "refToView":"$cn$"
                                             \},
                                         }$
                                         {
                                                 "id":"None",
                                                 "title":"None",
-                                                "value":"None"
+                                                "value":"None",
+                                                "refToView":"None"
                                         }
                                 ]
                         }
@@ -2702,12 +2705,12 @@
                 //Model
                 {
                     "type" : 		"node",
-                    "id":               "Model",
+                    "id":               "ModelEntity",
                     "title" : 		"Model Entity",
                     "groups" : 		["Model"],
                     "description" :     "A Model Entity",
-                    "view" :			"artifact/text.annotation.svg",
-                    "icon" :		"artifact/text.annotation.png",
+                    "view" :		"model/model.svg",
+                    "icon" :		"model/model.png",
                     "propertyPackages" : [
 				"baseAttributes",
 				"flowElement",
@@ -2939,6 +2942,55 @@
 		}$
 		// end custom workitems 
 		
+                //Model Classes
+                $workingSetsClassNames:{cn| 
+                    \{
+                        "type" : 		"node",
+			"id" :			"Model_$cn$",
+			"title" :		"$cn$",
+			"groups" :		["Model"],
+			"view" :		"model/dynamic/$cn$.svg",
+			"icon" :		"dataobject/data.object.png",
+                        "description" :         "$cn$ Model Element",
+			"defaultAlign" :	"southeast",
+			"propertyPackages":	[
+                            "baseAttributes",
+				"flowElement",
+				"artifact"
+			],
+                        "properties" :		[
+                            \{
+                                "id":"constraintValue",
+                                "type":"String",
+                                "title":"Type",
+                                "value":"",
+                                "readonly":false,
+                                "optional":false
+                            \},
+                            \{
+                                "id":"modelentity",
+                                "type":"String",
+                                "title":"Entity",
+                                "value":"$cn$",
+                                "readonly":true,
+                                "optional":false
+                            \},
+                            \{
+                                "id":"fieldConstraint",
+                                "type":"String",
+                                "title":"Field Constraint",
+                                "value":"name",
+                                "readonly":true,
+                                "optional":false
+                            \}
+                        ],
+			"roles" : [
+				"all"
+			]
+                    \},
+                }$
+                // end Model Classes
+                
 		// Gateways
 		
 		{
@@ -4316,12 +4368,22 @@
 					},
                                         {
 						"from" : "fromtoall",
-						"to" : ["Model"]
+						"to" : ["ModelEntity"]
 					},
 					{
-						"from" : "Model",
+						"from" : "ModelEntity",
 						"to" : ["fromtoall"]
 					},
+                                        $workingSetsClassNames:{cn|
+                                          \{
+                                                "from" : "fromtoall",
+						"to" : ["Model_$cn$"]
+                                          \}, 
+                                          \{
+                                                "from" : "Model_$cn$",
+						"to" : ["fromtoall"]
+                                          \}, 
+                                        }$
 					{
 						"from" : "Message",
 						"to" : ["MessageFlow"]

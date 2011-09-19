@@ -3616,6 +3616,84 @@
 				}
 			]
                 },
+                {
+			"type" : 			"node",
+			"id" :				"StartConditionalEvent",
+			"title" :			"Start Conditional Event",
+			"title_de" :		"Bedingungs-Startereignis",
+			"groups" :			["Start Events"],
+			"groups_de" :		["Start-Ereignisse"],
+			"description" :		"A process instance is started based on changed business conditions or matching business rules.",
+			"description_de" :	"Eine Prozess-Instanz wird als Reaktion auf veränderte Bedingungen oder Geschäftsregeln gestartet.",
+			"view" :			"startevent/conditional.svg",
+			"icon" 	:			"startevent/conditional.png",
+			"propertyPackages": [
+				"baseAttributes",
+				"catchEventAttributes",
+				"interrupting",
+				"condition",
+				"bgColor"
+			],
+			"roles" : 			[
+				"all",
+				"sequence_start",
+				"to_task_event",
+				"from_task_event",
+				"fromtoall",
+				"Startevents_all",
+				"choreography_sequence_start",
+				"StartEventsMorph"
+			],
+			"properties": [
+				{
+					"id":"trigger",
+					"type":"String",
+					"title":"Trigger",
+					"title_de":"Auslöser",
+					"value":"Conditional",
+					"description":"",
+					"readonly":true,
+					"optional":false
+				},
+				{
+					"id":"conditionlanguage",
+					"type":"Choice",
+					"title":"Language",
+					"title_de":"Sprache",
+					"value":"http://www.jboss.org/drools/rule",
+					"description":"",
+					"readonly":false,
+					"optional":false,
+                                        "items": [
+						{
+							"id":"rule",
+							"title":"Rule",
+							"value":"http://www.jboss.org/drools/rule"
+						},
+						{
+							"id":"java",
+							"title":"Java",
+							"value":"http://www.java.com/java"
+						},
+						{
+							"id":"xpath",
+							"title":"XPath",
+							"value":"http://www.w3.org/1999/XPath"
+						}
+					]
+				},
+				{
+					"id":"conditionexpression",
+					"type":"GuvnorRuleEditor",
+					"title":"Expression",
+					"title_de":"Expression",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true
+				}
+			]
+		},
                 
 		// Intermediate Events Catching
 		

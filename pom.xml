@@ -172,9 +172,9 @@
       </exclusions>
     </dependency>
       <dependency>
-          <groupId>antlr</groupId>
+          <groupId>org.antlr</groupId>
           <artifactId>stringtemplate</artifactId>
-          <version>3.0</version>
+          <version>3.2.1</version>
           <type>jar</type>
       </dependency>
       <dependency>

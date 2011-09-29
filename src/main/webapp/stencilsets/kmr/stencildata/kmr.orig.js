@@ -2703,6 +2703,7 @@
 		},
 		
                 //Model
+                /*
                 {
                     "type" : 		"node",
                     "id":               "ModelEntity",
@@ -2750,7 +2751,7 @@
 			]
                     
                 },
-                
+                */
 		// start custom workitems
 		$workitemDefs.keys:{k| 
 		\{
@@ -2960,14 +2961,6 @@
 			],
                         "properties" :		[
                             \{
-                                "id":"constraintValue",
-                                "type":"String",
-                                "title":"Type",
-                                "value":"",
-                                "readonly":false,
-                                "optional":false
-                            \},
-                            \{
                                 "id":"modelentity",
                                 "type":"String",
                                 "title":"Entity",
@@ -2979,9 +2972,21 @@
                                 "id":"fieldConstraint",
                                 "type":"String",
                                 "title":"Field Constraint",
-                                "value":"name",
+                                "value":"code",
                                 "readonly":true,
-                                "optional":false
+                                "optional":false,
+                                "visible":false,
+                                "hidden":true
+                            \},
+                            \{
+                                "id":"code",
+                                "type":"kmrSingleVocabulary",
+                                "title":"Code",
+                                "value":"",
+                                "description":"",
+                                "readonly":     false,
+                                "optional":     false,
+                                "lookupType":"$cn; format="upper"$"
                             \}
                         ],
 			"roles" : [
@@ -3097,71 +3102,6 @@
 		},
 		{
 			"type" : 			"node",
-			"id" : 				"EventbasedGateway",
-			"title" :			"Event-based Gateway",
-			"title_de" :		"Ereignis-basiertes Gateway",
-			"groups" :			["Gateways"],
-			"description" :		"Is always followed by catching events or receive tasks. Sequence flow is routed to the subsequent event/task which happens first.",
-			"description_de" :	"Wenn der Sequenzfluss verzweigt wird, werden alle ausgehenden Kanten simultan aktiviert. Bei der Zusammenführung wird auf alle eingehenden Kanten gewartet, bevor der ausgehende Sequenzfluss aktiviert wird.",
-			"view" :			"gateway/eventbased.svg",
-			"icon" :			"gateway/eventbased.png",
-			"propertyPackages" :[
-				"baseAttributes",
-				"flowElement",
-				"gateway",
-				"bgColor"
-			],
-			"properties" :		[
-				{
-					"id":"eventtype",
-					"type":"Choice",
-					"title":"Type",
-					"title_de":"Typ",
-					"value":"exclusive",
-					"description":"",
-					"readonly":false,
-					"optional":true,
-					"refToView":"",
-					"items":[
-						{
-							"id":"c1",
-							"title":"Exclusive (standard)",
-							"title_de" : "Exklusiv (Standard)",
-							"value":"exclusive",
-							"icon" : "gateway/list/eventbased.exclusive.png",
-							"refToView":"default"
-						},
-						{
-							"id":"c2",
-							"title":"Exclusive Instantiation",
-							"title_de" : "Exklusive Instantiierung",
-							"value":"instantiate_exclusive",
-							"icon" : "gateway/list/eventbased.exclusive.png",
-							"refToView":["default","instantiate"]
-						},
-						{
-							"id":"c3",
-							"title":"Parallel Instantiation",
-							"title_de" : "Parallele Instantiierung",
-							"value":"instantiate_parallel",
-							"icon" : "gateway/list/eventbased.parallel.png",
-							"refToView":["parallel","instantiate"]
-						}
-					]
-				}
-			],
-			"roles":			[
-				"all",
-				"sequence_end",
-				"choreography_sequence_start",
-				"choreography_sequence_end",
-				"fromtoall",
-				"GatewaysMorph",
-				"EventbasedGateway"
-			]
-		},
-		{
-			"type" : 			"node",
 			"id" :				"ParallelGateway",
 			"title" :			"Parallel Gateway",
 			"title_de" :		"Paralleles Gateway",
@@ -3190,157 +3130,6 @@
 				}
 			],
 			"roles": 			[
-				"all",
-				"sequence_start",
-				"sequence_end",
-				"choreography_sequence_start",
-				"choreography_sequence_end",
-				"fromtoall",
-				"GatewaysMorph"
-			]
-		},
-		{
-			"type" : 			"node",
-			"id" :				"InclusiveGateway",
-			"title" :			"Inclusive Gateway",
-			"title_de" :		"Inklusives Gateway",
-			"groups" :			["Gateways"],
-			"description" :		"When splitting, one or more branches are activated based on branching conditions. When merging, it awaits all active incoming branches to complete.",
-			"description_de" :	"Bei einer Verzweigung werden eine oder mehrere Kanten abhängig von Verzweigungsbedingungen aktiviert. Bei einer Vereinigung wird auf alle eingehenden aktiven Kanten gewartet.",
-			"view" :			"gateway/inclusive.svg",
-			"icon" :			"gateway/inclusive.png",
-			"propertyPackages" :[
-				"baseAttributes",
-				"flowElement",
-				"gateway",
-				"bgColor"
-			],
-			"properties" :		[
-				{
-					"id":"gatewaytype",
-					"type":"String",
-					"title":"GatewayType",
-					"title_de":"Gatewaytyp",
-					"value":"OR",
-					"description":"",
-					"readonly":true,
-					"optional":false,
-					"length":""
-				},
-				{
-					"id":"defaultgate",
-					"type":"String",
-					"title":"DefaultGate",
-					"title_de":"Standardgate",
-					"value":"",
-					"description":"",
-					"readonly":false,
-					"optional":true,
-					"refToView":"",
-					"length":"50",
-					"wrapLines":true
-				},
-				{
-					"id":"gate_outgoingsequenceflow",
-					"type":"String",
-					"title":"[Gate] OutgoingSequenceFlow",
-					"title_de":"[Gate] Ausgehender Steuerfluss",
-					"value":"",
-					"description":"",
-					"readonly":false,
-					"optional":true,
-					"refToView":"",
-					"length":"50"
-				},
-				{
-					"id":"gate_assignments",
-					"type":"String",
-					"title":"[Gate] Assignments",
-					"title":"[Gates] Zuweisungen",
-					"value":"",
-					"description":"",
-					"readonly":false,
-					"optional":true,
-					"refToView":"",
-					"length":"50",
-					"wrapLines":true
-				}
-			],
-			"roles": 			[
-				"all",
-				"sequence_start",
-				"sequence_end",
-				"choreography_sequence_start",
-				"choreography_sequence_end",
-				"fromtoall",
-				"GatewaysMorph"
-			]
-		},
-		{
-			"type": "node",
-			"id":"ComplexGateway",
-			"title":"Complex Gateway",
-			"title_de":"Komplexes Gateway",
-			"groups":["Gateways"],
-			"description":"It triggers one or more branches based on complex conditions or verbal descriptions. Use it sparingly as the semantics might not be clear.",
-			"description_de":"Eine oder mehrere Kanten werden abhängig von komplexen Bedingungen oder verbalen Beschreibungen aktiviert. Es sollte nur benutzt werden, wenn sich das Verhalten nicht durch andere Gateways ausdrücken lässt.",
-			"view":"gateway/complex.svg",
-			"icon":"gateway/complex.png",
-			"propertyPackages" : [
-				"baseAttributes",
-				"flowElement",
-				"gateway",
-				"bgColor"
-			],
-			"properties" : [
-				{
-					"id":"gatewaytype",
-					"type":"String",
-					"title":"GatewayType",
-					"title_de":"Gatewaytyp",
-					"value":"Complex",
-					"description":"",
-					"readonly":true,
-					"optional":false,
-					"length":""
-				},
-				{
-					"id":"activationcondition",
-					"type":"String",
-					"title":"ActivationCondition",
-					"title_de":"Aktivierungsbedingung",
-					"value":"",
-					"popular":true,
-					"description":"Determines which combination of incoming tokens will be synchronized for activation of the Gateway.",
-					"readonly":false,
-					"optional":true
-				},
-				{
-					"id":"incomingcondition",
-					"type":"String",
-					"title":"IncomingCondition",
-					"title_de":"Eingangsbedingung",
-					"value":"",
-					"description":"",
-					"readonly":false,
-					"optional":true,
-					"refToView":"",
-					"length":"50"
-				},
-				{
-					"id":"outgoingcondition",
-					"type":"String",
-					"title":"OutgoingCondition",
-					"title_de":"Ausgangsbedingung",
-					"value":"",
-					"description":"",
-					"readonly":false,
-					"optional":true,
-					"refToView":"",
-					"length":"50"
-				}
-			],
-			"roles": [
 				"all",
 				"sequence_start",
 				"sequence_end",
@@ -3616,6 +3405,84 @@
 				}
 			]
                 },
+                {
+			"type" : 			"node",
+			"id" :				"StartConditionalEvent",
+			"title" :			"Start Conditional Event",
+			"title_de" :		"Bedingungs-Startereignis",
+			"groups" :			["Start Events"],
+			"groups_de" :		["Start-Ereignisse"],
+			"description" :		"A process instance is started based on changed business conditions or matching business rules.",
+			"description_de" :	"Eine Prozess-Instanz wird als Reaktion auf veränderte Bedingungen oder Geschäftsregeln gestartet.",
+			"view" :			"startevent/conditional.svg",
+			"icon" 	:			"startevent/conditional.png",
+			"propertyPackages": [
+				"baseAttributes",
+				"catchEventAttributes",
+				"interrupting",
+				"condition",
+				"bgColor"
+			],
+			"roles" : 			[
+				"all",
+				"sequence_start",
+				"to_task_event",
+				"from_task_event",
+				"fromtoall",
+				"Startevents_all",
+				"choreography_sequence_start",
+				"StartEventsMorph"
+			],
+			"properties": [
+				{
+					"id":"trigger",
+					"type":"String",
+					"title":"Trigger",
+					"title_de":"Auslöser",
+					"value":"Conditional",
+					"description":"",
+					"readonly":true,
+					"optional":false
+				},
+				{
+					"id":"conditionlanguage",
+					"type":"Choice",
+					"title":"Language",
+					"title_de":"Sprache",
+					"value":"http://www.jboss.org/drools/rule",
+					"description":"",
+					"readonly":false,
+					"optional":false,
+                                        "items": [
+						{
+							"id":"rule",
+							"title":"Rule",
+							"value":"http://www.jboss.org/drools/rule"
+						},
+						{
+							"id":"java",
+							"title":"Java",
+							"value":"http://www.java.com/java"
+						},
+						{
+							"id":"xpath",
+							"title":"XPath",
+							"value":"http://www.w3.org/1999/XPath"
+						}
+					]
+				},
+				{
+					"id":"conditionexpression",
+					"type":"ContextAwareConstraintExpressionEditor",
+					"title":"Expression",
+					"title_de":"Expression",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true
+				}
+			]
+		},
                 
 		// Intermediate Events Catching
 		
@@ -3803,55 +3670,6 @@
 		},
 		{
 			"type": "node",
-			"id":"EndMessageEvent",
-			"title":"Message End Event",
-			"title_de":"Nachrichten-Endereignis",
-			"groups":["End Events"],
-			"groups_de":["End-Ereignisse"],
-			"description":"At the end of the process, a message is sent.",
-			"description_de":"Zum Abschluss des Prozesses wird noch eine Nachricht versendet.",
-			"view":"endevent/message.svg",
-			"icon":"endevent/message.png",
-			"propertyPackages":[
-				"baseAttributes",
-				"throwEventAttributes",
-				"bgColor"
-			],
-			"roles": [
-				"all",
-				"messageflow_start",
-				"sequence_end",
-				"to_task_event",
-				"from_task_event",
-				"fromtoall",
-				"Endevents_all",
-				"EndEventsMorph"
-			],
-			"properties": [
-				{
-					"id":"trigger",
-					"type":"String",
-					"title":"Trigger",
-					"title_de":"Auslöser",
-					"value":"Message",
-					"description":"",
-					"readonly":true,
-					"optional":false
-				},
-				{
-					"id":"messageref",
-					"type":"String",
-					"title":"MessageRef",
-					"title_de":"MessageRef",
-					"value":"",
-					"description":"Message Ref",
-					"readonly":false,
-					"optional":true
-				}
-			]
-		},
-		{
-			"type": "node",
 			"id":"EndTerminateEvent",
 			"title":"Terminate End Event",
 			"title_de":"Terminierungs-Endereignis",
@@ -3958,7 +3776,7 @@
 				},
 				{
 					"id":"conditionexpression",
-					"type":"GuvnorRuleEditor",
+					"type":"ContextAwareConstraintExpressionEditor",
 					"title":"Condition Expression",
 					"title_de":"Bedingungsausdruck",
 					"value":"",
@@ -4131,61 +3949,318 @@
                 }
            ]
 		},
-		{
-			"type": "edge",
-			"id":"Association_Bidirectional",
-			"title":"Association (bidirectional)",
-			"title_de":"Beidseitige Assoziation",
-			"description":"A Bidirected Association indicates that the data object is modified, i.e. read and written during the execution of an actvity.",
-			"description_de":"Eine beidseitig gericEhtete Assoziation zeigt, dass das Datenobjekt während der Ausführung einer Aktivität verändert, d.h. gelesen und geschrieben wird.",
-			"groups":["Connecting Objects"],
-			"groups_de":["Konnektoren"],
-			"view":"connector/association.bidirectional.svg",
-			"icon":"connector/association.bidirectional.png",
-			"roles": [
-				"all",
-				"ConnectingObjectsMorph",
-				"Directed_Association"
-			],			
-			"propertyPackages" : [
-			    "dataAssociation"
-			],
-			"properties" : [
-                {
-                    "id":"text",
-                    "type":"String",
-                    "title":"Name",
-                    "title_de":"Name",
-                    "value":"",
-                    "description":"",
-                    "readonly":false,
-                    "optional":true,
-                    "length":"",
-                    "refToView":"name",
-                    "wrapLines":true,
-					"popular":true
-                }
-           ]
-		},
-		{
-			"type": "edge",
-			"id":"MessageFlow",
-			"title":"Message Flow",
-			"title_de":"Nachrichtenfluss",
-			"description":"Message Flow symbolizes information flow across organizational boundaries. Message flow can be attached to pools, activities, or message events. The order of message exchanges can be specified by combining message flow and sequence flow.",
-			"description_de":"Nachrichtenflüsse symbolisieren Informationen, die über organisatorische Grenzen hinweg fließen. Nachrichtenflüsse können an Pools, Aktivitäten oder Nachrichten-Ereignissen angeheftet sein. Die Abfolge von Nachrichtenaustauschen kann spezifiziert werden, indem Nachrichtenfluss und Sequenzfluss kombiniert werden.",
-			"groups":["Connecting Objects"],
-			"groups_de":["Konnektoren"],
-			"view":"connector/messageflow.svg",
-			"icon":"connector/messageflow.png",
-			"propertyPackages":[
-				"baseAttributes"
-			],
-			"roles": [
-				"ConnectingObjectsMorph",
-				"MessageContainer"
-			]
-		}
+                
+           //Pre-defined Service Tasks
+           {
+                "type" : 			"node",
+                "id": 				"SendEmailService",
+                "title" : 			"Send Email",
+                "groups" : 			["Service Tasks"],
+                "description" : 	"Sends a Email",
+                "view" : "activity/sendEmail.svg",
+                "icon" : "activity/sendEmail.png",
+                "propertyPackages" :[
+                    "customtask",
+                    "customactivity",
+                    "customloopcharacteristics"
+                ],
+                "roles" : [
+                    "all",
+                    "sequence_start",
+                    "sequence_end",
+                    "from_task_event",
+                    "to_task_event",
+                    "FromEventbasedGateway",
+                    "messageflow_start",
+                    "messageflow_end",
+                    "fromtoall",
+                    "ActivitiesMorph"
+                ],
+                "properties": [
+                    {
+                        "id":"tasktype",
+                        "type":"String",
+                        "title":"TaskType",
+                        "value":"SendEmailService",
+                        "description":"",
+                        "readonly":true,
+                        "optional":false
+                    },
+                    {
+                        "id":"name",
+                        "type":"String",
+                        "title":"Name",
+                        "value":"Send Email",
+                        "description":"The descriptive name of the BPMN element.",
+                        "readonly":false,
+                        "optional":true,
+                        "length":"",
+                        "wrapLines" : true,
+                        "refToView":"text_name"	
+                    },
+                    {
+                        "id":"documentation",
+                        "type":"Text",
+                        "title":"Documentation",
+                        "value":"", 
+                        "description":"This attribute is used to annotate the BPMN element, such as descriptions and other documentation.",
+                        "readonly":true,
+                        "optional":true,
+                        "length":"",
+                        "wrapLines":true,
+                        "popular" : true
+                    },
+                    {
+                        "id":"taskName",
+                        "type":"String",
+                        "title":"Task Name",
+                        "title_de":"Task Name",
+                        "value":"Send Email",
+                        "description":"Task Name",
+                        "readonly":true,
+                        "optional":true
+                    },
+                    {
+                            "id":"datainputset",
+                            "type":"Text",
+                            "title":"DataInputSet",
+                            "title_de":"Dateneingabesatz",
+                            "value":"to,cc,bcc,subject,body",
+                            "description":"An InputSet is a collection of DataInput elements that together define a valid set of data inputs.",
+                            "description_de":"Ein Eingabesatz ist eine Zusammenstellung von Eingabe-Datenobjekten, die zusammen einen gültigen Satz von Dataeingaben definieren.",
+                            "readonly":false,
+                            "optional":true
+                    },  
+                    {
+                            "id":"dataoutputset",
+                            "type":"Text",
+                            "title":"DataOutputSet",
+                            "title_de":"Datenausgabesatz",
+                            "value":"",
+                            "description":"An OutputSet is a collection of DataOutputs elements that together may be produced as output from an Activity or Event.",
+                            "description_de":"Ein Ausgabesatz ist eine Zusammenstellung von Ausgabe-Datenobjekten, die zusammen als Ausgabe einer Aktivität oder eines Ereignisses produziert werden.",
+                            "readonly":false,
+                            "optional":true
+                    },
+                    {
+                            "id":"assignments",
+                            "type":"Text",
+                            "title":"Assignments",
+                            "title_de":"Zuweisungen",
+                            "value":"to=,cc=,bcc=,subject=,body=",
+                            "description":"",
+                            "readonly":false,
+                            "optional":true
+                    }
+                ]
+            },
+            {
+                "type" : 			"node",
+                "id": 				"SendSMSService",
+                "title" : 			"Send SMS",
+                "groups" : 			["Service Tasks"],
+                "description" : 	"Sends a SMS",
+                "view" : "activity/sendSMS.svg",
+                "icon" : "activity/sendSMS.png",
+                "propertyPackages" :[
+                    "customtask",
+                    "customactivity",
+                    "customloopcharacteristics"
+                ],
+                "roles" : [
+                    "all",
+                    "sequence_start",
+                    "sequence_end",
+                    "from_task_event",
+                    "to_task_event",
+                    "FromEventbasedGateway",
+                    "messageflow_start",
+                    "messageflow_end",
+                    "fromtoall",
+                    "ActivitiesMorph"
+                ],
+                "properties": [
+                    {
+                        "id":"tasktype",
+                        "type":"String",
+                        "title":"TaskType",
+                        "value":"SendSMSService",
+                        "description":"",
+                        "readonly":true,
+                        "optional":false
+                    },
+                    {
+                        "id":"name",
+                        "type":"String",
+                        "title":"Name",
+                        "value":"Send SMS",
+                        "description":"The descriptive name of the BPMN element.",
+                        "readonly":false,
+                        "optional":true,
+                        "length":"",
+                        "wrapLines" : true,
+                        "refToView":"text_name"	
+                    },
+                    {
+                        "id":"documentation",
+                        "type":"Text",
+                        "title":"Documentation",
+                        "value":"", 
+                        "description":"This attribute is used to annotate the BPMN element, such as descriptions and other documentation.",
+                        "readonly":true,
+                        "optional":true,
+                        "length":"",
+                        "wrapLines":true,
+                        "popular" : true
+                    },
+                    {
+                        "id":"taskName",
+                        "type":"String",
+                        "title":"Task Name",
+                        "title_de":"Task Name",
+                        "value":"Send SMS",
+                        "description":"Task Name",
+                        "readonly":true,
+                        "optional":true
+                    },
+                    {
+                            "id":"datainputset",
+                            "type":"Text",
+                            "title":"DataInputSet",
+                            "title_de":"Dateneingabesatz",
+                            "value":"to,body",
+                            "description":"An InputSet is a collection of DataInput elements that together define a valid set of data inputs.",
+                            "description_de":"Ein Eingabesatz ist eine Zusammenstellung von Eingabe-Datenobjekten, die zusammen einen gültigen Satz von Dataeingaben definieren.",
+                            "readonly":false,
+                            "optional":true
+                    },  
+                    {
+                            "id":"dataoutputset",
+                            "type":"Text",
+                            "title":"DataOutputSet",
+                            "title_de":"Datenausgabesatz",
+                            "value":"",
+                            "description":"An OutputSet is a collection of DataOutputs elements that together may be produced as output from an Activity or Event.",
+                            "description_de":"Ein Ausgabesatz ist eine Zusammenstellung von Ausgabe-Datenobjekten, die zusammen als Ausgabe einer Aktivität oder eines Ereignisses produziert werden.",
+                            "readonly":false,
+                            "optional":true
+                    },
+                    {
+                            "id":"assignments",
+                            "type":"Text",
+                            "title":"Assignments",
+                            "title_de":"Zuweisungen",
+                            "value":"to=,body=",
+                            "description":"",
+                            "readonly":false,
+                            "optional":true
+                    }
+                ]
+            },
+            {
+                "type" : 			"node",
+                "id": 				"NotifyExternalSystemService",
+                "title" : 			"Notify External System",
+                "groups" : 			["Service Tasks"],
+                "description" : 	"Notify External System",
+                "view" : "activity/notifySystem.svg",
+                "icon" : "activity/notifySystem.png",
+                "propertyPackages" :[
+                    "customtask",
+                    "customactivity",
+                    "customloopcharacteristics"
+                ],
+                "roles" : [
+                    "all",
+                    "sequence_start",
+                    "sequence_end",
+                    "from_task_event",
+                    "to_task_event",
+                    "FromEventbasedGateway",
+                    "messageflow_start",
+                    "messageflow_end",
+                    "fromtoall",
+                    "ActivitiesMorph"
+                ],
+                "properties": [
+                    {
+                        "id":"tasktype",
+                        "type":"String",
+                        "title":"TaskType",
+                        "value":"NotifyExternalSystemService",
+                        "description":"",
+                        "readonly":true,
+                        "optional":false
+                    },
+                    {
+                        "id":"name",
+                        "type":"String",
+                        "title":"Name",
+                        "value":"Notify External System",
+                        "description":"The descriptive name of the BPMN element.",
+                        "readonly":false,
+                        "optional":true,
+                        "length":"",
+                        "wrapLines" : true,
+                        "refToView":"text_name"	
+                    },
+                    {
+                        "id":"documentation",
+                        "type":"Text",
+                        "title":"Documentation",
+                        "value":"", 
+                        "description":"This attribute is used to annotate the BPMN element, such as descriptions and other documentation.",
+                        "readonly":true,
+                        "optional":true,
+                        "length":"",
+                        "wrapLines":true,
+                        "popular" : true
+                    },
+                    {
+                        "id":"taskName",
+                        "type":"String",
+                        "title":"Task Name",
+                        "title_de":"Task Name",
+                        "value":"Notify External System",
+                        "description":"Task Name",
+                        "readonly":true,
+                        "optional":true
+                    },
+                    {
+                            "id":"datainputset",
+                            "type":"Text",
+                            "title":"DataInputSet",
+                            "title_de":"Dateneingabesatz",
+                            "value":"",
+                            "description":"An InputSet is a collection of DataInput elements that together define a valid set of data inputs.",
+                            "description_de":"Ein Eingabesatz ist eine Zusammenstellung von Eingabe-Datenobjekten, die zusammen einen gültigen Satz von Dataeingaben definieren.",
+                            "readonly":false,
+                            "optional":true
+                    },  
+                    {
+                            "id":"dataoutputset",
+                            "type":"Text",
+                            "title":"DataOutputSet",
+                            "title_de":"Datenausgabesatz",
+                            "value":"",
+                            "description":"An OutputSet is a collection of DataOutputs elements that together may be produced as output from an Activity or Event.",
+                            "description_de":"Ein Ausgabesatz ist eine Zusammenstellung von Ausgabe-Datenobjekten, die zusammen als Ausgabe einer Aktivität oder eines Ereignisses produziert werden.",
+                            "readonly":false,
+                            "optional":true
+                    },
+                    {
+                            "id":"assignments",
+                            "type":"Text",
+                            "title":"Assignments",
+                            "title_de":"Zuweisungen",
+                            "value":"",
+                            "description":"",
+                            "readonly":false,
+                            "optional":true
+                    }
+                ]
+            }
+           
 	],
 	
 	"rules" : {

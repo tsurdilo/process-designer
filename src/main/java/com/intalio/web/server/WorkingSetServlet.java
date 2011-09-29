@@ -8,7 +8,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -69,7 +71,9 @@ public class WorkingSetServlet extends HttpServlet{
      *              where:
      *                  - 'validFact' is the name of a Model class in Guvnor
      *                  - 'factField' is the field where the constraints are going to be applied
-     *                  - 'matchesString' is the String used for the Match Constraint
+     *                  - 'matchesString' is the String used for the Match Constraint. 
+     *                     If more than one parameter with the same 'validFact' and 'factField'
+     *                     are passed, an OR is added to the existing 'matchesString'
      * 
      * @param req
      * @param resp 
@@ -84,12 +88,28 @@ public class WorkingSetServlet extends HttpServlet{
         //get the template
         StringTemplate workingSetStringTemplate = new StringTemplate(readFile(workingSetTemplate));
         
-        //for each config, parse its content and create template data
-        List<WorkingSetConfigData> templateData = new ArrayList<WorkingSetConfigData>();
+        //Group the config objects according to its validFact and factField
+        Map<String,WorkingSetConfigData> groupedWorkingSetConfigData = new HashMap<String, WorkingSetConfigData>();
         for (int i = 0; i < configs.length; i++) {
             String config = configs[i];
-            templateData.add(this.parseWorkingSetConfigData(config));
+            WorkingSetConfigData workingSetConfigData = this.parseWorkingSetConfigData(config);
+            
+            String key = workingSetConfigData.getValidFact()+"."+workingSetConfigData.getFactField();
+            if (groupedWorkingSetConfigData.containsKey(key)){
+                //concat the new constraint
+                WorkingSetConfigData existingWorkingSetConfigData = groupedWorkingSetConfigData.get(key);
+                existingWorkingSetConfigData.setMatchesString(existingWorkingSetConfigData.getMatchesString()+"|"+workingSetConfigData.getMatchesString());
+            }else{
+                groupedWorkingSetConfigData.put(key, workingSetConfigData);
+            }
         }
+        
+        //for each grouped config, parse its content and create template data
+        List<WorkingSetConfigData> templateData = new ArrayList<WorkingSetConfigData>();
+        for (WorkingSetConfigData workingSetConfigData : groupedWorkingSetConfigData.values()) {
+            templateData.add(workingSetConfigData);
+        }
+        
        
         //add attribute to template
         workingSetStringTemplate.setAttribute("data", templateData);

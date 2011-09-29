@@ -61,6 +61,7 @@ import com.intalio.web.profile.impl.ExternalInfo;
 import java.util.Arrays;
 import java.util.Collections;
 import javax.xml.namespace.QName;
+import org.antlr.stringtemplate.AttributeRenderer;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Entry;
@@ -156,6 +157,21 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
             workItemTemplate.setAttribute("workitemDefs", workDefinitions);
             
             workItemTemplate.setAttribute("workingSetsClassNames", workingSetsClassNames);
+            
+            workItemTemplate.registerRenderer(String.class, new AttributeRenderer() {
+
+                public String toString(Object o) {
+                    return o.toString();
+                }
+
+                public String toString(Object o, String format) {
+                    if (format.equals("upper")){
+                        return o.toString().toUpperCase();
+                    }
+                    throw new UnsupportedOperationException("Unsuported format "+format);
+                }
+                
+            });
             
             // delete stencil data json if exists
             deletefile(stencilFilePath);

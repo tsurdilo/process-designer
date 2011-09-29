@@ -28,6 +28,9 @@
     <!-- lane layouter -->
     <plugin name="ORYX.Plugins.DragTracker.LaneDragTracker" />
     <plugin name="ORYX.Plugins.DragTracker.PoolDragTracker" />
+    <plugin name="ORYX.Plugins.RegexTextEditor" />
+    <plugin name="ORYX.Plugins.ConstraintExpressionEditor" />
+    <plugin name="ORYX.Plugins.KmrVocabularyType" />
     <externalloadurl protocol="http" host="localhost:8080" subdomain="drools-guvnor/org.drools.guvnor.Guvnor/oryxeditor" usr="admin" pwd="admin"/>
   </profile>
 </profiles>

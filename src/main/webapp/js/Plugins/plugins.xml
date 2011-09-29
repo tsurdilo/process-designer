@@ -359,12 +359,13 @@
 		<plugin source="dragTracker/laneDragTracker.js" name="ORYX.Plugins.DragTracker.LaneDragTracker" />
 		<plugin source="dragTracker/poolDragTracker.js" name="ORYX.Plugins.DragTracker.PoolDragTracker" />
 			
-                        
+                    <plugin name="ORYX.Plugins.MouseOverLabelPlugin" source="mouseOverLabel.js"/>    
                 <plugin source="regexTextEditor.js" name="ORYX.Plugins.RegexTextEditor" />        
                 <plugin source="constraintExpressionEditor.js" name="ORYX.Plugins.ConstraintExpressionEditor" />        
+                <plugin source="kmr/kmrVocabularyType.js" name="ORYX.Plugins.KmrVocabularyType" />        
 	</plugins>
         
-        <plugin name="ORYX.Plugins.MouseOverLabelPlugin" source="mouseOverLabel.js"/>
+        
 	
 	
 	<properties>

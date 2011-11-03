@@ -2951,7 +2951,7 @@
 			"title" :		"$cn$",
 			"groups" :		["Model"],
 			"view" :		"model/dynamic/$cn$.svg",
-			"icon" :		"dataobject/data.object.png",
+			"icon" :		"model/fact.type.png",
                         "description" :         "$cn$ Model Element",
 			"defaultAlign" :	"southeast",
 			"propertyPackages":	[
@@ -3957,8 +3957,8 @@
                 "title" : 			"Send Email",
                 "groups" : 			["Service Tasks"],
                 "description" : 	"Sends a Email",
-                "view" : "activity/sendEmail.svg",
-                "icon" : "activity/sendEmail.png",
+                "view" : "service/sendEmail.svg",
+                "icon" : "service/task.png",
                 "propertyPackages" :[
                     "customtask",
                     "customactivity",
@@ -4060,8 +4060,8 @@
                 "title" : 			"Send SMS",
                 "groups" : 			["Service Tasks"],
                 "description" : 	"Sends a SMS",
-                "view" : "activity/sendSMS.svg",
-                "icon" : "activity/sendSMS.png",
+                "view" : "service/sendSMS.svg",
+                "icon" : "service/task.png",
                 "propertyPackages" :[
                     "customtask",
                     "customactivity",
@@ -4163,8 +4163,8 @@
                 "title" : 			"Notify External System",
                 "groups" : 			["Service Tasks"],
                 "description" : 	"Notify External System",
-                "view" : "activity/notifySystem.svg",
-                "icon" : "activity/notifySystem.png",
+                "view" : "service/notifySystem.svg",
+                "icon" : "service/task.png",
                 "propertyPackages" :[
                     "customtask",
                     "customactivity",

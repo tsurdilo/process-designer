@@ -95,6 +95,9 @@ private static final Logger _logger = LoggerFactory.getLogger(StencilSetServiceS
             if(path.indexOf("bpmn2.0jbpm.json/") >= 0) {
                 path = path.substring("bpmn2.0jbpm.json".length(), path.length());
             }
+            if(path.indexOf("kmr.json/") >= 0) {
+                path = path.substring("kmr.json".length(), path.length());
+            }
             input = stencilset.getResourceContents(path);
             if(requestURI.endsWith(".svg")) {
                 resp.setContentType("text/xml");

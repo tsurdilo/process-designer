@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 13.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 14948)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+	 width="135px" height="103px" xml:space="preserve" xmlns:oryx="http://www.b3mn.org/oryx">
+
+<oryx:magnets>
+  	<oryx:magnet oryx:cx="1" oryx:cy="20" oryx:anchors="left" />
+  	<oryx:magnet oryx:cx="1" oryx:cy="40" oryx:anchors="left" />
+  	<oryx:magnet oryx:cx="1" oryx:cy="60" oryx:anchors="left" />
+  	
+  	<oryx:magnet oryx:cx="25" oryx:cy="79" oryx:anchors="bottom" />
+  	<oryx:magnet oryx:cx="50" oryx:cy="79" oryx:anchors="bottom" />
+  	<oryx:magnet oryx:cx="75" oryx:cy="79" oryx:anchors="bottom" />
+  	
+  	<oryx:magnet oryx:cx="99" oryx:cy="20" oryx:anchors="right" />
+  	<oryx:magnet oryx:cx="99" oryx:cy="40" oryx:anchors="right" />
+  	<oryx:magnet oryx:cx="99" oryx:cy="60" oryx:anchors="right" />
+  	
+  	<oryx:magnet oryx:cx="25" oryx:cy="1" oryx:anchors="top" />
+  	<oryx:magnet oryx:cx="50" oryx:cy="1" oryx:anchors="top" />
+  	<oryx:magnet oryx:cx="75" oryx:cy="1" oryx:anchors="top" />
+  	
+  	<oryx:magnet oryx:cx="50" oryx:cy="40" oryx:default="yes" />
+  </oryx:magnets>
+
+<g>
+	<path fill="#D4E1C8" d="M135,91c0,6.627-5.373,12-12,12H12c-6.627,0-12-5.373-12-12V12C0,5.373,5.373,0,12,0h111
+		c6.627,0,12,5.373,12,12V91z"/>
+	<line fill="none" stroke="#FFFDFD" x1="0" y1="24.24" x2="135" y2="24.24"/>
+	<line fill="none" stroke="#FFFDFD" x1="28.1" y1="0" x2="28.1" y2="24.24"/>
+	<text transform="matrix(1 0 0 1 35.353 18.0244)" font-family="'MyriadPro-Regular'" font-size="13">Alert</text>
+	<path fill="#FFFFFF" stroke="#020000" stroke-width="1.5" d="M22.018,14.754c0,2.563-1.932,4.642-4.315,4.642h-4.879
+		c-2.383,0-4.315-2.078-4.315-4.642v-4.227c0-2.562,1.932-4.641,4.315-4.641h4.879c2.383,0,4.315,2.078,4.315,4.641V14.754z"/>
+	
+	<text 
+			font-size="12" 
+			id="text_name" 
+			x="50" 
+			y="40" 
+			oryx:align="middle center"
+			oryx:fittoelem="text_frame"
+			stroke="black">
+		</text>
+
+<g>
+		<line fill="none" stroke="#231F20" stroke-width="1.5" stroke-miterlimit="10" x1="12.228" y1="12.641" x2="18.561" y2="12.641"/>
+		<line fill="none" stroke="#231F20" stroke-width="1.5" stroke-miterlimit="10" x1="15.475" y1="9.383" x2="15.475" y2="15.715"/>
+	</g>
+</g>
+<rect x="7.333" y="30.167" id="text_frame" fill="#FFFFFF" width="120.667" height="64.333" oryx:anchors="bottom top right left"/>
+</svg>

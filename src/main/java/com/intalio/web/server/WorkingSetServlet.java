@@ -129,14 +129,14 @@ public class WorkingSetServlet extends HttpServlet{
         stringData = stringData.substring(1, stringData.length()-1);
         
         //separate elements
-        StringTokenizer tokenizer = new StringTokenizer(stringData, WORKING_SET_CONFOG_DATA_SEPARATOR);
-        if (tokenizer.countTokens() != 3 ){
-            throw new IllegalArgumentException("Expected 3 elements in '"+stringData+"', but "+tokenizer.countTokens()+" were found");
+        String[] data = stringData.split(WORKING_SET_CONFOG_DATA_SEPARATOR);
+        if (data.length != 3 ){
+            throw new IllegalArgumentException("Expected 3 elements in '"+stringData+"', but "+data+" were found");
         }
         
-        configData.setValidFact(tokenizer.nextToken().trim());
-        configData.setFactField(tokenizer.nextToken().trim());
-        configData.setMatchesString(tokenizer.nextToken().trim());
+        configData.setValidFact(data[0].trim());
+        configData.setFactField(data[1].trim());
+        configData.setMatchesString(data[2].trim());
         
         return configData;
     }

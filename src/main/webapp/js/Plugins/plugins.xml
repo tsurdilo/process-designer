@@ -368,6 +368,7 @@
                     <property name="hideRHS" value="true"/>
                     <property name="hideAttributes" value="true"/>
                 </plugin>        
+                <plugin source="kmr/kmrVocabularyType.js" name="ORYX.Plugins.KmrVocabularyType" />        
 	</plugins>
         
         

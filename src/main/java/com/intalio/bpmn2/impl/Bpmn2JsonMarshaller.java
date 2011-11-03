@@ -36,81 +36,6 @@ import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
-import org.eclipse.bpmn2.Activity;
-import org.eclipse.bpmn2.AdHocSubProcess;
-import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.BoundaryEvent;
-import org.eclipse.bpmn2.BusinessRuleTask;
-import org.eclipse.bpmn2.CallActivity;
-import org.eclipse.bpmn2.CallableElement;
-import org.eclipse.bpmn2.CatchEvent;
-import org.eclipse.bpmn2.Choreography;
-import org.eclipse.bpmn2.Collaboration;
-import org.eclipse.bpmn2.CompensateEventDefinition;
-import org.eclipse.bpmn2.ComplexGateway;
-import org.eclipse.bpmn2.ConditionalEventDefinition;
-import org.eclipse.bpmn2.Conversation;
-import org.eclipse.bpmn2.DataInput;
-import org.eclipse.bpmn2.DataInputAssociation;
-import org.eclipse.bpmn2.DataObject;
-import org.eclipse.bpmn2.DataOutput;
-import org.eclipse.bpmn2.DataOutputAssociation;
-import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.EndEvent;
-import org.eclipse.bpmn2.Error;
-import org.eclipse.bpmn2.ErrorEventDefinition;
-import org.eclipse.bpmn2.Escalation;
-import org.eclipse.bpmn2.EscalationEventDefinition;
-import org.eclipse.bpmn2.Event;
-import org.eclipse.bpmn2.EventBasedGateway;
-import org.eclipse.bpmn2.EventDefinition;
-import org.eclipse.bpmn2.ExclusiveGateway;
-import org.eclipse.bpmn2.Expression;
-import org.eclipse.bpmn2.ExtensionAttributeValue;
-import org.eclipse.bpmn2.FlowElement;
-import org.eclipse.bpmn2.FlowNode;
-import org.eclipse.bpmn2.FormalExpression;
-import org.eclipse.bpmn2.Gateway;
-import org.eclipse.bpmn2.GlobalBusinessRuleTask;
-import org.eclipse.bpmn2.GlobalChoreographyTask;
-import org.eclipse.bpmn2.GlobalManualTask;
-import org.eclipse.bpmn2.GlobalScriptTask;
-import org.eclipse.bpmn2.GlobalTask;
-import org.eclipse.bpmn2.GlobalUserTask;
-import org.eclipse.bpmn2.InclusiveGateway;
-import org.eclipse.bpmn2.InputSet;
-import org.eclipse.bpmn2.Interface;
-import org.eclipse.bpmn2.IntermediateCatchEvent;
-import org.eclipse.bpmn2.IntermediateThrowEvent;
-import org.eclipse.bpmn2.ItemDefinition;
-import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.LaneSet;
-import org.eclipse.bpmn2.ManualTask;
-import org.eclipse.bpmn2.Message;
-import org.eclipse.bpmn2.MessageEventDefinition;
-import org.eclipse.bpmn2.Operation;
-import org.eclipse.bpmn2.OutputSet;
-import org.eclipse.bpmn2.ParallelGateway;
-import org.eclipse.bpmn2.PotentialOwner;
-import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.Property;
-import org.eclipse.bpmn2.ReceiveTask;
-import org.eclipse.bpmn2.Resource;
-import org.eclipse.bpmn2.ResourceRole;
-import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.ScriptTask;
-import org.eclipse.bpmn2.SendTask;
-import org.eclipse.bpmn2.SequenceFlow;
-import org.eclipse.bpmn2.ServiceTask;
-import org.eclipse.bpmn2.Signal;
-import org.eclipse.bpmn2.SignalEventDefinition;
-import org.eclipse.bpmn2.StartEvent;
-import org.eclipse.bpmn2.SubProcess;
-import org.eclipse.bpmn2.Task;
-import org.eclipse.bpmn2.TerminateEventDefinition;
-import org.eclipse.bpmn2.ThrowEvent;
-import org.eclipse.bpmn2.TimerEventDefinition;
-import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNPlane;
@@ -126,6 +51,9 @@ import org.jbpm.bpmn2.emfextmodel.OnEntryScriptType;
 import org.jbpm.bpmn2.emfextmodel.OnExitScriptType;
 
 import com.intalio.web.profile.IDiagramProfile;
+import org.eclipse.bpmn2.*;
+import org.eclipse.bpmn2.Error;
+import org.eclipse.bpmn2.Process;
 
 /**
  * @author Antoine Toulme
@@ -426,6 +354,9 @@ public class Bpmn2JsonMarshaller {
         generator.writeArrayFieldStart("childShapes");
         for (FlowElement flowElement: process.getFlowElements()) {
         	marshallFlowElement(flowElement, plane, generator, 0, 0, preProcessingData, lanesetInfo, def);
+        }
+        for (Artifact artifact: process.getArtifacts()) {
+        	marshallArtifact(artifact, plane, generator, 0, 0, preProcessingData, lanesetInfo, def);
         }
         generator.writeEndArray();
     }
@@ -792,7 +723,7 @@ public class Bpmn2JsonMarshaller {
     	}
     }
     
-    private void marshallTask(Task task, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Map<String, List<String>> lanesetInfo, Definitions def) throws JsonGenerationException, IOException {
+    protected void marshallTask(Task task, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Map<String, List<String>> lanesetInfo, Definitions def) throws JsonGenerationException, IOException {
         Map<String, Object> properties = new LinkedHashMap<String, Object>();
     	String taskType = "None";
     	if (task instanceof BusinessRuleTask) {
@@ -1137,7 +1068,7 @@ public class Bpmn2JsonMarshaller {
     	marshallNode(node, null, stencil, plane, generator, xOffset, yOffset);
     }
     
-    private void marshallNode(FlowNode node, Map<String, Object> properties, String stencil, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset) throws JsonGenerationException, IOException {
+    protected void marshallNode(FlowNode node, Map<String, Object> properties, String stencil, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset) throws JsonGenerationException, IOException {
     	if (properties == null) {
     		properties = new LinkedHashMap<String, Object>();
     	}
@@ -1207,7 +1138,7 @@ public class Bpmn2JsonMarshaller {
     	}
     }
     
-    private void marshallDataObject(DataObject dataObject, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset) throws JsonGenerationException, IOException {
+    protected void marshallDataObject(DataObject dataObject, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset) throws JsonGenerationException, IOException {
     	Map<String, Object> properties = new LinkedHashMap<String, Object>();
 		properties.put("name", dataObject.getName());
 	    marshallProperties(properties, generator);
@@ -1248,6 +1179,10 @@ public class Bpmn2JsonMarshaller {
 	    for (FlowElement flowElement: subProcess.getFlowElements()) {
 	    	marshallFlowElement(flowElement, plane, generator, (int) (xOffset + bounds.getX()), (int) (yOffset + bounds.getY()), preProcessingData, lanesetInfo, def);
 	    }
+	    for (Artifact artifact: subProcess.getArtifacts()) {
+	    	marshallArtifact(artifact, plane, generator, (int) (xOffset + bounds.getX()), (int) (yOffset + bounds.getY()), preProcessingData, lanesetInfo, def);
+	    }
+            
 	    generator.writeEndArray();
 	    generator.writeArrayFieldStart("outgoing");
 	    for (BoundaryEvent boundaryEvent: subProcess.getBoundaryEventRefs()) {
@@ -1358,20 +1293,20 @@ public class Bpmn2JsonMarshaller {
         generator.writeEndArray();
     }
     
-    private DiagramElement findDiagramElement(BPMNPlane plane, FlowElement flowElement) {
-    	DiagramElement result = _diagramElements.get(flowElement.getId());
+    protected DiagramElement findDiagramElement(BPMNPlane plane, BaseElement baseElement) {
+    	DiagramElement result = _diagramElements.get(baseElement.getId());
     	if (result != null) {
     		return result;
     	}
     	for (DiagramElement element: plane.getPlaneElement()) {
-        	if ((element instanceof BPMNEdge && ((BPMNEdge) element).getBpmnElement() == flowElement) ||
-    			(element instanceof BPMNShape && ((BPMNShape) element).getBpmnElement() == flowElement)) {
-        		_diagramElements.put(flowElement.getId(), element);
+        	if ((element instanceof BPMNEdge && ((BPMNEdge) element).getBpmnElement() == baseElement) ||
+    			(element instanceof BPMNShape && ((BPMNShape) element).getBpmnElement() == baseElement)) {
+        		_diagramElements.put(baseElement.getId(), element);
         		return element;
         	}
         }
 		throw new IllegalArgumentException(
-			"Could not find BPMNDI information for " + flowElement.getId());
+			"Could not find BPMNDI information for " + baseElement.getId());
     }
 
     private void marshallGlobalTask(GlobalTask globalTask, JsonGenerator generator) {
@@ -1400,7 +1335,7 @@ public class Bpmn2JsonMarshaller {
         throw new UnsupportedOperationException("TODO"); //TODO!
     }
     
-    private void marshallProperties(Map<String, Object> properties, JsonGenerator generator) throws JsonGenerationException, IOException {
+    protected void marshallProperties(Map<String, Object> properties, JsonGenerator generator) throws JsonGenerationException, IOException {
         generator.writeObjectFieldStart("properties");
         for (Entry<String, Object> entry : properties.entrySet()) {
             generator.writeObjectField(entry.getKey(), String.valueOf(entry.getValue()));
@@ -1425,5 +1360,70 @@ public class Bpmn2JsonMarshaller {
         }
         return false;
     }
+
+    private void marshallArtifact(Artifact artifact, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Map<String, List<String>> lanesetInfo, Definitions def) throws IOException {
+        generator.writeStartObject();
+    	generator.writeObjectField("resourceId", artifact.getId());
+        
+        if (artifact instanceof Association){
+            this.marshallAssociation((Association)artifact, plane, generator, xOffset, yOffset, preProcessingData, lanesetInfo, def);
+        }else if (artifact instanceof TextAnnotation){
+            this.marshallTextAnnotation((TextAnnotation)artifact, plane, generator, xOffset, yOffset, preProcessingData, lanesetInfo, def);
+        }
+        
+        generator.writeEndObject();
+    }
     
+    
+    private void marshallAssociation(Association association, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Map<String, List<String>> lanesetInfo, Definitions def) throws JsonGenerationException, IOException {
+        if (association.getAssociationDirection() != AssociationDirection.NONE){
+            throw new IllegalArgumentException("Don't know how to marshall this type of association yet");
+        }
+        
+        Map<String, Object> properties = new LinkedHashMap<String, Object>();
+
+        properties.put("type", "none");
+        
+        marshallProperties(properties, generator);
+        generator.writeObjectFieldStart("stencil");
+        
+        generator.writeObjectField("id", "Association_Undirected");
+        
+        generator.writeEndObject();
+        
+        generator.writeArrayFieldStart("childShapes");
+        generator.writeEndArray();
+        
+        generator.writeArrayFieldStart("outgoing");
+        generator.writeStartObject();
+        generator.writeObjectField("resourceId", association.getTargetRef().getId());
+        generator.writeEndObject();
+        generator.writeEndArray();
+        
+        Bounds sourceBounds = ((BPMNShape) findDiagramElement(plane, association.getSourceRef())).getBounds();
+        Bounds targetBounds = ((BPMNShape) findDiagramElement(plane, association.getTargetRef())).getBounds();
+        generator.writeArrayFieldStart("dockers");
+        generator.writeStartObject();
+        generator.writeObjectField("x", sourceBounds.getWidth() / 2);
+        generator.writeObjectField("y", sourceBounds.getHeight() / 2);
+        generator.writeEndObject();
+        List<Point> waypoints = ((BPMNEdge) findDiagramElement(plane, association)).getWaypoint();
+        for (int i = 1; i < waypoints.size() - 1; i++) {
+        	Point waypoint = waypoints.get(i);
+            generator.writeStartObject();
+            generator.writeObjectField("x", waypoint.getX());
+            generator.writeObjectField("y", waypoint.getY());
+            generator.writeEndObject();
+        }
+        generator.writeStartObject();
+        generator.writeObjectField("x", targetBounds.getWidth() / 2);
+        generator.writeObjectField("y", targetBounds.getHeight() / 2);
+        generator.writeEndObject();
+        generator.writeEndArray();
+        
+    }
+
+    protected void marshallTextAnnotation(TextAnnotation textAnnotation, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Map<String, List<String>> lanesetInfo, Definitions def)  throws JsonGenerationException, IOException{
+        //Nothing here yet...
+    }
 }

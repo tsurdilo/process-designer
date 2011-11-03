@@ -274,7 +274,7 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
                _modelEntitiesInPath.each(function(_modelEntity){
                    var _validFact = _modelEntity.properties['oryx-modelentity'];
                    var _factField = _modelEntity.properties['oryx-fieldconstraint'];
-                   var _matchesString = _modelEntity.properties['oryx-constraintvalue'];
+                   var _matchesString = _modelEntity.properties['oryx-'+_factField];
                    
                    if (!_validFact){
                        errors.push("Fact Name is mandatory!");
@@ -321,7 +321,7 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
                     return;
                 }
                 
-                alert (workingSetXML);
+                //alert (workingSetXML);
                 
                 //add Working Set XML to request
                 _guvnorParameters.push({

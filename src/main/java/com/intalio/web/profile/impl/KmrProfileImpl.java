@@ -24,8 +24,8 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.intalio.bpmn2.impl.Bpmn2JsonMarshaller;
-import com.intalio.bpmn2.impl.Bpmn2JsonUnmarshaller;
+import com.intalio.bpmn2.impl.KMRJsonMarshaller;
+import com.intalio.bpmn2.impl.KMRJsonUnmarshaller;
 import com.intalio.web.plugin.IDiagramPlugin;
 import com.intalio.web.plugin.impl.PluginServiceImpl;
 import com.intalio.web.profile.IDiagramProfile;
@@ -198,7 +198,7 @@ public class KmrProfileImpl implements IDiagramProfile {
     public IDiagramMarshaller createMarshaller() {
         return new IDiagramMarshaller() {
             public String parseModel(String jsonModel, String preProcessingData) {
-                Bpmn2JsonUnmarshaller unmarshaller = new Bpmn2JsonUnmarshaller();
+                KMRJsonUnmarshaller unmarshaller = new KMRJsonUnmarshaller();
                 //Definitions def;
                 Bpmn2Resource res;
                 try {
@@ -223,7 +223,7 @@ public class KmrProfileImpl implements IDiagramProfile {
     public IDiagramUnmarshaller createUnmarshaller() {
         return new IDiagramUnmarshaller() {
             public String parseModel(String xmlModel, IDiagramProfile profile, String preProcessingData) {
-                Bpmn2JsonMarshaller marshaller = new Bpmn2JsonMarshaller();
+                KMRJsonMarshaller marshaller = new KMRJsonMarshaller();
                 marshaller.setProfile(profile);
                 try {
                     return marshaller.marshall(getDefinitions(xmlModel), preProcessingData);

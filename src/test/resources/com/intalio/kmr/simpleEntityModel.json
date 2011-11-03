@@ -1,0 +1,435 @@
+{
+  "resourceId": "350f00a8-d8d9-45e2-a33b-7836450207dd",
+  "properties": {
+    "name": "",
+    "documentation": "",
+    "executable": true,
+    "package": "",
+    "vardefs": "",
+    "lanes": "",
+    "imports": "",
+    "globals": "",
+    "id": "",
+    "version": "",
+    "author": "",
+    "language": "English",
+    "namespaces": "",
+    "targetnamespace": "http://www.omg.org/bpmn20",
+    "expressionlanguage": "http://www.w3.org/1999/XPath",
+    "typelanguage": "http://www.w3.org/2001/XMLSchema",
+    "creationdate": "",
+    "modificationdate": ""
+  },
+  "stencil": {
+    "id": "BPMNDiagram"
+  },
+  "childShapes": [
+    {
+      "resourceId": "_F3176449-55D7-446A-9A1D-4B8CE3853A14",
+      "properties": {
+        "name": "",
+        "documentation": "",
+        "eventdefinitionref": "",
+        "eventdefinitions": "",
+        "dataoutputassociations": "",
+        "dataoutput": "",
+        "outputset": "",
+        "bgcolor": "#ffffff",
+        "trigger": "None"
+      },
+      "stencil": {
+        "id": "StartNoneEvent"
+      },
+      "childShapes": [
+        
+      ],
+      "outgoing": [
+        {
+          "resourceId": "_8F6446EF-F3BA-4BD9-A569-8BE3DBC23702"
+        }
+      ],
+      "bounds": {
+        "lowerRight": {
+          "x": 254,
+          "y": 281
+        },
+        "upperLeft": {
+          "x": 224,
+          "y": 251
+        }
+      },
+      "dockers": [
+        
+      ]
+    },
+    {
+      "resourceId": "_207B0CCE-F188-4DB7-9CE0-DA54445709C0",
+      "properties": {
+        "name": "",
+        "documentation": "",
+        "eventdefinitionref": "",
+        "eventdefinitions": "",
+        "datainputassociations": "",
+        "datainput": "",
+        "inputset": "",
+        "bgcolor": "#ffffff",
+        "trigger": "Terminate"
+      },
+      "stencil": {
+        "id": "EndTerminateEvent"
+      },
+      "childShapes": [
+        
+      ],
+      "outgoing": [
+        
+      ],
+      "bounds": {
+        "lowerRight": {
+          "x": 403,
+          "y": 238
+        },
+        "upperLeft": {
+          "x": 375,
+          "y": 210
+        }
+      },
+      "dockers": [
+        
+      ]
+    },
+    {
+      "resourceId": "_1671AE81-603D-4141-8253-B0ACEE293A44",
+      "properties": {
+        "name": "",
+        "documentation": "",
+        "categories": "",
+        "assignments": "",
+        "pool": "",
+        "lanes": "",
+        "gates": "",
+        "gates_outgoingsequenceflow": "",
+        "gates_assignments": "",
+        "bgcolor": "#ffffff",
+        "gatewaytype": "XOR",
+        "xortype": "Data",
+        "markervisible": "true",
+        "defaultgate": "",
+        "gate_outgoingsequenceflow": "",
+        "gate_assignments": ""
+      },
+      "stencil": {
+        "id": "Exclusive_Databased_Gateway"
+      },
+      "childShapes": [
+        
+      ],
+      "outgoing": [
+        {
+          "resourceId": "_97F821A5-4ED2-4454-8486-EEB5175874D0"
+        },
+        {
+          "resourceId": "_74B9A52C-D72A-48C4-AC41-E9EBCA5A426A"
+        }
+      ],
+      "bounds": {
+        "lowerRight": {
+          "x": 339,
+          "y": 286
+        },
+        "upperLeft": {
+          "x": 299,
+          "y": 246
+        }
+      },
+      "dockers": [
+        
+      ]
+    },
+    {
+      "resourceId": "_8F6446EF-F3BA-4BD9-A569-8BE3DBC23702",
+      "properties": {
+        "name": "",
+        "documentation": "",
+        "conditiontype": "None",
+        "conditionexpression": "",
+        "conditionexpressionlanguage": "http://www.jboss.org/drools/rule",
+        "priority": "",
+        "isimmediate": "",
+        "showdiamondmarker": ""
+      },
+      "stencil": {
+        "id": "SequenceFlow"
+      },
+      "childShapes": [
+        
+      ],
+      "outgoing": [
+        {
+          "resourceId": "_1671AE81-603D-4141-8253-B0ACEE293A44"
+        }
+      ],
+      "bounds": {
+        "lowerRight": {
+          "x": 298.3750192888212,
+          "y": 266.36878893968213
+        },
+        "upperLeft": {
+          "x": 254.46482446117884,
+          "y": 266.09605481031787
+        }
+      },
+      "dockers": [
+        {
+          "x": 15,
+          "y": 15
+        },
+        {
+          "x": 20.5,
+          "y": 20.5
+        }
+      ],
+      "target": {
+        "resourceId": "_1671AE81-603D-4141-8253-B0ACEE293A44"
+      }
+    },
+    {
+      "resourceId": "_97F821A5-4ED2-4454-8486-EEB5175874D0",
+      "properties": {
+        "name": "",
+        "documentation": "",
+        "conditiontype": "None",
+        "conditionexpression": "",
+        "conditionexpressionlanguage": "http://www.jboss.org/drools/rule",
+        "priority": "",
+        "isimmediate": "",
+        "showdiamondmarker": ""
+      },
+      "stencil": {
+        "id": "SequenceFlow"
+      },
+      "childShapes": [
+        
+      ],
+      "outgoing": [
+        {
+          "resourceId": "_207B0CCE-F188-4DB7-9CE0-DA54445709C0"
+        }
+      ],
+      "bounds": {
+        "lowerRight": {
+          "x": 374.9704021256572,
+          "y": 245.15625
+        },
+        "upperLeft": {
+          "x": 319.5,
+          "y": 220
+        }
+      },
+      "dockers": [
+        {
+          "x": 20.5,
+          "y": 20.5
+        },
+        {
+          "x": 319.5,
+          "y": 220
+        },
+        {
+          "x": 14,
+          "y": 14
+        }
+      ],
+      "target": {
+        "resourceId": "_207B0CCE-F188-4DB7-9CE0-DA54445709C0"
+      }
+    },
+    {
+      "resourceId": "_74B9A52C-D72A-48C4-AC41-E9EBCA5A426A",
+      "properties": {
+        "name": "",
+        "documentation": "",
+        "conditiontype": "None",
+        "conditionexpression": "",
+        "conditionexpressionlanguage": "http://www.jboss.org/drools/rule",
+        "priority": "",
+        "isimmediate": "",
+        "showdiamondmarker": ""
+      },
+      "stencil": {
+        "id": "SequenceFlow"
+      },
+      "childShapes": [
+        
+      ],
+      "outgoing": [
+        {
+          "resourceId": "_A18CFA44-DFF8-4506-B7A2-7998CB363D4E"
+        }
+      ],
+      "bounds": {
+        "lowerRight": {
+          "x": 381.85369161159616,
+          "y": 355
+        },
+        "upperLeft": {
+          "x": 319.5,
+          "y": 286.859375
+        }
+      },
+      "dockers": [
+        {
+          "x": 20.5,
+          "y": 20.5
+        },
+        {
+          "x": 319.5,
+          "y": 355
+        },
+        {
+          "x": 14,
+          "y": 14
+        }
+      ],
+      "target": {
+        "resourceId": "_A18CFA44-DFF8-4506-B7A2-7998CB363D4E"
+      }
+    },
+    {
+      "resourceId": "_380D5186-D776-45CC-B238-C662AF6EF1FF",
+      "properties": {
+        "name": "",
+        "documentation": "",
+        "categories": "",
+        "pool": "",
+        "lanes": "",
+        "modelentity": "Allergy",
+        "fieldconstraint": "code",
+        "code": "123456"
+      },
+      "stencil": {
+        "id": "Model_Allergy"
+      },
+      "childShapes": [
+        
+      ],
+      "outgoing": [
+        {
+          "resourceId": "_4D68EBBF-080E-4748-9FBF-342D3AA78C41"
+        }
+      ],
+      "bounds": {
+        "lowerRight": {
+          "x": 313,
+          "y": 142
+        },
+        "upperLeft": {
+          "x": 225,
+          "y": 45
+        }
+      },
+      "dockers": [
+        
+      ]
+    },
+    {
+      "resourceId": "_4D68EBBF-080E-4748-9FBF-342D3AA78C41",
+      "properties": {
+        "assignments": "",
+        "transformation": "",
+        "type": "none"
+      },
+      "stencil": {
+        "id": "Association_Undirected"
+      },
+      "childShapes": [
+        
+      ],
+      "outgoing": [
+        {
+          "resourceId": "_1671AE81-603D-4141-8253-B0ACEE293A44"
+        }
+      ],
+      "bounds": {
+        "lowerRight": {
+          "x": 299.25,
+          "y": 266
+        },
+        "upperLeft": {
+          "x": 269,
+          "y": 142.341796875
+        }
+      },
+      "dockers": [
+        {
+          "x": 44,
+          "y": 48.5
+        },
+        {
+          "x": 269,
+          "y": 266
+        },
+        {
+          "x": 20,
+          "y": 20
+        }
+      ],
+      "target": {
+        "resourceId": "_1671AE81-603D-4141-8253-B0ACEE293A44"
+      }
+    },
+    {
+      "resourceId": "_A18CFA44-DFF8-4506-B7A2-7998CB363D4E",
+      "properties": {
+        "name": "",
+        "documentation": "",
+        "eventdefinitionref": "",
+        "eventdefinitions": "",
+        "datainputassociations": "",
+        "datainput": "",
+        "inputset": "",
+        "bgcolor": "#ffffff",
+        "trigger": "Terminate"
+      },
+      "stencil": {
+        "id": "EndTerminateEvent"
+      },
+      "childShapes": [
+        
+      ],
+      "outgoing": [
+        
+      ],
+      "bounds": {
+        "lowerRight": {
+          "x": 410,
+          "y": 364
+        },
+        "upperLeft": {
+          "x": 382,
+          "y": 336
+        }
+      },
+      "dockers": [
+        
+      ]
+    }
+  ],
+  "bounds": {
+    "lowerRight": {
+      "x": 1485,
+      "y": 1050
+    },
+    "upperLeft": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "stencilset": {
+    "url": "kmr",
+    "namespace": "http://b3mn.org/stencilset/kmr-1.0#"
+  },
+  "ssextensions": [
+    
+  ]
+}

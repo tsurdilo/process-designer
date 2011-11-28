@@ -22,7 +22,7 @@ import org.eclipse.dd.dc.Bounds;
  */
 public class KMRJsonMarshaller extends Bpmn2JsonMarshaller {
     private Map<String,Association> _diagramAssociations = new HashMap<String, Association>();
-
+    
     /**
      *
      * "resourceId": "_380D5186-D776-45CC-B238-C662AF6EF1FF", "properties": {
@@ -90,7 +90,7 @@ public class KMRJsonMarshaller extends Bpmn2JsonMarshaller {
 	    generator.writeEndObject();
             
         } else {
-            //no, just a regular Task
+            //no, just a regular Text Annotation
             super.marshallTextAnnotation(annotation, plane, generator, xOffset, yOffset, preProcessingData, lanesetInfo, def);
         }
     }

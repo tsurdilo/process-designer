@@ -54,7 +54,7 @@ public class LocalResource {
 
     public InputStream getContents() {
         try {
-            System.out.println("Retrieving "+_path);
+            //System.out.println("Retrieving "+_path);
             return new FileInputStream(_path);
         } catch (FileNotFoundException e) {
             throw new IllegalArgumentException(e);

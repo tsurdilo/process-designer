@@ -58,22 +58,96 @@ ORYX.Plugins.ConstraintExpressionEditor = Clazz.extend({
         ORYX.CONFIG.GUVNOR_CATEGORY             =   "Home Mortgage";
         ORYX.CONFIG.GUVNOR_HIDE_RHS             =   true;
         ORYX.CONFIG.GUVNOR_HIDE_ATTRIBUTES      =   true;
-        
-        console.log(ownPluginData);
+        ORYX.CONFIG.GUVNOR_WIDTH                =   undefined;
+        ORYX.CONFIG.GUVNOR_HEIGHT                =   undefined;
         
         //Read properties
         if (ownPluginData.properties) {
             ownPluginData.properties.each( function(property) {			
-                    if (property.useFixedPackage) {ORYX.CONFIG.GUVNOR_USE_FIXED_PACKAGE = (property.useFixedPackage == "true");}		
-                    if (property.fixedPackage) {ORYX.CONFIG.GUVNOR_FIXED_PACKAGE = property.fixedPackage;}
-                    if (property.category) {ORYX.CONFIG.GUVNOR_CATEGORY = property.category;}
-                    if (property.hideRHS) {ORYX.CONFIG.GUVNOR_HIDE_RHS = (property.hideRHS == "true");}
-                    if (property.hideAttributes) {ORYX.CONFIG.GUVNOR_HIDE_ATTRIBUTES = (property.hideAttributes == "true");}
+                if (property.useFixedPackage) {
+                    ORYX.CONFIG.GUVNOR_USE_FIXED_PACKAGE = (property.useFixedPackage == "true");
+                }		
+                if (property.fixedPackage) {
+                    ORYX.CONFIG.GUVNOR_FIXED_PACKAGE = property.fixedPackage;
+                }
+                if (property.category) {
+                    ORYX.CONFIG.GUVNOR_CATEGORY = property.category;
+                }
+                if (property.width) {
+                    ORYX.CONFIG.GUVNOR_WIDTH = property.width;
+                }
+                if (property.height) {
+                    ORYX.CONFIG.GUVNOR_HEIGHT = property.height;
+                }
             }.bind(this));
         }
         
+        //Define editors for custom types
         ORYX.FieldEditors["simpleconstraintexpressioneditor"] = new ORYX.Plugins.ConstraintExpressionEditor.SimpleConstraintExpressionEditorFactory();
+        ORYX.FieldEditors["simplemulticonstraintexpressioneditor"] = new ORYX.Plugins.ConstraintExpressionEditor.SimpleMultiConstraintExpressionEditorFactory();
         ORYX.FieldEditors["contextawareconstraintexpressioneditor"] = new ORYX.Plugins.ConstraintExpressionEditor.ContextAwareConstraintExpressionEditorFactory();
+        ORYX.FieldEditors["contextawaremulticonstraintexpressioneditor"] = new ORYX.Plugins.ConstraintExpressionEditor.ContextAwareMultiConstraintExpressionEditorFactory();
+        
+        this.facade.registerOnEvent(ORYX.CONFIG.EVENT_DBLCLICK, this.actOnDBLClick.bind(this));
+    },
+    
+    actOnDBLClick: function actOnDBLClick(evt, shape){
+        if( !(shape instanceof ORYX.Core.Shape) ){
+            return
+        }
+		
+        var helper = undefined;
+        var prop = shape.getStencil().properties().find(function(item){ 
+            if ((item.type() == 'simpleconstraintexpressioneditor' || item.type() == 'contextawareconstraintexpressioneditor')
+                && item.directlyEditable()){
+                helper = new GuvnorPopupEditorSingleRuleHelper(shape);
+                return true;
+            } else if ((item.type() == 'simplemulticonstraintexpressioneditor' || item.type() == 'contextawaremulticonstraintexpressioneditor')
+                && item.directlyEditable()){
+                helper = new GuvnorPopupEditorMultiRuleHelper(shape);
+                return true;
+            }
+            return false;
+        });        
+                
+        //no property found -> exit
+        if (!prop){
+            return;
+        }
+        
+        if (!helper.shouldPopupBeShown()){
+            return;
+        }
+                
+        var key = prop.id();        
+        var editor = new Ext.form.GuvnorPopupEditor(shape, helper, function(_value){
+            this.editDirectly(shape, key, _value);
+        });
+        
+        editor.setValue(shape.properties["oryx-"+key]);
+        
+        editor.onTriggerClick();
+        
+    },
+    
+    editDirectly:function(shape, key, value){
+		
+        if(!shape.getStencil().property(key).readonly()) {
+            shape.setProperty(key, value);
+        }
+		
+        /* Propagate changed properties */
+        var selectedElements = [shape];
+		
+        this.facade.raiseEvent({
+            type 		: ORYX.CONFIG.EVENT_PROPWINDOW_PROP_CHANGED, 
+            elements	: selectedElements,
+            key			: key,
+            value		: value
+        });
+
+        this.facade.getCanvas().update();
+		
     }
 }); 
 
@@ -92,7 +166,26 @@ ORYX.Plugins.ConstraintExpressionEditor.SimpleConstraintExpressionEditorFactory 
         var pair = arguments[1];
         var index = arguments[3];
         
-        return new ORYX.Plugins.ConstraintExpressionEditor.BaseConstraintExpressionEditorFactory().createEditor.bind(this)(false, key, pair, index);
+        return new ORYX.Plugins.ConstraintExpressionEditor.BaseConstraintExpressionEditorFactory().createEditor.bind(this)(false, false, key, pair, index);
+        
+    }        
+});
+
+ORYX.Plugins.ConstraintExpressionEditor.SimpleMultiConstraintExpressionEditorFactory = Clazz.extend({
+    construct: function(){
+
+    },          
+    /**
+     * This function gets executed by propertyWindow in its own context,
+     * so this = propertyWindow
+     */
+    init: function(){
+        //arguments: key, pair, icons, index
+        var key = arguments[0];
+        var pair = arguments[1];
+        var index = arguments[3];
+        
+        return new ORYX.Plugins.ConstraintExpressionEditor.BaseConstraintExpressionEditorFactory().createEditor.bind(this)(true, false, key, pair, index);
         
     }        
 });
@@ -112,7 +205,27 @@ ORYX.Plugins.ConstraintExpressionEditor.ContextAwareConstraintExpressionEditorFa
         var pair = arguments[1];
         var index = arguments[3];
         
-        return new ORYX.Plugins.ConstraintExpressionEditor.BaseConstraintExpressionEditorFactory().createEditor.bind(this)(true, key, pair, index);
+        return new ORYX.Plugins.ConstraintExpressionEditor.BaseConstraintExpressionEditorFactory().createEditor.bind(this)(false, true, key, pair, index);
+        
+    }        
+});
+
+ORYX.Plugins.ConstraintExpressionEditor.ContextAwareMultiConstraintExpressionEditorFactory = Clazz.extend({
+    
+    construct: function(){
+        
+    },          
+    /**
+     * This function gets executed by propertyWindow in its own context,
+     * so this = propertyWindow
+     */
+    init: function(){
+        //arguments: key, pair, icons, index
+        var key = arguments[0];
+        var pair = arguments[1];
+        var index = arguments[3];
+        
+        return new ORYX.Plugins.ConstraintExpressionEditor.BaseConstraintExpressionEditorFactory().createEditor.bind(this)(true, true, key, pair, index);
         
     }        
 });
@@ -125,30 +238,31 @@ ORYX.Plugins.ConstraintExpressionEditor.BaseConstraintExpressionEditorFactory = 
      * This function gets (indirectly) executed by propertyWindow in its own context,
      * so this = propertyWindow
      */
-    createEditor: function(contextAware, key, pair, index){
+    createEditor: function(multiRule, contextAware, key, pair, index){
+
+        var helper = undefined;
+        
+        if (multiRule){
+            helper = new GuvnorPopupEditorMultiRuleHelper(this.shapeSelection.shapes[0]);
+        } else{
+            helper = new GuvnorPopupEditorSingleRuleHelper(this.shapeSelection.shapes[0]);
+        }
+        helper.setFacade(this.facade);
         
         var showPopup = true;
-        //only show Guvnor Editor if 'showConstraintEditorWhen' is met
-        if (pair._jsonProp.showConstraintEditorWhen){
-            var prop = pair._jsonProp.showConstraintEditorWhen.property;
-            if (!prop){
-                alert ("Error reading definition of showConstraintEditorWhen: 'property' is missing!");
-                return null;
-            }
-            var value = pair._jsonProp.showConstraintEditorWhen.value;
-            if (!value){
-                alert ("Error reading definition of showConstraintEditorWhen: 'value' is missing!");
-                return null;
-            }
-            showPopup = this.shapeSelection.shapes[0].properties[pair.prefix() + "-" + prop] == value;
+        try{
+            showPopup = helper.shouldPopupBeShown();
+        } catch (e){
+            console.log(e);
+            alert (e.message);
+            return null;
         }
         
         var editor; 
-
         
         if (showPopup){
             var initialShape = contextAware?this.shapeSelection.shapes[0]:undefined;
-            editor = new Ext.form.GuvnorPopupEditor(initialShape, function(_value){
+            editor = new Ext.form.GuvnorPopupEditor(initialShape, helper, function(_value){
                 this.editDirectly(key, _value);
             }.bind(this));
             
@@ -156,13 +270,18 @@ ORYX.Plugins.ConstraintExpressionEditor.BaseConstraintExpressionEditorFactory = 
             guvnorPopupEditor = editor;
         }else{
             editor = new Ext.form.ComplexTextField({
-                    allowBlank: pair.optional(),
-                    dataSource:this.dataSource,
-                    grid:this.grid,
-                    row:index,
-                    facade:this.facade
+                allowBlank: pair.optional(),
+                dataSource:this.dataSource,
+                grid:this.grid,
+                row:index,
+                facade:this.facade
             });
-            editor.on('dialogClosed', this.dialogClosed, {scope:this, row:index, col:1,field:editor});							
+            editor.on('dialogClosed', this.dialogClosed, {
+                scope:this, 
+                row:index, 
+                col:1,
+                field:editor
+            });							
         }
 
         return new Ext.Editor(editor);
@@ -170,17 +289,13 @@ ORYX.Plugins.ConstraintExpressionEditor.BaseConstraintExpressionEditorFactory = 
     }
 });
 
-Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
+Ext.form.GuvnorPopupEditor = function(_srcShape, _helper, _onSave){
 
-    var brlCommentString = "#-#"
-
-    var brlValue = "";
-    
-    var drlValue = "";
-    
     var onSave = _onSave;
     
     var srcShape = _srcShape;
+    
+    var helper = _helper;
 
     Ext.form.GuvnorPopupEditor.superclass.constructor.call(this,{
         defaultAutoCreate : {
@@ -198,12 +313,21 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
             if(this.disabled){
                 return;
             }	
-
+ 
+            //default values for width and height
             var _width = document.body.clientWidth - 20;
             var _height = document.body.clientHeight - 20;
 
+            //if there are custom values defined for width and/or height, apply them
+            if (ORYX.CONFIG.GUVNOR_WIDTH){
+                _width = ORYX.CONFIG.GUVNOR_WIDTH;
+            }
+            if (ORYX.CONFIG.GUVNOR_HEIGHT){
+                _height = ORYX.CONFIG.GUVNOR_HEIGHT;
+            }
+
             //Guvnor url
-            var _guvnorURL= ORYX.EXTERNAL_PROTOCOL+"://"+ORYX.EXTERNAL_HOST+"/"+ORYX.EXTERNAL_SUBDOMAIN+"/org.drools.guvnor.Guvnor/standaloneEditorServlet";
+            var _guvnorURL= ORYX.EXTERNAL_PROTOCOL+"://"+ORYX.EXTERNAL_HOST+"/"+ORYX.EXTERNAL_SUBDOMAIN+"/org.drools.guvnor.GuvnorDrools/standaloneEditorServlet";
         
             //Guvnor editor parameters
             var _guvnorParameters = [];
@@ -243,78 +367,79 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
                 value: ''+ORYX.CONFIG.GUVNOR_HIDE_ATTRIBUTES
             });
         
-            if (brlValue == ""){
-                _guvnorParameters.push({
+            //BRL
+            //"<RULE_SEPARATOR_TAG/>"
+            var _brl = helper.getBRLValue();
+            _brl = _brl.split("<RULE_SEPARATOR_TAG/>");
+            
+            _brl.each(function(_singleBRL){
+                    _guvnorParameters.push({
                     name:"brlSource", 
-                    value: '<rule><name>Condition Constraint</name><modelVersion>1.0</modelVersion><attributes></attributes><metadataList/><lhs></lhs><rhs></rhs></rule>'
-                });
-            }else{
-                _guvnorParameters.push({
-                    name:"brlSource", 
-                    value: brlValue
-                });
-            }
+                    value: _singleBRL
+                } );
+            });
+            
         
-           //get the available Classes from the node's path
-           if (srcShape){
+            //get the available Classes from the node's path
+            if (srcShape){
                
-               var _modelEntitiesInPath = collectNodesInPath(srcShape, new RegExp("ModelEntity"));
-               _modelEntitiesInPath = _modelEntitiesInPath.concat(collectNodesInPath(srcShape, new RegExp("Model_")));
+                var _modelEntitiesInPath = collectNodesInPath(srcShape, new RegExp("ModelEntity"));
+                _modelEntitiesInPath = _modelEntitiesInPath.concat(collectNodesInPath(srcShape, new RegExp("Model_")));
                
-               if (!_modelEntitiesInPath || _modelEntitiesInPath.length == 0){
-                   alert ("You must define at least 1 Model Entity in your process!");
-                   return;
-               }
+                if (!_modelEntitiesInPath || _modelEntitiesInPath.length == 0){
+                    alert ("You must define at least 1 Model Entity in your process!");
+                    return;
+                }
 
-               var errors = [];
+                var errors = [];
 
-               //convert each Model Entity into Working Set config data
-               //and add it to the request parameter
-               var _workingSetConfigData = [];
-               _modelEntitiesInPath.each(function(_modelEntity){
-                   var _validFact = _modelEntity.properties['oryx-modelentity'];
-                   var _factField = _modelEntity.properties['oryx-fieldconstraint'];
-                   var _matchesString = _modelEntity.properties['oryx-'+_factField];
+                //convert each Model Entity into Working Set config data
+                //and add it to the request parameter
+                var _workingSetConfigData = [];
+                _modelEntitiesInPath.each(function(_modelEntity){
+                    var _validFact = _modelEntity.properties['oryx-modelentity'];
+                    var _factField = _modelEntity.properties['oryx-fieldconstraint'];
+                    var _matchesString = _modelEntity.properties['oryx-'+_factField];
                    
-                   if (!_validFact){
-                       errors.push("Fact Name is mandatory!");
-                       return;
-                   }
-                   if (!_factField){
-                       errors.push("You must specify a field for '"+_validFact+"' Model Entity");
-                       return;
-                   }
-                   if (!_matchesString){
-                       errors.push("You must specify a value for '"+_validFact+"."+_factField+"' Model Entity");
-                       return;
-                   }
+                    if (!_validFact){
+                        errors.push("Fact Name is mandatory!");
+                        return;
+                    }
+                    if (!_factField){
+                        errors.push("You must specify a field for '"+_validFact+"' Model Entity");
+                        return;
+                    }
+                    if (!_matchesString){
+                        errors.push("You must specify a value for '"+_validFact+"."+_factField+"' Model Entity");
+                        return;
+                    }
                    
-                   _workingSetConfigData.push("{"+_validFact+"--@--"+_factField+"--@--"+_matchesString+"}");
+                    _workingSetConfigData.push("{"+_validFact+"--@--"+_factField+"--@--"+_matchesString+"}");
                     
-               });
+                });
 
-               if (errors.length > 0){
-                   this.showErrors(errors);
-                   return;
-               }
+                if (errors.length > 0){
+                    this.showErrors(errors);
+                    return;
+                }
 
-               //get working-set definition for the model entities found in path
-               var workingSetXML = "";
+                //get working-set definition for the model entities found in path
+                var workingSetXML = "";
                
-               new Ajax.Request("/designer/workingSet", {
-			asynchronous: false,
-			method: 'POST',
-                        parameters: {
-                            "action": "createWorkingSetWithMandatoryConstraint",
-                            "config": _workingSetConfigData
-                        },
-			onSuccess: function(transport){
-				workingSetXML = transport.responseText;
-			}.bind(this),
-			onFailure: (function(transport){
-				errors.push("Error getting Working Set Definition: "+transport.responseText);
-			}).bind(this)
-		});
+                new Ajax.Request("/designer/workingSet", {
+                    asynchronous: false,
+                    method: 'POST',
+                    parameters: {
+                        "action": "createWorkingSetWithMandatoryConstraint",
+                        "config": _workingSetConfigData
+                    },
+                    onSuccess: function(transport){
+                        workingSetXML = transport.responseText;
+                    }.bind(this),
+                    onFailure: (function(transport){
+                        errors.push("Error getting Working Set Definition: "+transport.responseText);
+                    }).bind(this)
+                });
 
                 if (errors.length > 0){
                     this.showErrors(errors);
@@ -329,7 +454,7 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
                     value: workingSetXML
                 });
 
-           }
+            }
            
             if (_guvnorParameters.length > 0){
                 var i = 0;
@@ -346,18 +471,22 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
                 }
             }
             
+            var _windowWidth = _width/1+ 25;
+            var _windowHeight = _height/1 + 45;
+            var _windowYPad = 80;
+            
             var w=new Ext.Window({
                 id          : 'guvnorWindow',
                 layout      : 'fit',
-                width       : _width,
-                height      : _height,
+                width       : _windowWidth,
+                height      : _windowHeight,
                 closeAction :'close',
                 plain       : true,
                 modal       : true,
-     
-                title       : 'Title',
+                title       : 'Condition',
                 autoScroll  : true,
-                resizable: true,
+                resizable   : false,
+                y           : _windowYPad,          
                 html: '<iframe id="guvnorFrame" name="guvnorFrame" width="'+_width+'" height="'+_height+'"  onload="attachCallbacksToGuvnor();" src="'+_guvnorURL+'"></iframe>'
             });
         
@@ -374,75 +503,9 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
             alert(msg);
         },
     
-        encodeBRL : function(){
-            var _value = "";
-            
-            //process the brl part
-            if (brlValue){
-                //split the brl into single lines
-                var brlLines = brlValue.split("\n");
-                for (var i=0; i < brlLines.length; i++) {
-                    var brlLine = brlLines[i];
-
-                    //encode its content to avoid forbidden xml elements
-                    brlLine = encodeURIComponent(brlLine);
-                    
-                    //comment the line: jbpm will ignore this brl.
-                    brlLine = brlCommentString + brlLine;
-                    
-                    //append the line to the final value
-                    _value += brlLine + "\n";
-                }
-            }
-            
-            return _value;
-        },
-        
-        trimDRL : function(){
-            var _value = ""
-            
-            //we only need the RHS of the rule
-            if (drlValue){
-                var validLine = false;
-                var drlLines = drlValue.split("\n");
-                for (var i=0; i < drlLines.length; i++) {
-                    var drlLine = drlLines[i];
-                    
-                    //trim
-                    drlLine = drlLine.replace(/^\s+/, '').replace(/\s+$/, '');
-                    
-                    if (drlLine == "then"){
-                        //stop the loop
-                        break;
-                    }
-                    
-                    if (validLine){
-                        _value += drlLine + "\n";
-                    }
-                    
-                    if (drlLine == "when"){
-                        validLine = true
-                    }
-                    
-                }
-            }
-            
-            return _value;
-        },
         
         getValue : function(){
-            var value = "";
-            
-            //process the brl part
-            value += this.encodeBRL();
-            
-            value += "\n";
-            
-            //process the drl part
-            value += this.trimDRL();
-            
-            //alert (value);
-            return value;
+            return helper.getValue();
         },
         
         closeGuvnorWindow : function (){
@@ -471,37 +534,19 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _onSave){
         },
     
         setValue : function(value){
-            drlValue = "";
-            brlValue = "";
-            
-            var brlCommentPattern = new RegExp("^"+brlCommentString+".*");
-            var lines = value.split("\n");
-            for (var i=0; i < lines.length; i++) {
-                var line = lines[i];
-                
-                if (line.match(brlCommentPattern)){
-                    brlValue += decodeURIComponent(line.substring(brlCommentString.length))+"\n"; 
-                }else{
-                    drlValue += line + "\n";
-                }
-            }
-            
-        },
-        
+            helper.setValue(value);
+        },       
+    
         getDRLValue : function(){
-            return drlValue;
+            return helper.getDRLValue();
         },
     
         setDRLValue : function(drl){
-            drlValue = drl;
-        },
-        
-        getBRLValue : function(){
-            return brlValue;
-        },
+            helper.setDRLValue(drl);
+        },       
     
         setBRLValue : function(brl){
-            brlValue = brl;
+            helper.setBRLValue(brl);
         }
     });
 }
@@ -551,3 +596,455 @@ function collectNodesInPath(srcNode, nodeStencilId){
     
     return foundNodes;
 }
+
+GuvnorPopupEditorHelper = Clazz.extend({
+    brlCommentString: "#-#",
+    drlValue: "",
+    brlValue: "",
+    shape: "",
+    facade: undefined,
+    
+    setValue: function(){},
+    getValue: function(){},
+    getBRLValue : function(){},
+    
+    getDRLValue : function(){
+      return this.drlValue;  
+    },
+    
+    setDRLValue : function(drl){
+        this.drlValue = drl;
+    },
+
+    setBRLValue : function(brl){
+        this.brlValue = brl;
+    },
+    
+    setFacade: function(f){
+        this.facade = f;
+    },
+    
+    encodeBRL : function(brlValueToEncode){
+        var _value = "";
+            
+        //process the brl part
+        if (brlValueToEncode){
+            //split the brl into single lines
+            var brlLines = brlValueToEncode.split("\n");
+            for (var i=0; i < brlLines.length; i++) {
+                var brlLine = brlLines[i];
+
+                //encode its content to avoid forbidden xml elements
+                brlLine = encodeURIComponent(brlLine);
+                    
+                //comment the line: jbpm will ignore this brl.
+                brlLine = this.brlCommentString + brlLine;
+                    
+                //append the line to the final value
+                _value += brlLine + "\n";
+            }
+        }
+            
+        return _value;
+    },
+        
+    trimDRL : function(drlValueToEncode){
+        var _value = ""
+            
+        //we only need the RHS of the rule
+        if (drlValueToEncode){
+            var validLine = false;
+            var drlLines = drlValueToEncode.split("\n");
+            for (var i=0; i < drlLines.length; i++) {
+                var drlLine = drlLines[i];
+                    
+                //trim
+                drlLine = drlLine.replace(/^\s+/, '').replace(/\s+$/, '');
+                    
+                if (drlLine == "then"){
+                    //stop the loop
+                    break;
+                }
+                    
+                if (validLine){
+                    _value += drlLine + "\n";
+                }
+                    
+                if (drlLine == "when"){
+                    validLine = true
+                }
+                    
+            }
+        }
+            
+        return _value;
+    }
+        
+    
+    
+});
+
+GuvnorPopupEditorSingleRuleHelper = GuvnorPopupEditorHelper.extend({
+    construct: function(shape){
+        this.shape = shape;
+    },
+    
+    /**
+     * Determines whether the popup must be shown depending on the properties
+     * of shape. 
+     * if shape.showConstraintEditorWhen property is present, it is evaluated,
+     * otherwise this method always return true.
+     */
+    shouldPopupBeShown: function(){
+        var showPopup = true;
+        //only show Guvnor Editor if 'showConstraintEditorWhen' is met
+        if (this.shape._stencil._jsonStencil.showConstraintEditorWhen){
+            var prop = this.shape._stencil._jsonStencil.showConstraintEditorWhen.property;
+            if (!prop){
+                throw { 
+                    name:        "Error", 
+                    message:     "Error reading definition of showConstraintEditorWhen: 'property' is missing!"
+                };
+            }
+            var value = this.shape._stencil._jsonStencil.showConstraintEditorWhen.value;
+            if (!value){
+                throw { 
+                    name:        "Error", 
+                    message:     "Error reading definition of showConstraintEditorWhen: 'value' is missing!"
+                };
+            }
+            showPopup = this.shape.properties["oryx-" + prop] == value;
+        }
+        return showPopup;
+    },
+    
+    setValue : function(value){
+        this.drlValue = "";
+        this.brlValue = "";
+
+        var brlCommentPattern = new RegExp("^"+this.brlCommentString+".*");
+        var lines = value.split("\n");
+        for (var i=0; i < lines.length; i++) {
+            var line = lines[i];
+
+            if (line.match(brlCommentPattern)){
+                this.brlValue += decodeURIComponent(line.substring(this.brlCommentString.length))+"\n"; 
+            }else{
+                this.drlValue += line + "\n";
+            }
+        }
+
+    },
+    
+    getValue : function(){
+        var value = "";
+        
+        //process the brl part
+        value += this.encodeBRL(this.brlValue);
+
+        value += "\n";
+
+        //process the drl part
+        value += this.trimDRL(this.drlValue);
+
+        //alert (value);
+        return value;
+    },
+    
+    updateBRLRuleName: function(){
+      if (!this.shape){
+          return;
+      }  
+      
+      var name = this.shape.properties['oryx-name'];
+      if (name.strip() == ""){
+          return;
+      }
+      
+      this.brlValue = this.brlValue.replace(/<name>.+<\/name>/i, "<name>"+name+"</name>");
+      
+    },
+    
+    getBRLValue : function(){
+        if (this.brlValue == ""){
+            return this.getInitialBRL();
+        }
+        //update rule's name according to shape's name
+        this.updateBRLRuleName();
+        
+        return this.brlValue;
+    },
+    
+    getInitialBRL: function(){
+        return '<rule><name>Condition Constraint</name><modelVersion>1.0</modelVersion><attributes></attributes><metadataList/><lhs></lhs><rhs></rhs></rule>';
+    }
+    
+});
+
+GuvnorPopupEditorMultiRuleHelper = GuvnorPopupEditorHelper.extend({
+    //a hashmap of 'name' -> node
+    outgoingNodes: new Hash(),
+    //a hashmap of node -> property of 'constraint' type
+    outgoingNodesConstraintProperty: new Hash(),
+    construct: function(shape){
+        this.shape = shape;
+    },
+    
+    /**
+     * Determines whether the popup must be shown depending on the properties
+     * of the shapes directly connected to 'shape'. 
+     * Each connected shape is evaluated to check if its properties contain 
+     * showConstraintEditorWhen property. If this property present, it is evaluated.
+     * If at least one connection evaluates to true, this method returns true.
+     *
+     */
+    shouldPopupBeShown: function(){
+        var showPopup = false;
+        
+        this.outgoingNodes = new Hash();
+        
+        var i = 1;
+        if (this.shape.outgoing.length > 0){
+            showPopup = true;
+            this.shape.outgoing.each(function(outgoingNode){
+                
+                //get the name of the outgoing node, or set a temporal one
+                var nodeName = outgoingNode.properties["oryx-name"];
+                if (nodeName == ""){
+                    nodeName = "Condition "+i;
+                    i++;
+                }
+                
+                if (outgoingNode._stencil._jsonStencil.showConstraintEditorWhen){
+                    var prop = outgoingNode._stencil._jsonStencil.showConstraintEditorWhen.property;
+                    if (!prop){
+                        throw { 
+                            name:        "Error", 
+                            message:     "Error reading definition of showConstraintEditorWhen: 'property' is missing!"
+                        };
+                    }
+                    var value = outgoingNode._stencil._jsonStencil.showConstraintEditorWhen.value;
+                    if (!value){
+                        throw { 
+                            name:        "Error", 
+                            message:     "Error reading definition of showConstraintEditorWhen: 'value' is missing!"
+                        };
+                    }
+                    
+                    if (outgoingNode.properties["oryx-" + prop] == value){
+                        //store the node for later use
+                        if (this.outgoingNodes[nodeName]){
+                            throw { 
+                                name:        "Error", 
+                                message:     "More than one node with name '"+nodeName+"' exists!"
+                            };
+                        }
+                        this.outgoingNodes[nodeName] = outgoingNode;
+                    }
+                }else{
+                    //store the node for later use
+                    if (this.outgoingNodes[nodeName]){
+                        throw { 
+                            name:        "Error", 
+                            message:     "More than one node with name '"+nodeName+"' exists!"
+                        };
+                    }
+                    this.outgoingNodes[nodeName] = outgoingNode;
+                }
+                
+            }.bind(this));
+            showPopup = this.outgoingNodes.keys().length != 0;
+        }
+        
+        
+        return showPopup;
+    },
+    
+    getConstraintProperty: function(node){
+        if (!this.outgoingNodesConstraintProperty[node]){
+            node._stencil._jsonStencil.properties.each(function(property){
+                if (property.type == 'simpleconstraintexpressioneditor' || property.type == "contextawareconstraintexpressioneditor"){
+                    this.outgoingNodesConstraintProperty[node] = property;
+                }
+            }.bind(this));
+        }
+        
+        return this.outgoingNodesConstraintProperty[node];
+    },
+    
+    getBRLValue : function(){
+        //If we don't have any outgoing node, we never should get here in the
+        //first place!
+        if (this.outgoingNodes.keys().length == 0){
+            throw { 
+                name:        "Error", 
+                message:     "No outgoing nodes!"
+            };
+        }
+        
+        var brlValue = "";
+        var separator = "";
+        
+        //get the value of each outgoing node
+        //values must be sorted so we always respect the same order
+        var keys = this.outgoingNodes.keys().clone();
+        keys.sort();
+        keys.each(function(outgoingNodeKey){
+            var property = this.getConstraintProperty(this.outgoingNodes[outgoingNodeKey]);
+            var individualBRLValue = this.outgoingNodes[outgoingNodeKey].properties["oryx-"+property.id];
+            if (individualBRLValue == ""){
+                //empty value? add an empty rule
+                individualBRLValue = this.getInitialBRL(outgoingNodeKey);
+            }else{
+                //the value is encoded -> decode it
+                //We are going to use a instance of GuvnorPopupEditorSingleRuleHelper
+                //to do the decoding;
+                var h = new GuvnorPopupEditorSingleRuleHelper(this.outgoingNodes[outgoingNodeKey]);
+                h.setValue(individualBRLValue);
+                individualBRLValue = h.getBRLValue();
+                //TODO: update rule name because outgoing node's name could be change
+            }
+            brlValue += separator+individualBRLValue;
+            if (separator == ""){
+                separator = "<RULE_SEPARATOR_TAG/>";
+            }
+        }.bind(this));
+        
+        return brlValue;
+    },
+    
+    getInitialBRL: function(ruleName){
+        return '<rule><name>'+ruleName+'</name><modelVersion>1.0</modelVersion><attributes></attributes><metadataList/><lhs></lhs><rhs></rhs></rule>';
+    },
+    
+    setValue : function(value){
+
+    },
+    
+    getValue : function(){
+        
+        if (!this.brlValue || this.brlValue == ""){
+            return "";
+        }
+        
+        //separate each brl
+        var brls = this.splitBRLs();
+        
+        //separate each drl
+        var drls = this.splitDRLs();
+        
+        //hashmap containing all the final values that must be set to each
+        //outgoing node
+        var values = new Hash();
+        
+        //concatenate the encoded brl and drl for each outgoing node
+        brls.keys().each(function(ruleName){
+            var value = this.encodeBRL(brls[ruleName]);
+            value += "\n";
+            value += this.trimDRL(drls[ruleName]);
+            
+            values[ruleName]=value;
+        }.bind(this));
+        
+        //set the value of each outgoing node
+        brls.keys().each(function(ruleName){
+            var property = this.getConstraintProperty(this.outgoingNodes[ruleName]);
+            if (property){
+                this.editDirectly(this.outgoingNodes[ruleName], property.id, values[ruleName]);
+            }
+        }.bind(this));
+        
+        return "";
+    },
+    
+    splitBRLs: function(){
+        if (this.brlValue){
+            //split the brl into single lines
+            var brlLines = this.brlValue.split("\n");
+            
+            var singleBRL = "";
+            var singleBRLName;
+            var brls = new Hash();
+            for (var i=0; i < brlLines.length; i++) {
+                var brlLine = brlLines[i];
+
+                if (brlLine.strip().toUpperCase() == "</RULE>"){
+                    if (!singleBRLName){
+                        throw { 
+                            name:        "Error", 
+                            message:     "Rule without name!"
+                        };
+                    }
+                    brls[singleBRLName] = singleBRL+"\n"+brlLine;
+                    singleBRL = "";
+                    singleBRLName = undefined;
+                    continue;
+                }else if(brlLine.strip().toUpperCase().startsWith("<NAME>")){
+                    singleBRLName = brlLine.strip().slice("<NAME>".length, brlLine.strip().length-("</NAME>".length)).strip();
+                }
+                
+                singleBRL +=brlLine+"\n";
+            }
+            
+            return brls;
+        }
+        return undefined;
+    },
+    
+    splitDRLs: function(){
+        if (this.drlValue){
+            //split the drl into single lines
+            var drlLines = this.drlValue.split("\n");
+            
+            var ruleHeaderRegex = /rule\s+\".+\"/i;
+            
+            var singleDRL = "";
+            var singleDRLName;
+            var drls = new Hash();
+            for (var i=0; i < drlLines.length; i++) {
+                var drlLine = drlLines[i];
+                var strippedLine = drlLine.strip();
+                if (strippedLine.toUpperCase() == "END"){
+                    if (!singleDRLName){
+                        throw { 
+                            name:        "Error", 
+                            message:     "Rule without name!"
+                        };
+                    }
+                    drls[singleDRLName] = singleDRL+"\n"+drlLine;
+                    singleDRL = "";
+                    singleDRLName = undefined;
+                    continue;
+                }else if(strippedLine.match(ruleHeaderRegex)){
+                    singleDRLName = strippedLine.slice(strippedLine.indexOf("\"")+1, strippedLine.lastIndexOf("\"")).strip();
+                }
+                
+                singleDRL +=drlLine+"\n";
+            }
+            
+            return drls;
+        }
+        return undefined;
+    },
+    
+    editDirectly:function(shape, key, value){
+		
+        if(!shape.getStencil().property("oryx-"+key).readonly()) {
+            shape.setProperty("oryx-"+key, value);
+        }
+		
+        /* Propagate changed properties */
+        var selectedElements = [shape];
+		
+        this.facade.raiseEvent({
+            type 		: ORYX.CONFIG.EVENT_PROPWINDOW_PROP_CHANGED, 
+            elements	: selectedElements,
+            key			: key,
+            value		: value
+        });
+
+        this.facade.getCanvas().update();
+		
+    }
+    
+});

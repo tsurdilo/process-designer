@@ -367,6 +367,8 @@
                     <property name="category" value="Home Mortgage" />
                     <property name="hideRHS" value="true"/>
                     <property name="hideAttributes" value="true"/>
+                    <property name="width" value="650"/>
+                    <property name="height" value="400"/>
                 </plugin>        
                 <plugin source="kmr/kmrVocabularyType.js" name="ORYX.Plugins.KmrVocabularyType" />        
 	</plugins>

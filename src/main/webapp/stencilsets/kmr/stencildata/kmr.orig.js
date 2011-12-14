@@ -16,7 +16,7 @@
 					"readonly":false,
 					"optional":true,
 					"length":"",
-					"wrapLines" : true,
+					"wrapLines" : false,
 					"refToView":"text_name"	
 				},
 				{
@@ -3066,7 +3066,7 @@
 				},
 				{
 					"id":"gate_outgoingsequenceflow",
-					"type":"String",
+					"type":"contextawaremulticonstraintexpressioneditor",
 					"title":"[Gate] OutgoingSequenceFlow",
 					"title_de":"[Gate] Ausgehender Steuerfluss",
 					"value":"",
@@ -3479,7 +3479,8 @@
 					"value":"",
 					"description":"",
 					"readonly":false,
-					"optional":true
+					"optional":true,
+                                        "directlyEditable":true
 				}
 			]
 		},
@@ -3733,7 +3734,7 @@
                             //"text" : "@conditionexpressionlanguage"   //Property binding                            
                             "text"    : function(uiObject){ 
                                 var text = uiObject.properties["oryx-conditionexpression"]; 
-                                var editor = new Ext.form.GuvnorPopupEditor(null);
+                                var editor = new Ext.form.GuvnorPopupEditor(null, new GuvnorPopupEditorSingleRuleHelper(null));
                                 editor.setValue(text);
                                 return editor.getDRLValue().replace(/(\r\n|[\r\n])/g, "<br />");
                             }
@@ -3948,16 +3949,16 @@
 					"popular":true
                 }
            ]
-		},
+		}/*,
                 
            //Pre-defined Service Tasks
            {
                 "type" : 			"node",
-                "id": 				"SendEmailService",
+                "id": 				"_CustomTask_SendEmailService",
                 "title" : 			"Send Email",
                 "groups" : 			["Service Tasks"],
                 "description" : 	"Sends a Email",
-                "view" : "activity/sendEmail.svg",
+                "view" : "service/sendEmail.svg",
                 "icon" : "service/task.png",
                 "propertyPackages" :[
                     "customtask",
@@ -3981,7 +3982,7 @@
                         "id":"tasktype",
                         "type":"String",
                         "title":"TaskType",
-                        "value":"SendEmailService",
+                        "value":"_CustomTask_SendEmailService",
                         "description":"",
                         "readonly":true,
                         "optional":false
@@ -4056,11 +4057,11 @@
             },
             {
                 "type" : 			"node",
-                "id": 				"SendSMSService",
+                "id": 				"_CustomTask_SendSMSService",
                 "title" : 			"Send SMS",
                 "groups" : 			["Service Tasks"],
                 "description" : 	"Sends a SMS",
-                "view" : "activity/sendSMS.svg",
+                "view" : "service/sendSMS.svg",
                 "icon" : "service/task.png",
                 "propertyPackages" :[
                     "customtask",
@@ -4084,7 +4085,7 @@
                         "id":"tasktype",
                         "type":"String",
                         "title":"TaskType",
-                        "value":"SendSMSService",
+                        "value":"_CustomTask_SendSMSService",
                         "description":"",
                         "readonly":true,
                         "optional":false
@@ -4159,11 +4160,11 @@
             },
             {
                 "type" : 			"node",
-                "id": 				"NotifyExternalSystemService",
+                "id": 				"_CustomTask_NotifyExternalSystemService",
                 "title" : 			"Notify External System",
                 "groups" : 			["Service Tasks"],
                 "description" : 	"Notify External System",
-                "view" : "activity/notifySystem.svg",
+                "view" : "service/notifySystem.svg",
                 "icon" : "service/task.png",
                 "propertyPackages" :[
                     "customtask",
@@ -4187,7 +4188,7 @@
                         "id":"tasktype",
                         "type":"String",
                         "title":"TaskType",
-                        "value":"NotifyExternalSystemService",
+                        "value":"_CustomTask_NotifyExternalSystemService",
                         "description":"",
                         "readonly":true,
                         "optional":false
@@ -4259,7 +4260,7 @@
                             "optional":true
                     }
                 ]
-            }
+            }*/
            
 	],
 	

@@ -247,6 +247,7 @@ ORYX.CONFIG.EVENT_SHOW_PROPERTYWINDOW =		"propertywindow.show";
 ORYX.CONFIG.EVENT_DRAG_TRACKER_DRAG =       "dragTracker.drag";
 ORYX.CONFIG.EVENT_DRAG_TRACKER_RESIZE =     "dragTracker.resize";
 ORYX.CONFIG.EVENT_DROP_SHAPE =				"drop.shape";
+ORYX.CONFIG.EVENT_SHAPE_DELETED =				"shape.deleted";
 	
 	/* Selection Shapes Highlights */
 ORYX.CONFIG.SELECTION_HIGHLIGHT_SIZE =				5;

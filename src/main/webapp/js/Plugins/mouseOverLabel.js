@@ -99,6 +99,7 @@ ORYX.Plugins.MouseOverLabelPlugin = {
             this.facade = facade;
             this.facade.registerOnEvent(ORYX.CONFIG.EVENT_MOUSEOVER, this.handleMouseOver.bind(this));
             this.facade.registerOnEvent(ORYX.CONFIG.EVENT_MOUSEOUT, this.handleMouseOut.bind(this));
+            this.facade.registerOnEvent(ORYX.CONFIG.EVENT_SHAPE_DELETED, this.handleShapeDeted.bind(this));
     },
 
     handleMouseOver: function(event, uiObj) {
@@ -115,6 +116,12 @@ ORYX.Plugins.MouseOverLabelPlugin = {
     
     handleMouseOut: function(event, uiObj) {
         this._hideLabel(uiObj);
+    },
+    
+    handleShapeDeted: function(event) {
+        //check if is there any visible tooltip for the deleted shape and
+        //destroy it
+        this._hideLabel(event.value);
     },
     
     _processMouseOverTextAttribute: function(uiObj){
@@ -173,7 +180,7 @@ ORYX.Plugins.MouseOverLabelPlugin = {
         }
         
         
-        if (!text || text.replace(/^\s+/, '').replace(/\s+$/, '') == ""){
+        if (!text || text.stripTags().strip() == ""){
             return undefined;
         }
         return text;
@@ -189,7 +196,7 @@ ORYX.Plugins.MouseOverLabelPlugin = {
                 autoEl: {tag: 'div', html: text, autoWidth: true, autoHeight: true} 
             }] 
         });
-        tip.showBy(element.id, 't-b');
+        tip.showBy(element.id, 'c');
     },
     
     _hideLabel: function(element){

@@ -167,6 +167,8 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
 
             workItemTemplate.setAttribute("workingSetsClassNames", workingSetsClassNames);
 
+            workItemTemplate.setAttribute("packageName", packageName);
+            
             workItemTemplate.registerRenderer(String.class, new AttributeRenderer() {
 
                 public String toString(Object o) {
@@ -513,8 +515,8 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
             XMLStreamReader reader = factory.createXMLStreamReader(resp.getInputStream());
 
             boolean parsingValidFacts = false;
-
-            while (reader.hasNext()) {
+            boolean continueParsing = true;
+            while (reader.hasNext() && continueParsing) {
                 switch (reader.next()) {
                     case XMLStreamReader.START_ELEMENT:
                         if ("validFacts".equals(reader.getLocalName())) {
@@ -526,6 +528,10 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
                         break;
                     case XMLStreamReader.END_ELEMENT:
                         parsingValidFacts = false;
+                        if ("validFacts".equals(reader.getLocalName())) {
+                            //don't accept nested WorkingSets
+                            continueParsing = false;
+                        }
                         break;
                 }
             }

@@ -299,7 +299,7 @@
 					"type":"String",
 					"title":"package",
 					"title_de":"package",
-					"value":"",
+					"value":"$packageName$",
 					"description":"package",
 					"description_de":"package",
 					"readonly":false,
@@ -2759,8 +2759,8 @@
 			"id": 				"$workitemDefs.(k).name$",
 			"title" : 			"$workitemDefs.(k).displayName$",
 			"title_de" : 		"$workitemDefs.(k).displayName$",
-			"groups" : 			["Service Tasks"],
-			"groups_de" :		["Service Tasks"],
+			"groups" : 			["Tasks"],
+			"groups_de" :		["Tasks"],
 			"description" : 	"$workitemDefs.(k).explanationText$",
 			"description_de" : 	"$workitemDefs.(k).explanationText$.",
 			"view" : 			"activity/workitems/$workitemDefs.(k).name$.svg",
@@ -2949,7 +2949,7 @@
                         "type" : 		"node",
 			"id" :			"Model_$cn$",
 			"title" :		"$cn$",
-			"groups" :		["Model"],
+			"groups" :		["Facts"],
 			"view" :		"model/dynamic/$cn$.svg",
 			"icon" :		"model/fact.type.png",
                         "description" :         "$cn$ Model Element",
@@ -2996,16 +2996,156 @@
                 }$
                 // end Model Classes
                 
+                // Activities
+                
+                {
+			"type" : 			"node",
+			"id" :				"CollapsedSubprocess",
+			"title" : 			"Collapsed Subprocess",
+			"title_de" :		"Zugeklappter Unterprozess",
+			"groups" :			["Activities"],
+			"groups_de" :		["Aktivitäten"],
+			"description" :		"A subprocess is a decomposable activity. It can be linked to another process diagram.",
+			"description_de" :	"Ein Unterprozess ist eine verfeinerbare Aktivität. Er kann mit einem anderen Prozessdiagramm verlinkt werden.",
+			"view" :			"activity/subprocess.collapsed.svg",
+			"icon" :			"activity/subprocess.png",
+			"propertyPackages" :[
+				"baseAttributes",
+				"flowElement",
+				"activity",
+				"subprocess",
+				"loopcharacteristics",
+				"bgColor",
+				"properties",
+				"iospecification"
+			],
+			"properties" :		[
+				{
+					"id":"activitytype",
+					"type":"String",
+					"title":"ActivityType",
+					"title_de":"Aktivitätstyp",
+					"value":"Sub-Process",
+					"value_de":"Unterprozess",
+					"description":"The Type of Activity.",
+					"description_de":"Typ der Aktivität",
+					"readonly":true,
+					"optional":false,
+					"length":""
+				},
+				{
+					"id":"bgcolor",
+					"type":"Color",
+					"title":"BackgroundColor",
+					"title_de":"Hintergrundfarbe",
+					"value":"#b1c2d6",
+					"gradient":true,
+					"description":"",
+					"readonly":false,
+					"optional":false,
+					"refToView":"fill_el",
+					"fill":true,
+					"stroke":false
+				}	
+			],
+			"roles": 			[
+				"all",
+				"sequence_start",
+				"sequence_end",
+				"messageflow_start",
+				"messageflow_end",
+				"to_task_event",
+				"from_task_event",
+				"fromtoall",
+				"ActivitiesMorph"
+			]
+		}, 
+		{
+			"type" : 			"node",
+			"id" :				"Subprocess",
+			"title" :			"Embedded Subprocess",
+			"title_de" :		"Embedded Subprocess",
+			"groups" :			["Activities"],
+			"groups_de" :		["Aktivitäten"],
+			"description" :		"A subprocess is a decomposable activity. An expanded subprocess contains a valid BPMN diagram.",
+			"description_de" :	"Ein Unterprozess ist eine verfeinerte Aktivität. Ein aufgeklappter Unterprozess enthält in sich ein eigenes BPMN Diagramm, welches direkt innerhalb modelliert wird.",
+			"view" :			"activity/subprocess.expanded.svg",
+			"icon" :			"activity/expanded.subprocess.png",
+ 			"layout" : 			[
+ 									{"type" : "layout.bpmn2_0.subprocess"},
+ 									{"type" : "layout.container.dockers"},
+ 									{
+ 										"type" : "layout.container.minBounds",
+ 										"options" : {
+ 											"fixedX" : true,
+ 											"ignoreChildsWithId" : [
+ 												"http://b3mn.org/stencilset/bpmn2.0#Lane",
+ 												"http://b3mn.org/stencilset/bpmn2.0#StartNoneEvent"
+ 											]
+ 										}
+ 									}
+ 								],
+			"propertyPackages" :[
+				"baseAttributes",
+				"flowElement",
+				"activity",
+				"subprocess",
+				"loopcharacteristics",
+				"properties",
+				"iospecification"
+			],
+			"properties" :		[
+				{
+					"id":"activitytype",
+					"type":"String",
+					"title":"ActivityType",
+					"title_de":"Aktivitätstyp",
+					"value":"Sub-Process",
+					"value_de":"Unterprozess",
+					"description":"The Type of Activity.",
+					"description_de":"Typ der Aktivität",
+					"readonly":true,
+					"optional":false,
+					"length":""
+				},
+				{
+					"id":"bgcolor",
+					"type":"Color",
+					"title":"BackgroundColor",
+					"title_de":"Hintergrundfarbe",
+					"value":"#ffffff",
+					"description":"",
+					"readonly":false,
+					"optional":false,
+					"refToView":"fill_el",
+					"fill":true,
+					"stroke":false
+				}	
+			],
+			"roles"	:			[
+				"all",
+				"sequence_start",
+				"sequence_end",
+				"messageflow_start",
+				"messageflow_end",
+				"to_task_event",
+				"from_task_event",
+				"fromtoall",
+				"canContainArtifacts",
+				"ActivitiesMorph"
+			]
+		},
+                
 		// Gateways
 		
 		{
 			"type" : 			"node",
 			"id" :				"Exclusive_Databased_Gateway",
-			"title" :			"Data-based Exclusive (XOR) Gateway",
+			"title" :			"Exclusive (XOR)",
 			"title_de" : 		"Daten-basiertes exklusives Gateway",
 			"description" :		"When splitting, it routes the sequence flow to exactly one of the outgoing branches based on conditions. When merging, it awaits one incoming branch to complete before triggering the outgoing flow.",
 			"description_de" :	"Bei einer Verzweigung wird der Sequenzfluss abhängig von Verzweigungsbedingungen zu genau einer ausgehenden Kante geleitet. Bei einer Zusammenführung wird auf eine der eingehenden Kante gewartet, um den ausgehenden Sequenzfluss zu aktivieren.",
-			"groups" : 			["Gateways"],
+			"groups" : 			["Decision Points"],
 			"view" : 			"gateway/exclusive.databased.svg",
 			"icon" : 			"gateway/exclusive.databased.png",
                         "mouseOverLabelConfig" : {
@@ -3100,12 +3240,91 @@
 				"GatewaysMorph"
 			]
 		},
+                
+                {
+			"type" : 			"node",
+			"id" :				"InclusiveGateway",
+			"title" :			"Inclusive (OR)",
+			"title_de" :		"Inklusives Gateway",
+			"groups" :			["Decision Points"],
+			"description" :		"When splitting, one or more branches are activated based on branching conditions. When merging, it awaits all active incoming branches to complete.",
+			"description_de" :	"Bei einer Verzweigung werden eine oder mehrere Kanten abhängig von Verzweigungsbedingungen aktiviert. Bei einer Vereinigung wird auf alle eingehenden aktiven Kanten gewartet.",
+			"view" :			"gateway/inclusive.svg",
+			"icon" :			"gateway/inclusive.png",
+			"propertyPackages" :[
+				"baseAttributes",
+				"flowElement",
+				"gateway",
+				"bgColor"
+			],
+			"properties" :		[
+				{
+					"id":"gatewaytype",
+					"type":"String",
+					"title":"GatewayType",
+					"title_de":"Gatewaytyp",
+					"value":"OR",
+					"description":"",
+					"readonly":true,
+					"optional":false,
+					"length":""
+				},
+				{
+					"id":"defaultgate",
+					"type":"String",
+					"title":"DefaultGate",
+					"title_de":"Standardgate",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"refToView":"",
+					"length":"50",
+					"wrapLines":true
+				},
+				{
+					"id":"gate_outgoingsequenceflow",
+					"type":"contextawaremulticonstraintexpressioneditor",
+					"title":"[Gate] OutgoingSequenceFlow",
+					"title_de":"[Gate] Ausgehender Steuerfluss",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"refToView":"",
+					"length":"50"
+				},
+				{
+					"id":"gate_assignments",
+					"type":"String",
+					"title":"[Gate] Assignments",
+					"title":"[Gates] Zuweisungen",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"refToView":"",
+					"length":"50",
+					"wrapLines":true
+				}
+			],
+			"roles": 			[
+				"all",
+				"sequence_start",
+				"sequence_end",
+				"choreography_sequence_start",
+				"choreography_sequence_end",
+				"fromtoall",
+				"GatewaysMorph"
+			]
+		},
+                
 		{
 			"type" : 			"node",
 			"id" :				"ParallelGateway",
-			"title" :			"Parallel Gateway",
+			"title" :			"Parallel (AND)",
 			"title_de" :		"Paralleles Gateway",
-			"groups" :			["Gateways"],
+			"groups" :			["Decision Points"],
 			"description" :		"When used to split the sequence flow, all outgoing branches are activated simultaneously. When merging parallel branches it waits for all incoming branches to complete before triggering the outgoing flow.",
 			"description_de" :	"Wenn der Sequenzfluss verzweigt wird, werden alle ausgehenden Kanten simultan aktiviert. Bei der Zusammenführung wird auf alle eingehenden Kanten gewartet, bevor der ausgehende Sequenzfluss aktiviert wird.",
 			"view" :			"gateway/parallel.svg",
@@ -3141,7 +3360,7 @@
 		},
 		
 		// Swimlanes
-		
+		/*
 		{
 			"type" : 			"node",
 			"id" :				"Pool",
@@ -3278,13 +3497,15 @@
 			]
 		},
 		
+                */
+                
 		// Artifacts
 		{
 			"type" : 			"node",
 			"id" : 				"Group",
 			"title" :			"Group",
 			"title_de" :		"Gruppe",
-			"groups" :			["Artifacts"],
+			"groups" :			["Miscellaneous"],
 			"groups_de" :		["Artefakte"],
 			"description" :		"An arbitrary set of objects can be defined as a Group to show that they logically belong together.",
 			"description_de" :	"Mehrere Objekte, die logisch in Verbindung stehen, können in einer Gruppe zusammengefasst werden.",
@@ -3319,7 +3540,7 @@
 			"id" : 				"TextAnnotation",
 			"title" :			"Text Annotation",
 			"title_de" :		"Text-Anmerkung",
-			"groups" :			["Artifacts"],
+			"groups" :			["Miscellaneous"],
 			"groups_de" :		["Artefakte"],
 			"description" :		"Any object can be associated with a Text Annotation to provide additional documentation.",
 			"description_de" :	"Jedes Objekt kann durch eine Text-Anmerkung kommentiert werden.",
@@ -3406,6 +3627,132 @@
 			]
                 },
                 {
+			"type" :		 	"node",
+			"id" :				"StartMessageEvent",
+			"title" : 			"Start Message Event",
+			"title_de" :		"Nachrichten-Startereignis",
+			"groups" :			["Start Events"],
+			"groups_de" : 		["Start-Ereignisse"],
+			"description" :		"A process instance is started on receive of a message.",
+			"description_de" :	"Eine Prozess-Instanz wird genau dann gestartet, wenn eine Nachricht eintrifft.",
+			"view" :			"startevent/message.svg",
+			"icon" :			"startevent/message.png",
+			"propertyPackages":[
+				"baseAttributes",
+				"catchEventAttributes",
+				"interrupting",
+				"bgColor"
+			],
+			"roles": [
+				"all",
+				"messageflow_end",
+				"to_task_event",
+				"from_task_event",
+				"fromtoall",
+				"sequence_start",
+				"Startevents_all",
+				"StartEventsMorph"
+			],
+			"properties": [
+				{
+					"id":"trigger",
+					"type":"String",
+					"title":"Trigger",
+					"title_de":"Auslöser",
+					"value":"Message",
+					"description":"",
+					"readonly":true,
+					"optional":false
+				},
+				{
+					"id":"messageref",
+					"type":"String",
+					"title":"MessageRef",
+					"title_de":"MessageRef",
+					"value":"",
+					"description":"Message Ref",
+					"readonly":false,
+					"optional":true
+				}
+			]
+		},
+		{
+			"type" :			"node",
+			"id" :				"StartTimerEvent",
+			"title" :			"Start Timer Event",
+			"title_de" :		"Zeit-Startereignis",
+			"groups" :			["Start Events"],
+			"groups_de" : 		["Start-Ereignisse"],
+			"description" :		"A process instance is started on cyclic timer events, points in time, after time spans or timeouts.",
+			"description_de" :	"Eine Prozess-Instanz wird gestartet, wenn periodische zeitliche Ereignisse, Zeitpunkte, Zeitspannen oder Zeitüberschreitungen eintreten.",
+			"view" :			"startevent/timer.svg",
+			"icon" :			"startevent/timer.png",
+			"propertyPackages":[
+				"baseAttributes",
+				"catchEventAttributes",
+				"interrupting",
+				"bgColor"
+			],
+			"roles" : 			[
+				"all",
+				"sequence_start",
+				"to_task_event",
+				"from_task_event",
+				"fromtoall",
+				"Startevents_all",
+				"choreography_sequence_start",
+				"StartEventsMorph"
+			],
+			"properties": [
+				{
+					"id":"trigger",
+					"type":"String",
+					"title":"Trigger",
+					"title_de":"Auslöser",
+					"value":"Timer",
+					"description":"",
+					"readonly":true,
+					"optional":false
+				},
+				{
+					"id":"timedate",
+					"type":"String",
+					"title":"Time Date",
+					"title_de":"Time Date",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"refToView":"",
+					"length":""
+				},
+				{
+					"id":"timeduration",
+					"type":"Text",
+					"title":"Time Duration",
+					"title_de":"Time Duration",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"refToView":"",
+					"length":""
+				},
+				{
+					"id":"timecycle",
+					"type":"Text",
+					"title":"Time Cycle",
+					"title_de":"Time Cycle",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"refToView":"",
+					"length":""
+				}
+			]
+		},
+                {
 			"type" : 			"node",
 			"id" :				"StartConditionalEvent",
 			"title" :			"Start Conditional Event",
@@ -3484,9 +3831,61 @@
 				}
 			]
 		},
+                {
+			"type" : 			"node",
+			"id" :				"StartSignalEvent",
+			"title" :			"Start Signal Event",
+			"title_de" :		"Signal-Startereignis",
+			"groups" :			["Start Events"],
+			"groups_de" :		["Start-Ereignisse"],
+			"description" :		"A process instance is started based on signalling across different processes. (One signal thrown can be caught multiple times)",
+			"description_de" :	"Eine Prozess-Instanz wird auf Basis von Signalen über mehrere Prozesse hinweg gestartet. (Auf dasselbe Signal kann an mehreren Stellen reagiert werden)",
+			"view" :			"startevent/signal.svg",
+			"icon" :			"startevent/signal.png",
+			"propertyPackages": [
+				"baseAttributes",
+				"catchEventAttributes",
+				"interrupting",
+				"bgColor"
+			],
+			"roles" : 			[
+				"all",
+				"sequence_start",
+				"Startevents_all",
+				"to_task_event",
+				"from_task_event",
+				"fromtoall",
+				"choreography_sequence_start",
+				"StartEventsMorph"
+			],
+			"properties": [
+				{
+					"id":"trigger",
+					"type":"String",
+					"title":"Trigger",
+					"title_de":"Auslöser",
+					"value":"Signal",
+					"description":"",
+					"readonly":true,
+					"optional":false
+				},
+				{
+					"id":"signalref",
+					"type":"Text",
+					"title":"SignalRef",
+					"title_de":"SignalRef",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"refToView":"",
+					"length":""
+				}
+			]
+		},
                 
 		// Intermediate Events Catching
-		
+		/*
 		{
 			"type": "node",
 			"id":"IntermediateMessageEventCatching",
@@ -3627,7 +4026,7 @@
 			]
 		},
 		
-		
+		*/
 		// End Events
 		
 		{
@@ -3666,6 +4065,193 @@
 					"description":"",
 					"readonly":true,
 					"optional":false
+				}
+			]
+		},
+		{
+			"type": "node",
+			"id":"EndMessageEvent",
+			"title":"Message End Event",
+			"title_de":"Nachrichten-Endereignis",
+			"groups":["End Events"],
+			"groups_de":["End-Ereignisse"],
+			"description":"At the end of the process, a message is sent.",
+			"description_de":"Zum Abschluss des Prozesses wird noch eine Nachricht versendet.",
+			"view":"endevent/message.svg",
+			"icon":"endevent/message.png",
+			"propertyPackages":[
+				"baseAttributes",
+				"throwEventAttributes",
+				"bgColor"
+			],
+			"roles": [
+				"all",
+				"messageflow_start",
+				"sequence_end",
+				"to_task_event",
+				"from_task_event",
+				"fromtoall",
+				"Endevents_all",
+				"EndEventsMorph"
+			],
+			"properties": [
+				{
+					"id":"trigger",
+					"type":"String",
+					"title":"Trigger",
+					"title_de":"Auslöser",
+					"value":"Message",
+					"description":"",
+					"readonly":true,
+					"optional":false
+				},
+				{
+					"id":"messageref",
+					"type":"String",
+					"title":"MessageRef",
+					"title_de":"MessageRef",
+					"value":"",
+					"description":"Message Ref",
+					"readonly":false,
+					"optional":true
+				}
+			]
+		},
+		{
+			"type": "node",
+			"id":"EndErrorEvent",
+			"title":"Error End Event",
+			"title_de":"Fehler-Endereignis",
+			"groups":["End Events"],
+			"groups_de":["End-Ereignisse"],
+			"description":"The process ends in an error state. As result a named error is thrown.",
+			"description_de":"Der Prozess endet in einem Fehlerzustand. Es wird abschließend ein benannter Fehler geworfen.",
+			"view":"endevent/error.svg",
+			"icon":"endevent/error.png",
+			"propertyPackages":[
+				"baseAttributes",
+				"throwEventAttributes",
+				"bgColor"
+			],
+			"roles": [
+				"all",
+				"sequence_end",
+				"to_task_event",
+				"from_task_event",
+				"fromtoall",
+				"Endevents_all",
+				"EndEventsMorph"
+			],
+			"properties": [
+				{
+					"id":"trigger",
+					"type":"String",
+					"title":"Trigger",
+					"title_de":"Auslöser",
+					"value":"Error",
+					"description":"",
+					"readonly":true,
+					"optional":false
+				},
+				{
+					"id":"errorref",
+					"type":"Text",
+					"title":"ErrorRef",
+					"title_de":"ErrorRef",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"refToView":"",
+					"length":""
+				}
+			]
+		},
+		{
+			"type": "node",
+			"id":"EndCancelEvent",
+			"title":"Cancel End Event",
+			"title_de":"Abbruch-Endereignis",
+			"groups":["End Events"],
+			"groups_de":["End-Ereignisse"],
+			"description":"Triggering cancellation of a transaction.",
+			"description_de":"Auslösen eines Abbruchs einer Transaktion.",
+			"view":"endevent/cancel.svg",
+			"icon":"endevent/cancel.png",
+			"propertyPackages":[
+				"baseAttributes",
+				"throwEventAttributes",
+				"bgColor"
+			],
+			"roles":[
+				"all",
+				"sequence_end",
+				"to_task_event",
+				"from_task_event",
+				"fromtoall",
+				"Endevents_all",
+				"EndEventsMorph"
+			],
+			"properties": [
+				{
+					"id":"trigger",
+					"type":"String",
+					"title":"Trigger",
+					"title_de":"Auslöser",
+					"value":"Cancel",
+					"description":"",
+					"readonly":true,
+					"optional":false
+				}
+			]
+		},
+		{
+			"type": "node",
+			"id":"EndSignalEvent",
+			"title":"Signal End Event",
+			"title_de":"Signal-Endereignis",
+			"groups":["End Events"],
+			"groups_de":["End-Ereignisse"],
+			"description":"At the end of the process, a signal is thrown. (One signal thrown can be caught multiple times)",
+			"description_de":"Zum Ende des Prozesses wird abschließend ein Signal hochgeworfen. (Auf dasselbe Signal kann an mehreren Stellen reagiert werden)",
+			"view":"endevent/signal.svg",
+			"icon":"endevent/signal.png",
+			"propertyPackages":[
+				"baseAttributes",
+				"throwEventAttributes",
+				"bgColor"
+			],
+			"roles": [
+				"all",
+				"sequence_end",
+				"to_task_event",
+				"from_task_event",
+				"fromtoall",
+				"Endevents_all",
+				"EndEventsMorph"
+			],
+			"properties": [
+				{
+					"id":"trigger",
+					"type":"String",
+					"title":"Trigger",
+					"title_de":"Auslöser",
+					"value":"Signal",
+					"description":"",
+					"readonly":true,
+					"optional":false
+				},
+				{
+					"id":"signalref",
+					"type":"Text",
+					"title":"SignalRef",
+					"title_de":"SignalRef",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"refToView":"",
+					"length":""
 				}
 			]
 		},
@@ -3717,7 +4303,7 @@
 			"title_de":"Sequenzfluss",
 			"description":"Sequence Flow defines the execution order of activities.",
 			"description_de":"Ein Sequenzfluss definiert die Reihenfolge der Ausführung von Aktivitäten.",
-			"groups":["Connecting Objects"],
+			"groups":["Connectors"],
 			"groups_de":["Konnektoren"],
 			"view":"connector/sequenceflow.svg",
 			"icon":"connector/sequenceflow.png",
@@ -3856,7 +4442,7 @@
 			"title_de":"Ungerichtete Assoziation",
 			"description":"Attaching a data object with an Undirected Association to a sequence flow indicates hand-over of information between the activities involved.",
 			"description_de":"Die Zuordnung eines Datenobjekts zu einem Sequenzfluss über eine ungerichtete Assoziation weist auf eine Informationsübergabe zwischen den Aktivitäten hin.",
-			"groups":["Connecting Objects"],
+			"groups":["Connectors"],
 			"groups_de":["Konnektoren"],
 			"view":"connector/association.undirected.svg",
 			"icon":"connector/association.undirected.png",
@@ -3912,42 +4498,6 @@
 						}
 					]
 				}
-           ]
-		},
-		{
-			"type": "edge",
-			"id":"Association_Unidirectional",
-			"title":"Association (unidirectional)",
-			"title_de":"Gerichtete Assoziation",
-			"description":"A Directed Association indicates information flow. A data object can be read at the start of an activity or written upon completion.",
-			"description_de":"Eine gerichtete Assoziation zeigt den Informationsfluss. Ausgehende Kanten zeigen Schreiben, eingehende zeigen Lesen an.",
-			"groups":["Connecting Objects"],
-			"groups_de":["Konnektoren"],
-			"view":"connector/association.unidirectional.svg",
-			"icon":"connector/association.unidirectional.png",
-			"roles": [
-				"all",
-				"ConnectingObjectsMorph",
-				"Directed_Association"
-			],
-			"propertyPackages" : [
-			    "dataAssociation"
-			],
-			"properties" : [
-                {
-                    "id":"text",
-                    "type":"String",
-                    "title":"Name",
-                    "title_de":"Name",
-                    "value":"",
-                    "description":"",
-                    "readonly":false,
-                    "optional":true,
-                    "length":"",
-                    "refToView":"name",
-                    "wrapLines":true,
-					"popular":true
-                }
            ]
 		}/*,
                 

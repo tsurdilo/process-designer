@@ -257,7 +257,7 @@ ORYX.Plugins.View = {
 		        regexa = new RegExp( regexSa );
 		        profileParams = regexa.exec( window.location.href );
 		        profileParamValue = profileParams[1]; 
-				return profileParamValue == "jbpm";
+				return profileParamValue == "jbpm" || profileParamValue == "kmr";
 			}.bind(this)
 		});
 		
@@ -344,7 +344,7 @@ ORYX.Plugins.View = {
 		        regexa = new RegExp( regexSa );
 		        profileParams = regexa.exec( window.location.href );
 		        profileParamValue = profileParams[1]; 
-				return profileParamValue == "jbpm";
+				return profileParamValue == "jbpm" || profileParamValue == "kmr";
 			}.bind(this)
 		});
 		
@@ -365,7 +365,7 @@ ORYX.Plugins.View = {
 		        regexa = new RegExp( regexSa );
 		        profileParams = regexa.exec( window.location.href );
 		        profileParamValue = profileParams[1]; 
-				return profileParamValue == "jbpm";
+				return profileParamValue == "jbpm" || profileParamValue == "kmr";
 			}.bind(this)
 		});
 		
@@ -386,7 +386,7 @@ ORYX.Plugins.View = {
 		        regexa = new RegExp( regexSa );
 		        profileParams = regexa.exec( window.location.href );
 		        profileParamValue = profileParams[1]; 
-				return profileParamValue == "jbpm";
+				return profileParamValue == "jbpm"  || profileParamValue == "kmr";
 			}.bind(this)
 		});
 		
@@ -407,7 +407,7 @@ ORYX.Plugins.View = {
 		        regexa = new RegExp( regexSa );
 		        profileParams = regexa.exec( window.location.href );
 		        profileParamValue = profileParams[1]; 
-				return profileParamValue == "jbpm";
+				return profileParamValue == "jbpm" || profileParamValue == "kmr";
 			}.bind(this)
 		});
 		
@@ -428,7 +428,7 @@ ORYX.Plugins.View = {
 		        regexa = new RegExp( regexSa );
 		        profileParams = regexa.exec( window.location.href );
 		        profileParamValue = profileParams[1]; 
-				return profileParamValue == "jbpm";
+				return profileParamValue == "jbpm" || profileParamValue == "kmr";
 			}.bind(this)
 		});
 		
@@ -449,7 +449,7 @@ ORYX.Plugins.View = {
 		        regexa = new RegExp( regexSa );
 		        profileParams = regexa.exec( window.location.href );
 		        profileParamValue = profileParams[1]; 
-				return profileParamValue == "jbpm";
+				return profileParamValue == "jbpm" || profileParamValue == "kmr";
 			}.bind(this)
 		});
 	},

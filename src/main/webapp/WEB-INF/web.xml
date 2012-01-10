@@ -106,7 +106,7 @@
   <servlet-class>com.intalio.web.plugin.impl.PluginServiceServlet</servlet-class>
   <init-param>
    <param-name>factoryName</param-name>
-   <param-value>jbpm</param-value>
+   <param-value>kmr</param-value>
   </init-param>
  </servlet>
  <servlet>
@@ -115,9 +115,16 @@
   <servlet-class>com.intalio.web.stencilset.impl.StencilSetServiceServlet</servlet-class>
   <init-param>
    <param-name>defaultName</param-name>
-   <param-value>bpmn2.0jbpm</param-value>
+   <param-value>kmr</param-value>
   </init-param>
  </servlet>
+ 
+ <servlet>
+    <display-name>WorkingSet</display-name>
+    <servlet-name>WorkingSetServlet</servlet-name>
+    <servlet-class>com.intalio.web.server.WorkingSetServlet</servlet-class>
+ </servlet>
+ 
  <servlet-mapping>
   <servlet-name>ResourceList</servlet-name>
   <url-pattern>/resourceList</url-pattern>
@@ -193,6 +200,10 @@
  <servlet-mapping>
   <servlet-name>StencilSetServiceServlet</servlet-name>
   <url-pattern>/stencilset/*</url-pattern>
+ </servlet-mapping>
+ <servlet-mapping>
+    <servlet-name>WorkingSetServlet</servlet-name>
+    <url-pattern>/workingSet</url-pattern>
  </servlet-mapping>
  <!-- the number within the session-timout element must be expressed in 
     minutes. it is now 24 hours. -->

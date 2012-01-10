@@ -1476,6 +1476,11 @@ ORYX.Editor = {
 		shape.getDockers().each(function(docker) {
 			docker.setDockedShape(undefined);
 		});
+                
+                this._getPluginFacade().raiseEvent({
+                    type 		: ORYX.CONFIG.EVENT_SHAPE_DELETED, 
+                    value		: shape
+                });
 	},
 	
 	/**

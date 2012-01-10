@@ -25,7 +25,7 @@
  * @author martin.czuchra
  * @author Intalio, Inc
  */
- 
+
 if(!ORYX) var ORYX = {};
 
 if(!ORYX.CONFIG) ORYX.CONFIG = {};
@@ -246,6 +246,7 @@ ORYX.CONFIG.EVENT_SHOW_PROPERTYWINDOW =		"propertywindow.show";
 ORYX.CONFIG.EVENT_DRAG_TRACKER_DRAG =       "dragTracker.drag";
 ORYX.CONFIG.EVENT_DRAG_TRACKER_RESIZE =     "dragTracker.resize";
 ORYX.CONFIG.EVENT_DROP_SHAPE =				"drop.shape";
+ORYX.CONFIG.EVENT_SHAPE_DELETED =				"shape.deleted";
 	
 	/* Selection Shapes Highlights */
 ORYX.CONFIG.SELECTION_HIGHLIGHT_SIZE =				5;
@@ -297,4 +298,8 @@ ORYX.CONFIG.KEY_ACTION_DOWN = 			"down";
 ORYX.CONFIG.KEY_ACTION_UP = 			"up";
 
 ORYX.CONFIG.PANEL_RIGHT_COLLAPSED = true;
+
 ORYX.CONFIG.PANEL_LEFT_COLLAPSED = true;
+
+//KMR
+ORYX.CONFIG.KMR_VOCABULARY_SERVICE_URL  =   "/Workbench/KnowledgeModuleServlet"

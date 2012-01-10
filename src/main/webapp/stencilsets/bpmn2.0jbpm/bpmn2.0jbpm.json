@@ -5487,7 +5487,7 @@
 				},
 				{
 					"id":"conditionexpression",
-					"type":"String",
+					"type":"GuvnorRuleEditor",
 					"title":"Condition Expression",
 					"title_de":"Bedingungsausdruck",
 					"value":"",

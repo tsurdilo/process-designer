@@ -133,6 +133,9 @@ import org.jbpm.bpmn2.emfextmodel.OnEntryScriptType;
 import org.jbpm.bpmn2.emfextmodel.OnExitScriptType;
 
 import com.intalio.web.profile.IDiagramProfile;
+import org.eclipse.bpmn2.*;
+import org.eclipse.bpmn2.Error;
+import org.eclipse.bpmn2.Process;
 
 /**
  * @author Antoine Toulme
@@ -1067,7 +1070,7 @@ public class Bpmn2JsonMarshaller {
         marshallNode(callActivity, properties, "ReusableSubprocess", plane, generator, xOffset, yOffset);
     }
     
-    private void marshallTask(Task task, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Definitions def, Map<String, Object> flowElementProperties) throws JsonGenerationException, IOException {
+    protected void marshallTask(Task task, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset, String preProcessingData, Definitions def, Map<String, Object> flowElementProperties) throws JsonGenerationException, IOException {
         Map<String, Object> properties = new LinkedHashMap<String, Object>(flowElementProperties);
     	String taskType = "None";
     	if (task instanceof BusinessRuleTask) {
@@ -1410,7 +1413,7 @@ public class Bpmn2JsonMarshaller {
     	marshallNode(gateway, flowElementProperties, "ComplexGateway", plane, generator, xOffset, yOffset);
     }
     
-    private void marshallNode(FlowNode node, Map<String, Object> properties, String stencil, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset) throws JsonGenerationException, IOException {
+    protected void marshallNode(FlowNode node, Map<String, Object> properties, String stencil, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset) throws JsonGenerationException, IOException {
     	if (properties == null) {
     		properties = new LinkedHashMap<String, Object>();
     	}
@@ -1798,6 +1801,7 @@ public class Bpmn2JsonMarshaller {
 	    for (Artifact artifact: subProcess.getArtifacts()) {
 	    	marshallArtifact(artifact, plane, generator, 0, 0, preProcessingData, def);
 	    }
+            
 	    generator.writeEndArray();
 	    generator.writeArrayFieldStart("outgoing");
 	    for (BoundaryEvent boundaryEvent: subProcess.getBoundaryEventRefs()) {
@@ -1919,7 +1923,7 @@ public class Bpmn2JsonMarshaller {
         generator.writeEndArray();
     }
     
-    private DiagramElement findDiagramElement(BPMNPlane plane, BaseElement baseElement) {
+    protected DiagramElement findDiagramElement(BPMNPlane plane, BaseElement baseElement) {
     	DiagramElement result = _diagramElements.get(baseElement.getId());
     	if (result != null) {
     		return result;
@@ -1931,8 +1935,8 @@ public class Bpmn2JsonMarshaller {
         		return element;
         	}
         }
-    	_logger.info("Could not find BPMNDI information for " + baseElement);
-    	return null;
+		throw new IllegalArgumentException(
+			"Could not find BPMNDI information for " + baseElement.getId());
     }
     
     private void marshallGlobalTask(GlobalTask globalTask, JsonGenerator generator) {
@@ -1961,7 +1965,7 @@ public class Bpmn2JsonMarshaller {
         throw new UnsupportedOperationException("TODO"); //TODO!
     }
     
-    private void marshallProperties(Map<String, Object> properties, JsonGenerator generator) throws JsonGenerationException, IOException {
+    protected void marshallProperties(Map<String, Object> properties, JsonGenerator generator) throws JsonGenerationException, IOException {
         generator.writeObjectFieldStart("properties");
         for (Entry<String, Object> entry : properties.entrySet()) {
             generator.writeObjectField(entry.getKey(), String.valueOf(entry.getValue()));
@@ -2134,5 +2138,5 @@ public class Bpmn2JsonMarshaller {
         }
         return false;
     }
-    
+
 }

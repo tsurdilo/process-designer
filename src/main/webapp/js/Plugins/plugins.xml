@@ -361,7 +361,7 @@
 		<plugin source="dragTracker/laneDragTracker.js" name="ORYX.Plugins.DragTracker.LaneDragTracker" />
 		<plugin source="dragTracker/poolDragTracker.js" name="ORYX.Plugins.DragTracker.PoolDragTracker" />
 			
-                        
+                <plugin name="ORYX.Plugins.MouseOverLabelPlugin" source="mouseOverLabel.js"/>    
                 <plugin source="regexTextEditor.js" name="ORYX.Plugins.RegexTextEditor" />        
                 <plugin source="constraintExpressionEditor.js" name="ORYX.Plugins.ConstraintExpressionEditor">
                     <property name="useFixedPackage" value="false"/>
@@ -369,8 +369,13 @@
                     <property name="category" value="Home Mortgage" />
                     <property name="hideRHS" value="true"/>
                     <property name="hideAttributes" value="true"/>
+                    <property name="width" value="650"/>
+                    <property name="height" value="400"/>
                 </plugin>        
+                <plugin source="kmr/kmrVocabularyType.js" name="ORYX.Plugins.KmrVocabularyType" />        
 	</plugins>
+        
+        
 	
 	
 	<properties>

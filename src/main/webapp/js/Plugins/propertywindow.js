@@ -518,7 +518,7 @@ ORYX.Plugins.PropertyWindow = {
 				var refToViewFlag = false;
 
 				var editorClass = ORYX.FieldEditors[pair.type()];
-				 
+				
 				if (editorClass !== undefined) {
 					editorGrid = editorClass.init.bind(this, key, pair, icons, index)();
 					if (editorGrid == null) {
@@ -581,7 +581,7 @@ ORYX.Plugins.PropertyWindow = {
 							break;
 						case ORYX.CONFIG.TYPE_FLOAT:
 							// Set as an Editor for Float
-							var numberField = new Ext.form.NumberField({ allowBlank: pair.optional(), allowDecimals:true, msgTarget:'title', minValue: pair.min(), maxValue: pair.max()});
+							var numberField = new Ext.form.NumberField({allowBlank: pair.optional(), allowDecimals:true, msgTarget:'title', minValue: pair.min(), maxValue: pair.max()});
 							numberField.on('keyup', function(input, event) {
 								this.editDirectly(key, input.getValue());
 							}.bind(this));
@@ -593,7 +593,7 @@ ORYX.Plugins.PropertyWindow = {
 							// Set as a ColorPicker
 							// Ext1.0 editorGrid = new gEdit(new form.ColorField({ allowBlank: pair.optional(),  msgTarget:'title' }));
 
-							var editorPicker = new Ext.ux.ColorField({ allowBlank: pair.optional(),  msgTarget:'title', facade: this.facade });
+							var editorPicker = new Ext.ux.ColorField({allowBlank: pair.optional(),  msgTarget:'title', facade: this.facade});
 
 							/*this.facade.registerOnEvent(ORYX.CONFIG.EVENT_COLOR_CHANGE, function(option) {
 								this.editDirectly(key, option.value);
@@ -652,7 +652,7 @@ ORYX.Plugins.PropertyWindow = {
 							var currFormat = ORYX.I18N.PropertyWindow.dateFormat
 							if(!(attribute instanceof Date))
 								attribute = Date.parseDate(attribute, currFormat)
-								editorGrid = new Ext.Editor(new Ext.form.DateField({ allowBlank: pair.optional(), format:currFormat,  msgTarget:'title'}));
+								editorGrid = new Ext.Editor(new Ext.form.DateField({allowBlank: pair.optional(), format:currFormat,  msgTarget:'title'}));
 							break;
 
 						case ORYX.CONFIG.TYPE_TEXT:
@@ -671,7 +671,7 @@ ORYX.Plugins.PropertyWindow = {
 							// extended by Kerstin (start)
 						case ORYX.CONFIG.TYPE_COMPLEX:
 
-							var cf = new Ext.form.ComplexListField({ allowBlank: pair.optional()}, pair.complexItems(), key, this.facade);
+							var cf = new Ext.form.ComplexListField({allowBlank: pair.optional()}, pair.complexItems(), key, this.facade);
 							cf.on('dialogClosed', this.dialogClosed, {scope:this, row:index, col:1,field:cf});							
 							editorGrid = new Ext.Editor(cf);
 							break;
@@ -694,9 +694,8 @@ ORYX.Plugins.PropertyWindow = {
 							editorGrid = new Ext.Editor(editorInput);							
 							break;
 							// extended by Gerardo (End)
-
 						default:
-							var editorInput = new Ext.form.TextField({ allowBlank: pair.optional(),  msgTarget:'title', maxLength:pair.length(), enableKeyEvents: true});
+							var editorInput = new Ext.form.TextField({allowBlank: pair.optional(),  msgTarget:'title', maxLength:pair.length(), enableKeyEvents: true});
 						editorInput.on('keyup', function(input, event) {
 							this.editDirectly(key, input.getValue());
 						}.bind(this));
@@ -765,7 +764,7 @@ ORYX.Plugins.PropertyWindow = {
 	
 	hideMoreAttrs: function(panel) {
 		// TODO: Implement the case that the canvas has no attributes
-		if (this.properties.length <= 0){ return }
+		if (this.properties.length <= 0){return}
 		
 		// collapse the "more attr" group
 		this.grid.view.toggleGroup(this.grid.view.getGroupId(this.properties[0][0]), false);
@@ -980,7 +979,7 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 			var editor;
 			
 			if (type == ORYX.CONFIG.TYPE_STRING) {
-				editor = new Ext.form.TextField({ allowBlank : this.items[i].optional(), width : width});
+				editor = new Ext.form.TextField({allowBlank : this.items[i].optional(), width : width});
 			} else if (type == ORYX.CONFIG.TYPE_CHOICE) {				
 				var items = this.items[i].items();
 				var select = ORYX.Editor.graft("http://www.w3.org/1999/xhtml", parent, ['select', {style:'display:none'}]);
@@ -990,12 +989,12 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 				});				
 				
 				editor = new Ext.form.ComboBox(
-					{ typeAhead: true, triggerAction: 'all', transform:select, lazyRender:true,  msgTarget:'title', width : width});			
+					{typeAhead: true, triggerAction: 'all', transform:select, lazyRender:true,  msgTarget:'title', width : width});			
 			} else if (type == ORYX.CONFIG.TYPE_BOOLEAN) {
-				editor = new Ext.form.Checkbox( { width : width } );
+				editor = new Ext.form.Checkbox( {width : width} );
 			} else if (type == "xpath") {
 				//TODO set the xpath type as string, same editor as string.
-				editor = new Ext.form.TextField({ allowBlank : this.items[i].optional(), width : width});
+				editor = new Ext.form.TextField({allowBlank : this.items[i].optional(), width : width});
 			}
 					
 			cols.push({
@@ -1215,7 +1214,7 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 
 Ext.form.ComplexTextField = Ext.extend(Ext.form.TriggerField,  {
 
-	defaultAutoCreate : {tag: "textarea", rows:1, style:"height:16px;overflow:hidden;" },
+	defaultAutoCreate : {tag: "textarea", rows:1, style:"height:16px;overflow:hidden;"},
 
     /**
      * If the trigger was clicked a dialog has to be opened

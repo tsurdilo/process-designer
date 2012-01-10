@@ -460,9 +460,16 @@
         <scope>provided</scope>
       </dependency>
 
-    </dependencies>
 
-  <build>
+	<!--abdera -->
+	<dependency>
+      <groupId>org.apache.abdera</groupId>
+      <artifactId>abdera-client</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+
+    </dependencies>
+<build>
     <plugins>
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
@@ -551,6 +558,7 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
+
     <repository>
       <id>jboss-thirdparty-uploads</id>
       <name>JBoss ThirdParty Uploads</name>

@@ -86,11 +86,17 @@ private static final Logger _logger = LoggerFactory.getLogger(StencilSetServiceS
             if(path.indexOf("designer/stencilset//designer/stencilsets/bpmn2.0jbpm/") >= 0) {
                 path = path.substring("designer/stencilset//designer/stencilsets/bpmn2.0jbpm/".length(), path.length());
             }
+            if(path.indexOf("designer/stencilset//designer/stencilsets/kmr/") >= 0) {
+                path = path.substring("designer/stencilset//designer/stencilsets/kmr/".length(), path.length());
+            }
             if(path.indexOf("bpmn2.0.json/") >= 0) {
                 path = path.substring("bpmn2.0.json".length(), path.length());
             }
             if(path.indexOf("bpmn2.0jbpm.json/") >= 0) {
                 path = path.substring("bpmn2.0jbpm.json".length(), path.length());
+            }
+            if(path.indexOf("kmr.json/") >= 0) {
+                path = path.substring("kmr.json".length(), path.length());
             }
             input = stencilset.getResourceContents(path);
             if(requestURI.endsWith(".svg")) {

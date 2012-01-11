@@ -198,7 +198,7 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         createAndParseWorkItemSVGs(workDefinitions);
 
         // create and parse the view svg to include Model data
-        createAndParseModelSVGs(packageName, workingSetsClassNames);
+        //createAndParseModelSVGs(packageName, workingSetsClassNames);
     }
 
     @SuppressWarnings("unchecked")

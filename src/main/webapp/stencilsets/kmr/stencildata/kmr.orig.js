@@ -2868,7 +2868,7 @@
 			"id" :			"Model_$cn$",
 			"title" :		"$cn$",
 			"groups" :		["Facts"],
-			"view" :		"model/dynamic/$cn$.svg",
+			"view" :		"model/model.fixed.svg",
 			"icon" :		"model/fact.type.png",
                         "description" :         "$cn$ Model Element",
 			"defaultAlign" :	"southeast",

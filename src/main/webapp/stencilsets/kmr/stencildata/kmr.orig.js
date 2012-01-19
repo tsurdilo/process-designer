@@ -341,7 +341,7 @@
 					"type":"String",
 					"title":"ID",
 					"title_de":"ID",
-					"value":"",
+					"value":"$processid$",
 					"description":"ID",
 					"description_de":"ID",
 					"readonly":false,
@@ -2424,7 +2424,7 @@
 					"type":"String",
 					"title":"ProcessName",
 					"title_de":"Prozessname",
-					"value":"$processName$",
+					"value":"",
 					"description":"",
 					"readonly":false,
 					"optional":false,
@@ -2884,27 +2884,29 @@
                                 "title":"Entity",
                                 "value":"$cn$",
                                 "readonly":true,
-                                "optional":false
+                                "optional":false,
+                                "refToView":"name"
                             \},
                             \{
                                 "id":"fieldConstraint",
                                 "type":"String",
                                 "title":"Field Constraint",
-                                "value":"code",
+                                "value":"oid",
                                 "readonly":true,
                                 "optional":false,
                                 "visible":false,
                                 "hidden":true
                             \},
                             \{
-                                "id":"code",
+                                "id":"oid",
                                 "type":"kmrSingleVocabulary",
-                                "title":"Code",
+                                "title":"OID",
                                 "value":"",
                                 "description":"",
                                 "readonly":     false,
                                 "optional":     false,
-                                "lookupType":"$cn; format="upper"$"
+                                "lookupType":"$cn; format="upper"$",
+                                "popular" : true
                             \}
                         ],
 			"roles" : [

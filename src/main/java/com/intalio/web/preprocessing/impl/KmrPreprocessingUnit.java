@@ -169,6 +169,9 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
 
             workItemTemplate.setAttribute("workingSetsClassNames", workingSetsClassNames);
 
+            // default the process id
+            workItemTemplate.setAttribute("processid", "com.sample.bpmm2");
+            
             workItemTemplate.setAttribute("packageName", packageName);
             
             workItemTemplate.setAttribute("processName", processName);

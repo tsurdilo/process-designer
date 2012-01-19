@@ -80,6 +80,9 @@ ORYX.Plugins.ShapeMenuPlugin = {
 		
 				// Show the Morph Button
 				this.showMorphButton(this.currentShapes);
+                                
+                                // Show the Morph Button
+				this.showDeleteButton(this.currentShapes);
 				
 				// Show the Stencil Buttons
 				this.showStencilButtons(this.currentShapes);	
@@ -115,6 +118,8 @@ ORYX.Plugins.ShapeMenuPlugin = {
 		this.createdButtons = {};
 		
 		this.createMorphMenu();
+                
+		this.createDeleteButton();
 		
 		if( !this.pluginsData ){
 			this.pluginsData = [];
@@ -181,6 +186,23 @@ ORYX.Plugins.ShapeMenuPlugin = {
 					
 	},
 	
+	createDeleteButton: function() {
+		
+		// Create the button to show the morph menu
+		var button = new ORYX.Plugins.ShapeMenuButton({
+			callback:		this.deleteShape.bind(this), 
+			icon: 			ORYX.PATH + 'images/cross.png',
+			align: 			ORYX.CONFIG.SHAPEMENU_TOP,
+			group:			0,
+			msg:			ORYX.I18N.ShapeMenuPlugin.deleteSelection
+		});				
+		
+                this.shapeMenu.setNumberOfButtonsPerLevel(ORYX.CONFIG.SHAPEMENU_TOP, 1)
+		this.shapeMenu.addButton(button);
+                
+		this.deleteButton = button;              
+	},
+        
 	createMorphMenu: function() {
 		
 		this.morphMenu = new Ext.menu.Menu({
@@ -210,7 +232,7 @@ ORYX.Plugins.ShapeMenuPlugin = {
 		this.shapeMenu.setNumberOfButtonsPerLevel(ORYX.CONFIG.SHAPEMENU_BOTTOM, 1)
 		this.shapeMenu.addButton(button);
 		this.morphMenu.getEl().appendTo(button.node);
-		this.morphButton = button;
+		this.morphButton = button;              
 	},
 	
 	showMorphMenu: function() {
@@ -228,6 +250,12 @@ ORYX.Plugins.ShapeMenuPlugin = {
 			this.hideMorphMenu();
 		else
 			this.showMorphMenu();
+	},
+        
+	deleteShape: function() {
+            this.facade.raiseEvent({
+                type 		: ORYX.CONFIG.EVENT_FACADE_SELECTION_DELETION_REQUEST
+            });
 	},
 	
 	onSelectionChanged: function(event) {
@@ -287,6 +315,13 @@ ORYX.Plugins.ShapeMenuPlugin = {
 		
 		this.morphButton.prepareToShow();
 		
+	},
+        
+        /**
+	 * Show button for morphing the selected shape into another stencil
+	 */
+	showDeleteButton: function(elements) {
+            this.deleteButton.prepareToShow();
 	},
 
 	/**
@@ -993,7 +1028,7 @@ ORYX.Plugins.ShapeMenu = {
  				button.setLevel(y);
  				
  				button.setPosition(a.x+numOfButtonsPerLevel*button.group*size + button.group*0.3*size + x*size,
- 						a.y-5 - (y+1)*size);
+ 						a.y-15 - (y+1)*size);
 				top++;
  			} else if (button.align == ORYX.CONFIG.SHAPEMENU_BOTTOM) {
  				// horizontal levels

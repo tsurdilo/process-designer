@@ -367,18 +367,6 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _helper, _onSave){
                 value: ''+ORYX.CONFIG.GUVNOR_HIDE_ATTRIBUTES
             });
         
-            //BRL
-            //"<RULE_SEPARATOR_TAG/>"
-            var _brl = helper.getBRLValue();
-            _brl = _brl.split("<RULE_SEPARATOR_TAG/>");
-            
-            _brl.each(function(_singleBRL){
-                    _guvnorParameters.push({
-                    name:"brlSource", 
-                    value: _singleBRL
-                } );
-            });
-            
         
             //get the available Classes from the node's path
             if (srcShape){
@@ -393,9 +381,9 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _helper, _onSave){
 
                 var errors = [];
 
-                //convert each Model Entity into Working Set config data
+                //convert each Model Entity into Guvnor config data
                 //and add it to the request parameter
-                var _workingSetConfigData = [];
+                var _guvnorConfigData = [];
                 _modelEntitiesInPath.each(function(_modelEntity){
                     var _validFact = _modelEntity.properties['oryx-modelentity'];
                     var _factField = _modelEntity.properties['oryx-fieldconstraint'];
@@ -414,7 +402,7 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _helper, _onSave){
                         return;
                     }
                    
-                    _workingSetConfigData.push("{"+_validFact+"--@--"+_factField+"--@--"+_matchesString+"}");
+                    _guvnorConfigData.push("{"+_validFact+"--@--"+_factField+"--@--"+_matchesString+"}");
                     
                 });
 
@@ -426,12 +414,12 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _helper, _onSave){
                 //get working-set definition for the model entities found in path
                 var workingSetXML = "";
                
-                new Ajax.Request("/designer/workingSet", {
+                new Ajax.Request("/designer/guvnorTemplates", {
                     asynchronous: false,
                     method: 'POST',
                     parameters: {
                         "action": "createWorkingSetWithMandatoryConstraint",
-                        "config": _workingSetConfigData
+                        "config": _guvnorConfigData
                     },
                     onSuccess: function(transport){
                         workingSetXML = transport.responseText;
@@ -455,21 +443,33 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _helper, _onSave){
                 });
 
             }
+            
+            //BRL
+            //"<RULE_SEPARATOR_TAG/>"
+            var _brl = helper.getBRLValue(_guvnorConfigData);
+            _brl = _brl.split("<RULE_SEPARATOR_TAG/>");
+            
+            _brl.each(function(_singleBRL){
+                    _guvnorParameters.push({
+                    name:"brlSource", 
+                    value: _singleBRL
+                } );
+            });
            
-            if (_guvnorParameters.length > 0){
-                var i = 0;
-                var separator = "";
-                _guvnorURL += "?";
-                for (i = 0; i < _guvnorParameters.length; i++){
-                    var p = _guvnorParameters[i];
-                    var uriComponent= separator + p.name+"="+encodeURIComponent(p.value);
-                    if (separator == ""){
-                        separator = "&amp;"; // %26
-                    }
-                
-                    _guvnorURL += uriComponent;
-                }
-            }
+//            if (_guvnorParameters.length > 0){
+//                var i = 0;
+//                var separator = "";
+//                _guvnorURL += "?";
+//                for (i = 0; i < _guvnorParameters.length; i++){
+//                    var p = _guvnorParameters[i];
+//                    var uriComponent= separator + p.name+"="+encodeURIComponent(p.value);
+//                    if (separator == ""){
+//                        separator = "&amp;"; // %26
+//                    }
+//                
+//                    _guvnorURL += uriComponent;
+//                }
+//            }
             
             var _windowWidth = _width/1+ 25;
             var _windowHeight = _height/1 + 45;
@@ -487,10 +487,27 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _helper, _onSave){
                 autoScroll  : true,
                 resizable   : false,
                 y           : _windowYPad,          
-                html: '<iframe id="guvnorFrame" name="guvnorFrame" width="'+_width+'" height="'+_height+'"  onload="attachCallbacksToGuvnor();" src="'+_guvnorURL+'"></iframe>'
+                html: '<iframe id="guvnorFrame" name="guvnorFrame" width="'+_width+'" height="'+_height+'"  onload="attachCallbacksToGuvnor();" src=""></iframe>'
             });
         
             w.show();
+            
+            var form = document.createElement("form");
+            form.setAttribute("method", "POST");
+            form.setAttribute("action", _guvnorURL);
+            form.setAttribute("target", "guvnorFrame");
+
+            _guvnorParameters.each(function(param){
+                var hiddenField = document.createElement("input");
+                hiddenField.setAttribute("type", "hidden");
+                hiddenField.setAttribute("name", param.name);
+                hiddenField.setAttribute("value", param.value);
+
+                form.appendChild(hiddenField);
+            });
+
+            //document.body.appendChild(form);
+            form.submit();
         },
         
         showErrors : function (errors){
@@ -765,9 +782,9 @@ GuvnorPopupEditorSingleRuleHelper = GuvnorPopupEditorHelper.extend({
       
     },
     
-    getBRLValue : function(){
+    getBRLValue : function(guvnorConfigData){
         if (this.brlValue == ""){
-            return this.getInitialBRL();
+            return this.getInitialBRL(undefined, guvnorConfigData);
         }
         //update rule's name according to shape's name
         this.updateBRLRuleName();
@@ -775,8 +792,33 @@ GuvnorPopupEditorSingleRuleHelper = GuvnorPopupEditorHelper.extend({
         return this.brlValue;
     },
     
-    getInitialBRL: function(){
-        return '<rule><name>Condition Constraint</name><modelVersion>1.0</modelVersion><attributes></attributes><metadataList/><lhs></lhs><rhs></rhs></rule>';
+    getInitialBRL: function(ruleName, guvnorConfigData){
+        
+        if (!ruleName){
+            ruleName = "Condition Constraint";
+        }
+        
+        var brl = "";
+        
+        new Ajax.Request("/designer/guvnorTemplates", {
+            asynchronous: false,
+            method: 'POST',
+            parameters: {
+                "action": "createInitialBRL",
+                "ruleName": ruleName,
+                "config": guvnorConfigData
+            },
+            onSuccess: function(transport){
+                brl = transport.responseText;
+            }.bind(this),
+            onFailure: (function(transport){
+                alert ("Error getting Initial BRL value: "+transport.responseText);
+            }).bind(this)
+        });
+
+        return brl;
+                
+        //return '<rule><name>Condition Constraint</name><modelVersion>1.0</modelVersion><attributes></attributes><metadataList/><lhs></lhs><rhs></rhs></rule>';
     }
     
 });
@@ -872,7 +914,7 @@ GuvnorPopupEditorMultiRuleHelper = GuvnorPopupEditorHelper.extend({
         return this.outgoingNodesConstraintProperty[node];
     },
     
-    getBRLValue : function(){
+    getBRLValue : function(guvnorConfigData){
         //If we don't have any outgoing node, we never should get here in the
         //first place!
         if (this.outgoingNodes.keys().length == 0){
@@ -892,14 +934,18 @@ GuvnorPopupEditorMultiRuleHelper = GuvnorPopupEditorHelper.extend({
         keys.each(function(outgoingNodeKey){
             var property = this.getConstraintProperty(this.outgoingNodes[outgoingNodeKey]);
             var individualBRLValue = this.outgoingNodes[outgoingNodeKey].properties["oryx-"+property.id];
+            
+            //We are going to use a GuvnorPopupEditorSingleRuleHelper to
+            //handle BRL code
+            var h = new GuvnorPopupEditorSingleRuleHelper(this.outgoingNodes[outgoingNodeKey]);
+            
             if (individualBRLValue == ""){
                 //empty value? add an empty rule
-                individualBRLValue = this.getInitialBRL(outgoingNodeKey);
+                individualBRLValue = h.getInitialBRL(outgoingNodeKey, guvnorConfigData);
             }else{
                 //the value is encoded -> decode it
                 //We are going to use a instance of GuvnorPopupEditorSingleRuleHelper
                 //to do the decoding;
-                var h = new GuvnorPopupEditorSingleRuleHelper(this.outgoingNodes[outgoingNodeKey]);
                 h.setValue(individualBRLValue);
                 individualBRLValue = h.getBRLValue();
                 //TODO: update rule name because outgoing node's name could be change
@@ -913,9 +959,9 @@ GuvnorPopupEditorMultiRuleHelper = GuvnorPopupEditorHelper.extend({
         return brlValue;
     },
     
-    getInitialBRL: function(ruleName){
-        return '<rule><name>'+ruleName+'</name><modelVersion>1.0</modelVersion><attributes></attributes><metadataList/><lhs></lhs><rhs></rhs></rule>';
-    },
+//    getInitialBRL: function(ruleName){
+//        return '<rule><name>'+ruleName+'</name><modelVersion>1.0</modelVersion><attributes></attributes><metadataList/><lhs></lhs><rhs></rhs></rule>';
+//    },
     
     setValue : function(value){
 

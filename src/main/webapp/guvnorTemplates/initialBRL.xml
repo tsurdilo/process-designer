@@ -1,0 +1,30 @@
+<rule>
+  <name>$ruleName$</name>
+  <modelVersion>1.0</modelVersion>
+  <attributes/>
+  <metadataList/>
+  <lhs>
+    $data:{d|  
+    <fact>
+      <constraintList>
+        <constraints>
+          <fieldConstraint>
+            <value>$d.matchesString$</value>
+            <operator>==</operator>
+            <constraintValueType>1</constraintValueType>
+            <expression>
+              <parts/>
+            </expression>
+            <fieldName>$d.validFact$.$d.factField$</fieldName>
+            <fieldType>Numeric</fieldType>
+          </fieldConstraint>
+        </constraints>
+      </constraintList>
+      <factType>$d.validFact$</factType>
+      <isNegated>false</isNegated>
+    </fact>
+    }$
+  </lhs>
+  <rhs/>
+  <isNegated>false</isNegated>
+</rule>

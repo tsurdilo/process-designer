@@ -120,9 +120,9 @@
  </servlet>
  
  <servlet>
-    <display-name>WorkingSet</display-name>
-    <servlet-name>WorkingSetServlet</servlet-name>
-    <servlet-class>com.intalio.web.server.WorkingSetServlet</servlet-class>
+    <display-name>Guvnor Templates Servlet</display-name>
+    <servlet-name>GuvnorTemplatesServlet</servlet-name>
+    <servlet-class>com.intalio.web.server.GuvnorTemplatesServlet</servlet-class>
  </servlet>
  
  <servlet-mapping>
@@ -202,8 +202,8 @@
   <url-pattern>/stencilset/*</url-pattern>
  </servlet-mapping>
  <servlet-mapping>
-    <servlet-name>WorkingSetServlet</servlet-name>
-    <url-pattern>/workingSet</url-pattern>
+    <servlet-name>GuvnorTemplatesServlet</servlet-name>
+    <url-pattern>/guvnorTemplates</url-pattern>
  </servlet-mapping>
  <!-- the number within the session-timout element must be expressed in 
     minutes. it is now 24 hours. -->

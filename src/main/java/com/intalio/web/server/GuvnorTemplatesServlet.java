@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,28 +19,32 @@ import javax.servlet.http.HttpServletResponse;
 import org.antlr.stringtemplate.StringTemplate;
 import org.apache.log4j.Logger;
 
+
 /**
- * Service in charge to create Working-Set XML definitions that can be 
+ * Service in charge to create Working-Set and rules XML definitions that can be 
  * passed to Guvnor to customize the behavior of the Rule Editor
  * @author esteban.aliverti
  */
-public class WorkingSetServlet extends HttpServlet{
+public class GuvnorTemplatesServlet extends HttpServlet{
     
-    public final static String WORKING_SET_TEMPLATE_PATH = "workingSetTemplate/workingSet.xml";
+    public final static String WORKING_SET_TEMPLATE_PATH = "guvnorTemplates/workingSet.xml";
+    public final static String BRL_TEMPLATE_PATH = "guvnorTemplates/initialBRL.xml";
     
-    public final static String WORKING_SET_CONFOG_DATA_SEPARATOR = "--@--";
+    public final static String GUVNOR_CONFIG_DATA_SEPARATOR = "--@--";
     
     private static final long serialVersionUID = 1L;
     private static final Logger _logger = Logger
-            .getLogger(WorkingSetServlet.class);
+            .getLogger(GuvnorTemplatesServlet.class);
 
     
     private String workingSetTemplate;
+    private String brlTemplate;
     
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         workingSetTemplate = config.getServletContext().getRealPath("/" + WORKING_SET_TEMPLATE_PATH);
+        brlTemplate = config.getServletContext().getRealPath("/" + BRL_TEMPLATE_PATH);
     }
     
     
@@ -56,6 +59,8 @@ public class WorkingSetServlet extends HttpServlet{
         
         if ("createWorkingSetWithMandatoryConstraint".equals(action)){
             this.createWorkingSetWithMandatoryConstraint(req, resp);
+        }else if ("createInitialBRL".equals(action)){
+            this.createInitialBRL(req, resp);
         }
         
     }
@@ -89,15 +94,15 @@ public class WorkingSetServlet extends HttpServlet{
         StringTemplate workingSetStringTemplate = new StringTemplate(readFile(workingSetTemplate));
         
         //Group the config objects according to its validFact and factField
-        Map<String,WorkingSetConfigData> groupedWorkingSetConfigData = new HashMap<String, WorkingSetConfigData>();
+        Map<String,GuvnorConfigData> groupedWorkingSetConfigData = new HashMap<String, GuvnorConfigData>();
         for (int i = 0; i < configs.length; i++) {
             String config = configs[i];
-            WorkingSetConfigData workingSetConfigData = this.parseWorkingSetConfigData(config);
+            GuvnorConfigData workingSetConfigData = this.parseGuvnorConfigData(config);
             
             String key = workingSetConfigData.getValidFact()+"."+workingSetConfigData.getFactField();
             if (groupedWorkingSetConfigData.containsKey(key)){
                 //concat the new constraint
-                WorkingSetConfigData existingWorkingSetConfigData = groupedWorkingSetConfigData.get(key);
+                GuvnorConfigData existingWorkingSetConfigData = groupedWorkingSetConfigData.get(key);
                 existingWorkingSetConfigData.setMatchesString(existingWorkingSetConfigData.getMatchesString()+"|"+workingSetConfigData.getMatchesString());
             }else{
                 groupedWorkingSetConfigData.put(key, workingSetConfigData);
@@ -105,8 +110,8 @@ public class WorkingSetServlet extends HttpServlet{
         }
         
         //for each grouped config, parse its content and create template data
-        List<WorkingSetConfigData> templateData = new ArrayList<WorkingSetConfigData>();
-        for (WorkingSetConfigData workingSetConfigData : groupedWorkingSetConfigData.values()) {
+        List<GuvnorConfigData> templateData = new ArrayList<GuvnorConfigData>();
+        for (GuvnorConfigData workingSetConfigData : groupedWorkingSetConfigData.values()) {
             templateData.add(workingSetConfigData);
         }
         
@@ -122,18 +127,56 @@ public class WorkingSetServlet extends HttpServlet{
         resp.getWriter().print(workingSetStringTemplate.toString());
     }
     
-    private WorkingSetConfigData parseWorkingSetConfigData(String stringData){
-        WorkingSetConfigData configData = new WorkingSetConfigData();
+    private void createInitialBRL(HttpServletRequest req, HttpServletResponse resp) throws IOException{
+        String[] configs = req.getParameterValues("config");
+        String ruleName = req.getParameter("ruleName");
+        
+        if (configs == null){
+            throw new IllegalArgumentException("'config' parameter is mandatory!");
+        }
+        if (ruleName == null){
+            throw new IllegalArgumentException("'ruleName' parameter is mandatory!");
+        }
+        
+        //get the template
+        StringTemplate brlStringTemplate = new StringTemplate(readFile(brlTemplate));
+        
+        //parse the configuration parameter and add the result in a list
+        List<GuvnorConfigData> templateData = new ArrayList<GuvnorConfigData>();
+        for (int i = 0; i < configs.length; i++) {
+            String config = configs[i];
+            GuvnorConfigData brlConfigData = this.parseGuvnorConfigData(config);
+            templateData.add(brlConfigData);
+        }
+        
+        //add data to template
+        brlStringTemplate.setAttribute("ruleName", ruleName);
+        brlStringTemplate.setAttribute("data", templateData);
+        
+        
+        //prepare response
+        resp.setHeader("Content-Type", "application/xml");
+        resp.setHeader("charset", "UTF-8");
+
+        //send response
+        resp.getWriter().print(brlStringTemplate.toString());
+    }
+    
+    private GuvnorConfigData parseGuvnorConfigData(String stringData){
+        
         
         //remove { and }
         stringData = stringData.substring(1, stringData.length()-1);
         
         //separate elements
-        String[] data = stringData.split(WORKING_SET_CONFOG_DATA_SEPARATOR);
-        if (data.length != 3 ){
-            throw new IllegalArgumentException("Expected 3 elements in '"+stringData+"', but "+data+" were found");
+        String[] data = stringData.split(GUVNOR_CONFIG_DATA_SEPARATOR);
+        
+        if (data.length != 3){
+            throw new IllegalArgumentException("Expected 3 elements in '"+stringData+"', but "+data.length+" were found");
         }
         
+        GuvnorConfigData configData = new GuvnorConfigData();
+         
         configData.setValidFact(data[0].trim());
         configData.setFactField(data[1].trim());
         configData.setMatchesString(data[2].trim());
@@ -146,7 +189,7 @@ public class WorkingSetServlet extends HttpServlet{
         
         BufferedReader reader = new BufferedReader(new FileReader(pathname));
         try {
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null){
                 fileContents.append(line);
                 fileContents.append("\n");
@@ -168,8 +211,7 @@ public class WorkingSetServlet extends HttpServlet{
     }
     
 }
-
-class WorkingSetConfigData{
+class GuvnorConfigData{
     private String validFact;
     private String factField;
     private String matchesString;

@@ -327,7 +327,7 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _helper, _onSave){
             }
 
             //Guvnor url
-            var _guvnorURL= ORYX.EXTERNAL_PROTOCOL+"://"+ORYX.EXTERNAL_HOST+"/"+ORYX.EXTERNAL_SUBDOMAIN+"/org.drools.guvnor.GuvnorDrools/standaloneEditorServlet";
+            var _guvnorURL= ORYX.EXTERNAL_PROTOCOL+"://"+ORYX.EXTERNAL_HOST+"/"+ORYX.EXTERNAL_SUBDOMAIN+"/org.drools.guvnor.Guvnor/standaloneEditorServlet";
         
             //Guvnor editor parameters
             var _guvnorParameters = [];

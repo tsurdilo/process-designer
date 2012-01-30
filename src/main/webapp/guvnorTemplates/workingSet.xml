@@ -11,7 +11,7 @@
       <args>
         <entry>
           <string>matches</string>
-          <string>$d.matchesString$</string>
+          <string>$d.matchesValue$</string>
         </entry>
       </args>
       <constraintName>Matches</constraintName>
@@ -25,4 +25,16 @@
     <string>$d.validFact$</string>
     }$
   </validFacts>
+  <customForms>
+    $data:{d|  
+    <org.drools.ide.common.client.factconstraints.customform.predefined.DefaultCustomFormImplementation>
+      <width>220</width>
+      <height>300</height>
+      <factType>$d.validFact$</factType>
+      <fieldName>$d.factField$</fieldName>
+      <url>$customFormURL$</url>
+      <useFormIdForRule>true</useFormIdForRule>
+    </org.drools.ide.common.client.factconstraints.customform.predefined.DefaultCustomFormImplementation>
+    }$
+  </customForms>
 </org.drools.guvnor.client.rpc.WorkingSetConfigData>

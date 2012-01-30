@@ -123,6 +123,10 @@
     <display-name>Guvnor Templates Servlet</display-name>
     <servlet-name>GuvnorTemplatesServlet</servlet-name>
     <servlet-class>com.intalio.web.server.GuvnorTemplatesServlet</servlet-class>
+    <init-param>
+        <param-name>customFormProviderURL</param-name>
+        <param-value>/Workbench/oidForm.jsp</param-value>
+    </init-param>
  </servlet>
  
  <servlet-mapping>

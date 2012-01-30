@@ -387,7 +387,7 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _helper, _onSave){
                 _modelEntitiesInPath.each(function(_modelEntity){
                     var _validFact = _modelEntity.properties['oryx-modelentity'];
                     var _factField = _modelEntity.properties['oryx-fieldconstraint'];
-                    var _matchesString = _modelEntity.properties['oryx-'+_factField];
+                    var _matchesObject = _modelEntity.properties['oryx-'+_factField];
                    
                     if (!_validFact){
                         errors.push("Fact Name is mandatory!");
@@ -397,12 +397,20 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _helper, _onSave){
                         errors.push("You must specify a field for '"+_validFact+"' Model Entity");
                         return;
                     }
-                    if (!_matchesString){
+                    if (!_matchesObject){
                         errors.push("You must specify a value for '"+_validFact+"."+_factField+"' Model Entity");
                         return;
                     }
                    
-                    _guvnorConfigData.push("{"+_validFact+"--@--"+_factField+"--@--"+_matchesString+"}");
+                   if (_matchesObject.indexOf('->') > 0){
+                       var _parts = _matchesObject.split("->");
+                       _guvnorConfigData.push("{"+_validFact+"--@--"+_factField+"--@--"+_parts[0]+"--@--"+_parts[1]+"}");
+                   }else{
+                       //legacy
+                       _guvnorConfigData.push("{"+_validFact+"--@--"+_factField+"--@--"+_matchesObject+"--@--"+_matchesObject+"}");
+                   }
+                   
+                    
                     
                 });
 

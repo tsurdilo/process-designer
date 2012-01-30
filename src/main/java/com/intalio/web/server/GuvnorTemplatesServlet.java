@@ -39,12 +39,14 @@ public class GuvnorTemplatesServlet extends HttpServlet{
     
     private String workingSetTemplate;
     private String brlTemplate;
+    private String customFormProviderURL;
     
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         workingSetTemplate = config.getServletContext().getRealPath("/" + WORKING_SET_TEMPLATE_PATH);
         brlTemplate = config.getServletContext().getRealPath("/" + BRL_TEMPLATE_PATH);
+        customFormProviderURL = config.getInitParameter("customFormProviderURL");
     }
     
     
@@ -103,7 +105,7 @@ public class GuvnorTemplatesServlet extends HttpServlet{
             if (groupedWorkingSetConfigData.containsKey(key)){
                 //concat the new constraint
                 GuvnorConfigData existingWorkingSetConfigData = groupedWorkingSetConfigData.get(key);
-                existingWorkingSetConfigData.setMatchesString(existingWorkingSetConfigData.getMatchesString()+"|"+workingSetConfigData.getMatchesString());
+                existingWorkingSetConfigData.setMatchesValue(existingWorkingSetConfigData.getMatchesValue()+"|"+workingSetConfigData.getMatchesValue());
             }else{
                 groupedWorkingSetConfigData.put(key, workingSetConfigData);
             }
@@ -115,9 +117,12 @@ public class GuvnorTemplatesServlet extends HttpServlet{
             templateData.add(workingSetConfigData);
         }
         
-       
+        //construct the url for custom form configuration
+        String url = req.getScheme()+"://"+req.getServerName()+":"+req.getServerPort()+customFormProviderURL;
+        
         //add attribute to template
         workingSetStringTemplate.setAttribute("data", templateData);
+        workingSetStringTemplate.setAttribute("customFormURL", url);
         
         //prepare response
         resp.setHeader("Content-Type", "application/xml");
@@ -171,15 +176,16 @@ public class GuvnorTemplatesServlet extends HttpServlet{
         //separate elements
         String[] data = stringData.split(GUVNOR_CONFIG_DATA_SEPARATOR);
         
-        if (data.length != 3){
-            throw new IllegalArgumentException("Expected 3 elements in '"+stringData+"', but "+data.length+" were found");
+        if (data.length != 4){
+            throw new IllegalArgumentException("Expected 4 elements in '"+stringData+"', but "+data.length+" were found");
         }
         
         GuvnorConfigData configData = new GuvnorConfigData();
          
         configData.setValidFact(data[0].trim());
         configData.setFactField(data[1].trim());
-        configData.setMatchesString(data[2].trim());
+        configData.setMatchesId(data[2].trim());
+        configData.setMatchesValue(data[3].trim());
         
         return configData;
     }
@@ -214,7 +220,8 @@ public class GuvnorTemplatesServlet extends HttpServlet{
 class GuvnorConfigData{
     private String validFact;
     private String factField;
-    private String matchesString;
+    private String matchesId;
+    private String matchesValue;
 
     public String getFactField() {
         return factField;
@@ -224,20 +231,28 @@ class GuvnorConfigData{
         this.factField = factField;
     }
 
-    public String getMatchesString() {
-        return matchesString;
-    }
-
-    public void setMatchesString(String matchesString) {
-        this.matchesString = matchesString;
-    }
-
     public String getValidFact() {
         return validFact;
     }
 
     public void setValidFact(String validFact) {
         this.validFact = validFact;
+    }
+
+    public String getMatchesId() {
+        return matchesId;
+    }
+
+    public void setMatchesId(String matchesId) {
+        this.matchesId = matchesId;
+    }
+
+    public String getMatchesValue() {
+        return matchesValue;
+    }
+
+    public void setMatchesValue(String matchesValue) {
+        this.matchesValue = matchesValue;
     }
     
 }

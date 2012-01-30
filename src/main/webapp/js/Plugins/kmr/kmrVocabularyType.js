@@ -211,19 +211,19 @@ Ext.extend(Ext.form.KmrVocabularyTypeField, Ext.form.TriggerField,  {
             this.dialog.un("show", dl.show,  this);
             this.dialog.un("hide", dl.hide,  this);
 			
-			this.dialog.destroy(true);
-			this.grid.destroy(true);
-			delete this.grid;
-			delete this.dialog;
-			
-			this.facade.unregisterOnEvent(ORYX.CONFIG.EVENT_KEYDOWN, this.keydownHandler.bind(this));
-			this.facade.enableEvent(ORYX.CONFIG.EVENT_KEYDOWN);
-			
-			// store data and notify parent about the closed dialog
-			// parent has to handel this event and start editing the text field again
-			this.fireEvent('dialogClosed', this.data);
-			
-			Ext.form.ComplexListField.superclass.setValue.call(this, this.data);
+            this.dialog.destroy(true);
+            this.grid.destroy(true);
+            delete this.grid;
+            delete this.dialog;
+
+            this.facade.unregisterOnEvent(ORYX.CONFIG.EVENT_KEYDOWN, this.keydownHandler.bind(this));
+            this.facade.enableEvent(ORYX.CONFIG.EVENT_KEYDOWN);
+
+            // store data and notify parent about the closed dialog
+            // parent has to handel this event and start editing the text field again
+            this.fireEvent('dialogClosed', this.data);
+
+            Ext.form.ComplexListField.superclass.setValue.call(this, this.data);
         }
     },	
 	

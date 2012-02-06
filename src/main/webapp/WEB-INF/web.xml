@@ -55,6 +55,10 @@
    <param-name>designer.preprocess</param-name>
    <param-value>true</param-value>
   </init-param>
+  <init-param>
+   <param-name>designer.preprocess.useCache</param-name>
+   <param-value>false</param-value>
+  </init-param>
  </servlet>
  <servlet>
   <display-name>Oryx Validator</display-name>

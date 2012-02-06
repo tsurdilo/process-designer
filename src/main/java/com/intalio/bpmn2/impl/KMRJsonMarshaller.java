@@ -8,8 +8,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 import org.eclipse.bpmn2.*;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
@@ -88,7 +91,57 @@ public class KMRJsonMarshaller extends Bpmn2JsonMarshaller {
 	    generator.writeEndObject();
 	    generator.writeEndObject();
             
-        } else {
+        } else if(textAnnotation.getText() != null && textAnnotation.getText().startsWith("KMRCustomCohort--")){ 
+            try{
+                Map<String, Object> properties = new LinkedHashMap<String, Object>();
+
+                //is this a kmr's cohort entity node?
+                String text = textAnnotation.getText();
+
+                //discard first token: KMRCustomCohort--
+                text = text.substring(text.indexOf("--")+2);
+
+                JsonParser jsonParser = new JsonFactory().createJsonParser(text);
+                JsonToken token;
+                String field = null;
+                while ((token = jsonParser.nextToken()) != null){
+                    if (token == JsonToken.FIELD_NAME){
+                        field = jsonParser.getText();
+                    }else if (token == JsonToken.VALUE_STRING){
+                        properties.put(field, jsonParser.getText());
+                    }
+                }
+                
+                marshallProperties(properties, generator);
+
+                generator.writeObjectFieldStart("stencil");
+                generator.writeObjectField("id", "Cohort_"+properties.get("cohortentity"));
+                generator.writeEndObject();
+                generator.writeArrayFieldStart("childShapes");
+                generator.writeEndArray();
+                generator.writeArrayFieldStart("outgoing");
+    //            generator.writeStartObject();
+    //            generator.writeObjectField("resourceId", findOutgoingAssociation(plane, textAnnotation).getId());
+    //            generator.writeEndObject();
+                generator.writeEndArray();
+
+                Bounds bounds = ((BPMNShape) findDiagramElement(plane, textAnnotation)).getBounds();
+                generator.writeObjectFieldStart("bounds");
+                generator.writeObjectFieldStart("lowerRight");
+                generator.writeObjectField("x", bounds.getX() + bounds.getWidth() - xOffset);
+                generator.writeObjectField("y", bounds.getY() + bounds.getHeight() - yOffset);
+                generator.writeEndObject();
+                generator.writeObjectFieldStart("upperLeft");
+                generator.writeObjectField("x", bounds.getX() - xOffset);
+                generator.writeObjectField("y", bounds.getY() - yOffset);
+                generator.writeEndObject();
+                generator.writeEndObject();
+            } catch (Exception e){
+                e.printStackTrace();
+                //in order to be able to open the process, teat this as a regular text annotation
+                super.marshallTextAnnotation(textAnnotation, plane, generator, xOffset, yOffset, preProcessingData, def);
+            }
+        }else {
             //no, just a regular Text Annotation
             super.marshallTextAnnotation(textAnnotation, plane, generator, xOffset, yOffset, preProcessingData, def);
         }

@@ -4,32 +4,32 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns:oryx="http://www.b3mn.org/oryx"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   width="51"
-   height="41"
+   width="102"
+   height="82"
    version="1.0">
   <defs></defs>
   <oryx:magnets>
 	<oryx:magnet oryx:cx="0" oryx:cy="48.5" oryx:anchors="left"/>
 	<oryx:magnet oryx:cx="44" oryx:cy="97" oryx:anchors="bottom"/>
-	<oryx:magnet oryx:cx="44" oryx:cy="48.5" oryx:anchors="right"/>
+	<oryx:magnet oryx:cx="88" oryx:cy="48.5" oryx:anchors="right"/>
 	<oryx:magnet oryx:cx="44" oryx:cy="0" oryx:anchors="top"/>
 	<oryx:magnet oryx:cx="44" oryx:cy="48.5" oryx:default="yes"/>
   </oryx:magnets>
 	<g pointer-events="fill">
                 <defs>
-			<radialGradient id="background" cx="0%" cy="0%" r="50%" fx="0%" fy="0%">
+			<radialGradient id="background" cx="0%" cy="0%" r="100%" fx="0%" fy="0%">
 				<stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
-                                <stop id="fill_el" offset="50%" stop-color="#ccccff" stop-opacity="1"/>
+                                <stop id="fill_el" offset="100%" stop-color="#F7DF02" stop-opacity="1"/>
 			</radialGradient>
 		</defs>
 		
-		<polyline oryx:resize="vertical horizontal" oryx:anchors="left right" id="frame" stroke="black" fill="url(#background)" stroke-width="3" points="19,97 0,97 0,0 19,0"/>
+		<polyline oryx:resize="vertical horizontal" oryx:anchors="left right" id="frame" stroke="black" fill="url(#background)" stroke-width="1" points="78,97 0,97 0,0 78,0"/>
 		
-		<polyline oryx:anchors="right top bottom" id="celem2" stroke="black" fill="#ccccff" stroke-width="3" points="19,97 44,97 44,5 19,5"/>
+		<polyline oryx:anchors="right top bottom" id="celem2" stroke="black" fill="#F7DF02" stroke-width="1" points="78,97 88,97 88,10 78,10"/>
 		
-		<polyline oryx:anchors="right top" id="celem3" stroke="black" fill="#ccccff" stroke-width="3" points="44,5 19,0 19,5 44,5"/>
+		<polyline oryx:anchors="right top" id="celem3" stroke="black" fill="#F7DF02" stroke-width="1" points="88,10 78,0 78,10 88,10"/>
 		
-		<rect id="unvisibleBorder" x="0" y="0" height="46" width="44" stroke="none" fill="none" oryx:resize="horizontal vertical"/>
+		<rect id="unvisibleBorder" x="0" y="0" height="97" width="88" stroke="none" fill="none" oryx:resize="horizontal vertical"/>
 		
 		<text font-size="12" x="44" y="48.5" id="name" oryx:align="middle center" oryx:fittoelem="unvisibleBorder" stroke="black"></text>		
                 

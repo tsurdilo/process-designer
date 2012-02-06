@@ -122,6 +122,11 @@ public class EditorHandler extends HttpServlet {
     public static final String PREPROCESS = "designer.preprocess";
     
     /**
+     * The designer PREPROCESS_USE_CACHE flag looked up from servlet config.
+     */
+    public static final String PREPROCESS_USE_CACHE = "designer.preprocess.useCache";
+    
+    /**
      * The designer bundle version looked up from the manifest.
      */
     public static final String BUNDLE_VERSION = "Bundle-Version";
@@ -135,6 +140,18 @@ public class EditorHandler extends HttpServlet {
      * The designer preprocess mode setting.
      */
     private boolean _preProcess;
+    
+    /**
+     * The designer preprocess cache mode setting.
+     * If this flag is true, the preprocess routine is executed once and cached.
+     */
+    private boolean _preProcessUseCache;
+    
+    /**
+     * Flag that indicates whether the preprocess routine was already executed 
+     * or not.
+     */
+    private boolean _preProcessAlreadyDone;
     
     /**
      * The designer version setting.
@@ -182,6 +199,7 @@ public class EditorHandler extends HttpServlet {
         
         _devMode = Boolean.parseBoolean( System.getProperty(DEV) == null ? config.getInitParameter(DEV) : System.getProperty(DEV) );
         _preProcess = Boolean.parseBoolean( System.getProperty(PREPROCESS) == null ? config.getInitParameter(PREPROCESS) : System.getProperty(PREPROCESS) );
+        _preProcessUseCache = Boolean.parseBoolean( config.getInitParameter(PREPROCESS_USE_CACHE) == null ? config.getInitParameter(PREPROCESS_USE_CACHE) : "false");
         _designerVersion = readDesignerVersion(config.getServletContext());
         
         String editor_file = config.
@@ -290,13 +308,17 @@ public class EditorHandler extends HttpServlet {
         }
         
         IDiagramPreprocessingUnit preprocessingUnit = null;
-        if(_preProcess) {
+        //We should synchromnize this block, but the overhead caused by 
+        //synchronization could be worst than the desynchronization problems
+        //themselves.
+        if(_preProcess && ((_preProcessUseCache && !_preProcessAlreadyDone) || !_preProcessUseCache)) {
             if (_logger.isInfoEnabled()) {
                 _logger.info(
                     "Performing diagram information pre-processing steps. ");
             }
             preprocessingUnit = _preProcessingService.findPreprocessingUnit(request, profile);
             preprocessingUnit.preprocess(request, response, profile);
+            _preProcessAlreadyDone = true;
         }
 
         //output env javascript files

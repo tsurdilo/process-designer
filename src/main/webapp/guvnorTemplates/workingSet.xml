@@ -11,7 +11,7 @@
       <args>
         <entry>
           <string>matches</string>
-          <string>$d.matchesValue$</string>
+          <string>$d.matchesId$</string>
         </entry>
       </args>
       <constraintName>Matches</constraintName>

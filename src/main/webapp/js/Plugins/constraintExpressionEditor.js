@@ -494,7 +494,7 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _helper, _onSave){
                 title       : 'Condition',
                 autoScroll  : true,
                 resizable   : false,
-                y           : _windowYPad,          
+                //y           : _windowYPad,          
                 html: '<iframe id="guvnorFrame" name="guvnorFrame" width="'+_width+'" height="'+_height+'"  onload="attachCallbacksToGuvnor();" src=""></iframe>'
             });
         

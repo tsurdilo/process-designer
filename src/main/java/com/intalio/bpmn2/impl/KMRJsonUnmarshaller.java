@@ -122,6 +122,11 @@ import org.osgi.framework.ServiceReference;
 
 import com.intalio.bpmn2.BpmnMarshallerHelper;
 import com.intalio.bpmn2.resource.JBPMBpmn2ResourceFactoryImpl;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.codehaus.jackson.JsonGenerator;
 
 /**
  * @author Esteban Aliverti
@@ -150,6 +155,9 @@ public class KMRJsonUnmarshaller {
     private List<BpmnMarshallerHelper> _helpers;
 
     private Bpmn2Resource _currentResource;
+
+    
+    private Map<String,Map<String,String>> cohortTypes = new HashMap<String, Map<String, String>>();
     
     public KMRJsonUnmarshaller() {
         _helpers = new ArrayList<BpmnMarshallerHelper>();
@@ -628,6 +636,36 @@ public class KMRJsonUnmarshaller {
                                             }
                                         }
                                     }
+                                }
+                            }else if (ed instanceof ConditionalEventDefinition){
+                                ConditionalEventDefinition conditionalEventDefinition = (ConditionalEventDefinition)ed;
+                                if (conditionalEventDefinition.getCondition() != null 
+                                        && ((FormalExpression)conditionalEventDefinition.getCondition()).getBody() != null
+                                        && !((FormalExpression)conditionalEventDefinition.getCondition()).getBody().trim().equals("")){
+                                    String body = ((FormalExpression)conditionalEventDefinition.getCondition()).getBody(); 
+                                    StringBuilder ruleHeader = new StringBuilder();
+                                    for (Entry<String, Map<String, String>> entry : cohortTypes.entrySet()) {
+                                        ruleHeader.append("@");
+                                        ruleHeader.append(entry.getKey());
+                                        ruleHeader.append("([");
+                                        String separator = "";
+                                        for (Entry<String, String> property : entry.getValue().entrySet()) {
+                                            ruleHeader.append(separator);
+                                            ruleHeader.append("\"");
+                                            ruleHeader.append(property.getKey());
+                                            ruleHeader.append("\" : \"");
+                                            ruleHeader.append(property.getValue());
+                                            ruleHeader.append("\"");
+                                            if (separator.equals("")){
+                                                separator = ", ";
+                                            }
+                                        }
+                                        
+                                        ruleHeader.append("])\n");
+                                        
+                                    }
+                                    body = ruleHeader.toString() + body;
+                                    ((FormalExpression)conditionalEventDefinition.getCondition()).setBody(body);
                                 }
                             }
                         }
@@ -1718,6 +1756,34 @@ public class KMRJsonUnmarshaller {
             //Set custom text as a concatenation of modelentity and the property
             //indicated by fieldconstraint
             text = "KMRCustom--"+properties.get("modelentity")+"--"+properties.get("fieldconstraint")+"--"+properties.get(properties.get("fieldconstraint"));
+        }
+        
+        //if ta has a 'cohortentity' property means that is one of our
+        //cohort entities.
+        if(properties.get("cohortentity") != null) {
+            //Set custom text as a concatenation of modelentity and the property
+            //indicated by fieldconstraint
+            text = "KMRCustomCohort--";
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            try {
+                JsonGenerator jsonGenerator = new JsonFactory().createJsonGenerator(new OutputStreamWriter(out));
+                
+                //convert properties to json
+                jsonGenerator.writeStartObject();
+                for (Entry<String, String> entry : properties.entrySet()) {
+                    jsonGenerator.writeStringField(entry.getKey(), entry.getValue());
+                }
+                jsonGenerator.writeEndObject();
+                jsonGenerator.flush();
+                jsonGenerator.close();
+                text += out.toString();
+                
+                cohortTypes.put(properties.get("cohortentity"), properties);
+            } catch (IOException ex) {
+                Logger.getLogger(KMRJsonUnmarshaller.class.getName()).log(Level.SEVERE, null, ex);
+                text += "ERROR: "+ex.getMessage();
+            }
+            
         }
         
         if(text != null) {

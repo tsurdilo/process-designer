@@ -1,6 +1,6 @@
 package com.intalio.web.server;
 
-import com.intalio.web.preprocessing.impl.KmrPreprocessingUnit;
+import com.intalio.web.preprocessing.impl.AbderaGuvnorHelper;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -102,7 +102,7 @@ public class ProcessInfoServlet extends HttpServlet {
                 + "/"
                 + profile.getExternalLoadURLSubdomain().substring(0,
                         profile.getExternalLoadURLSubdomain().indexOf("/"))
-                + "/rest/packages/" + packageName + "/assets/" + KmrPreprocessingUnit.encodeURIComponent(assetName);
+                + "/rest/packages/" + packageName + "/assets/" + AbderaGuvnorHelper.encodeURIComponent(assetName);
 		XMLInputFactory factory = XMLInputFactory.newInstance();
         XMLStreamReader reader = factory
                .createXMLStreamReader(getInputStreamForURL(assetInfoURL,
@@ -176,7 +176,7 @@ public class ProcessInfoServlet extends HttpServlet {
                     + "/"
                     + profile.getExternalLoadURLSubdomain().substring(0,
                             profile.getExternalLoadURLSubdomain().indexOf("/"))
-                    + "/rest/packages/" + KmrPreprocessingUnit.encodeURIComponent(nextPackage) + "/assets/";
+                    + "/rest/packages/" + AbderaGuvnorHelper.encodeURIComponent(nextPackage) + "/assets/";
             XMLInputFactory pfactory = XMLInputFactory.newInstance();
             XMLStreamReader preader = pfactory
                    .createXMLStreamReader(getInputStreamForURL(

@@ -506,7 +506,7 @@ ORYX.Plugins.DragDropResize = ORYX.Plugins.AbstractPlugin.extend({
 			y: upL.y - oldUpL.y };
 
 		// Instanciate the dragCommand
-		var commands = [new ORYX.Core.Command.Move(this.toMoveShapes, offset, null, this.containmentParentNode, this.currentShapes, this, true)];
+		var commands = [new ORYX.Core.Command.Move(this.toMoveShapes, offset, null, this.containmentParentNode, this.currentShapes, this, false)];
 		// If the undocked edges command is setted, add this command
 		if( this._undockedEdgesCommand instanceof ORYX.Core.Command ){
 			commands.unshift( this._undockedEdgesCommand );

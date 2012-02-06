@@ -2899,13 +2899,14 @@
                             \},
                             \{
                                 "id":"oid",
-                                "type":"kmrSingleVocabulary",
+                                "type":"externalkmrsinglevocabulary",
                                 "title":"OID",
                                 "value":"",
                                 "description":"",
                                 "readonly":     false,
                                 "optional":     false,
-                                "lookupType":"$cn; format="upper"$",
+                                //"lookupType":"$cn; format="upper"$",
+                                "lookupType":"$cn$",
                                 "popular" : true
                             \}
                         ],
@@ -2914,7 +2915,53 @@
 			]
                     \},
                 }$
-                // end Model Classes               
+                // end Model Classes            
+                
+                
+                //Cohort Classes
+                $cohortDefs.keys:{ch| 
+                    \{
+                        "type" : 		"node",
+			"id" :			"Cohort_$ch$",
+			"title" :		"$ch$",
+			"groups" :		["Cohort"],
+			"view" :		"model/cohort.fixed.svg",
+			"icon" :		"model/fact.type.png",
+                        "description" :         "$ch$ Element",
+			"defaultAlign" :	"southeast",
+			"propertyPackages":	[
+                            "baseAttributes",
+				"flowElement",
+				"artifact"
+			],
+                        "properties" :		[
+                            $cohortDefs.(ch):{field|
+                            \{
+                                "id":"$field$",
+                                "type":"String",
+                                "title":"$field$",
+                                "value":"",
+                                "readonly":false,
+                                "optional":true
+                            \},
+                            }$
+                            \{
+                                "id":"entity",
+                                "type":"String",
+                                "title":"Entity",
+                                "value":"$ch$",
+                                "readonly":true,
+                                "optional":false,
+                                "refToView":"name"
+                            \},
+                            
+                        ],
+			"roles" : [
+				"all"
+			]
+                    \},
+                }$
+                // end Cohort Classes            
                 
                 
                 {

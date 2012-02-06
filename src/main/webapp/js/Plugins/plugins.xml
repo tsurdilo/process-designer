@@ -373,6 +373,7 @@
                     <property name="height" value="400"/>
                 </plugin>        
                 <plugin source="kmr/kmrVocabularyType.js" name="ORYX.Plugins.KmrVocabularyType" />        
+                <plugin source="kmr/externalKmrVocabularyType.js" name="ORYX.Plugins.ExternalKmrVocabularyType" />        
 	</plugins>
         
         

@@ -55,26 +55,19 @@ import org.jbpm.process.workitem.WorkDefinitionImpl;
 import org.drools.process.core.datatype.DataType;
 import org.mvel2.MVEL;
 
-import sun.misc.BASE64Encoder;
 
 import com.intalio.web.preprocessing.IDiagramPreprocessingUnit;
 import com.intalio.web.profile.IDiagramProfile;
 import com.intalio.web.profile.impl.ExternalInfo;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collections;
 import javax.xml.namespace.QName;
 import org.antlr.stringtemplate.AttributeRenderer;
-import org.apache.abdera.Abdera;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.model.Feed;
-import org.apache.abdera.protocol.Response.ResponseType;
-import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
-import org.apache.abdera.protocol.client.RequestOptions;
 
 /**
  * KmrPreprocessingUnit - preprocessing unit for the jbpm profile
@@ -97,6 +90,9 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
     private String origModelSVGFile;
     private IDiagramProfile profile;
 
+    private String guvnorBaseURL;
+    private AbderaGuvnorHelper guvnorHelper;
+    
     public KmrPreprocessingUnit(ServletContext servletContext) {
         stencilPath = servletContext.getRealPath("/" + STENCILSET_PATH);
         origStencilFilePath = stencilPath + "/kmr/stencildata/" + "kmr.orig.json";
@@ -105,6 +101,8 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         origWorkitemSVGFile = workitemSVGFilePath + "workitem.orig";
         modelSVGFilePath = stencilPath + "/kmr/view/model/dynamic/";
         origModelSVGFile = modelSVGFilePath + "model.orig";
+        
+        
     }
 
     public String getOutData() {
@@ -121,6 +119,11 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         String[] wsUuids = req.getParameterValues("wsUuid");
 
         this.profile = profile;
+        
+        guvnorBaseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile)
+                + "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"));
+        
+        guvnorHelper = new AbderaGuvnorHelper(guvnorBaseURL);
 
         List<String> wsUuidsList = wsUuids == null ? new ArrayList<String>() : Arrays.asList(wsUuids);
 
@@ -159,8 +162,10 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         //get the available classes according to the passed working-sets
         List<String> workingSetsClassNames = new ArrayList(getWorkingSetsClasses(packageName, wsUuidsList, profile));
         Collections.sort(workingSetsClassNames);
-
-
+        
+        //get all the Cohort Types from the package
+        Map<String, Set<String>> cohortTemplateData = new CohortPreprocessor(packageName, guvnorHelper).getCohortTemplateData();
+        
         // parse the profile json to include config data
         try {
             // parse the orig stencil data with workitem definitions
@@ -168,6 +173,8 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
             workItemTemplate.setAttribute("workitemDefs", workDefinitions);
 
             workItemTemplate.setAttribute("workingSetsClassNames", workingSetsClassNames);
+            
+            workItemTemplate.setAttribute("cohortDefs", cohortTemplateData);
 
             // default the process id
             workItemTemplate.setAttribute("processid", "com.sample.bpmm2");
@@ -305,21 +312,14 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
     private String getWorkitemConfigContent(String packageName, String configInfoName){
         String content = "";
 
-        String baseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile) +
-            "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"));
+        String widURL = "/rest/packages/"+packageName+"/assets/"+configInfoName+"/source";
+        
+        ClientResponse resp = null;
 
-        String widURL = baseURL + "/rest/packages/"+encodeURIComponent(packageName)+"/assets/"+encodeURIComponent(configInfoName)+"/source";
-
-        Abdera abdera = new Abdera();
-        AbderaClient client = new AbderaClient(abdera);
-
-        RequestOptions options = this.createBaseOptions(client);
-        options.setAccept("text/plain"); //even if we know is json
-
-        ClientResponse resp = client.get(widURL, options);
-
-        if (resp.getType() != ResponseType.SUCCESS) {
-            throw new IllegalStateException("Error occurred when retrieving Work Item Config from package: " + resp.getStatusText());
+        try{
+            resp = guvnorHelper.invokeGETGuvnor(widURL, "text/plain");
+        } catch (Exception e){
+            throw new IllegalStateException("Error occurred when retrieving Work Item Config from package: ", e);
         }
 
         try {
@@ -337,23 +337,16 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
 
     private String[] findPackageAndNameForProcessUUID(String uuid, List<String> packageNames) {
 
-        String baseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile)
-                + "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"));
-
         for (String nextPackage : packageNames) {
             //The UUID must be of a bpmn2 asset
-            String processesURL = baseURL + "/rest/packages/" + nextPackage + "/assets?format=bpmn2";
+            String processesURL = "/rest/packages/" + nextPackage + "/assets?format=bpmn2";
 
-            Abdera abdera = new Abdera();
-            AbderaClient client = new AbderaClient(abdera);
+            ClientResponse resp = null;
 
-            RequestOptions options = this.createBaseOptions(client);
-            options.setAccept("application/atom+xml");
-
-            ClientResponse resp = client.get(processesURL, options);
-
-            if (resp.getType() != ResponseType.SUCCESS) {
-                throw new IllegalStateException("Error occurred when retrieving Processes from package: " + resp.getStatusText());
+            try{
+                resp = guvnorHelper.invokeGETGuvnor(processesURL, "application/atom+xml");
+            } catch (Exception e){
+                throw new IllegalStateException("Error occurred when retrieving Processes from package: ", e);
             }
 
             Document<Feed> document = resp.getDocument();
@@ -379,21 +372,15 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
      * @return 
      */
     private Map<String, List<WorkDefinitionImpl>> findWorkitemInfoForPackage(String packageName) {
-        String baseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile)
-                + "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"));
 
-        String widsURL = baseURL + "/rest/packages/" + packageName + "/assets?format=" + WORKITEM_DEFINITION_EXT;
+        String widsURL = "/rest/packages/" + packageName + "/assets?format=" + WORKITEM_DEFINITION_EXT;
 
-        Abdera abdera = new Abdera();
-        AbderaClient client = new AbderaClient(abdera);
+        ClientResponse resp = null;
 
-        RequestOptions options = this.createBaseOptions(client);
-        options.setAccept("application/atom+xml");
-
-        ClientResponse resp = client.get(widsURL, options);
-
-        if (resp.getType() != ResponseType.SUCCESS) {
-            throw new IllegalStateException("Error occurred when retrieving Work Item definitions from package: " + resp.getStatusText());
+        try{
+            resp = guvnorHelper.invokeGETGuvnor(widsURL, "application/atom+xml");
+        } catch (Exception e){
+            throw new IllegalStateException("Error occurred when retrieving Work Item definitions from package: ", e);
         }
 
         Document<Feed> document = resp.getDocument();
@@ -415,21 +402,15 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
     private List<String> findPackages(IDiagramProfile profile) {
         List<String> packages = new ArrayList<String>();
 
-        String packagesURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile)
-                + "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"))
-                + "/rest/packages/";
+        String packagesURL = "/rest/packages/";
 
-        Abdera abdera = new Abdera();
-        AbderaClient client = new AbderaClient(abdera);
+        ClientResponse resp = null;
 
-        RequestOptions options = this.createBaseOptions(client);
-
-        ClientResponse resp = client.get(packagesURL, options);
-
-        if (resp.getType() != ResponseType.SUCCESS) {
-            throw new IllegalStateException("Couldn't get list of packages from Guvnor");
+        try{
+            resp = guvnorHelper.invokeGETGuvnor(packagesURL, "application/atom+xml");
+        } catch (Exception e){
+            throw new IllegalStateException("Couldn't get list of packages from Guvnor", e);
         }
-
 
         Document<Feed> document = resp.getDocument();
         for (Entry entry : document.getRoot().getEntries()) {
@@ -448,23 +429,16 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
             return result;
         }
 
-        String baseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile)
-                + "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"));
+        String workingSetsURL = "/rest/packages/" + packageName + "/assets?format=workingset";
 
-        String workingSetsURL = baseURL + "/rest/packages/" + packageName + "/assets?format=workingset";
+        ClientResponse resp = null;
 
-        Abdera abdera = new Abdera();
-        AbderaClient client = new AbderaClient(abdera);
-
-        RequestOptions options = this.createBaseOptions(client);
-        options.setAccept("application/atom+xml");
-
-        ClientResponse resp = client.get(workingSetsURL, options);
-
-        if (resp.getType() != ResponseType.SUCCESS) {
-            throw new IllegalStateException("Error occurred when retrieving Working Sets from package: " + resp.getStatusText());
+        try{
+            resp = guvnorHelper.invokeGETGuvnor(workingSetsURL, "application/atom+xml");
+        } catch (Exception e){
+            throw new IllegalStateException("Error occurred when retrieving Working Sets from package: ", e);
         }
-
+        
         Document<Feed> document = resp.getDocument();
 
         //Convert from UUIDs to entry
@@ -504,19 +478,14 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
             throw new IllegalArgumentException("Working Set Entry doesn't have any binary URL");
         }
 
-        //Invoke Guvnor to get the content of the WS.
-        Abdera abdera = new Abdera();
-        AbderaClient client = new AbderaClient(abdera);
+        ClientResponse resp = null;
 
-        RequestOptions options = this.createBaseOptions(client);
-        options.setAccept("application/octet-stream"); //even if we know is xml
-
-        ClientResponse resp = client.get(binaryURL, options);
-
-        if (resp.getType() != ResponseType.SUCCESS) {
-            throw new IllegalStateException("Error occurred when retrieving Working Sets '" + workingSetEntry.getTitle() + "' Content: " + resp.getStatusText());
+        try{
+            resp = guvnorHelper.invokeGET(binaryURL, "application/octet-stream");
+        } catch (Exception e){
+            throw new IllegalStateException("Error occurred when retrieving Working Sets from package: ", e);
         }
-
+        
         try {
             XMLInputFactory factory = XMLInputFactory.newInstance();
             XMLStreamReader reader = factory.createXMLStreamReader(resp.getInputStream());
@@ -548,24 +517,6 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         }
 
         return result;
-    }
-
-    /**
-     * Creates default RequestOptions with authentication attribute (if needed).
-     * @return 
-     */
-    private RequestOptions createBaseOptions(AbderaClient client) {
-
-        RequestOptions options = client.getDefaultRequestOptions();
-
-        if (profile.getUsr() != null && profile.getUsr().trim().length() > 0 && profile.getPwd() != null && profile.getPwd().trim().length() > 0) {
-            BASE64Encoder enc = new sun.misc.BASE64Encoder();
-            String userpassword = profile.getUsr() + ":" + profile.getPwd();
-            String encodedAuthorization = enc.encode(userpassword.getBytes());
-            options.setAuthorization("Basic " + encodedAuthorization);
-        }
-
-        return options;
     }
 
     private String readFile(String pathname) throws IOException {
@@ -610,16 +561,5 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         _logger.info("Created file:" + file);
     }
 
-    public static String encodeURIComponent(String s) {
-        String result = null;
-
-        try {
-            result = URLEncoder.encode(s, "UTF-8").replaceAll("\\+", "%20").replaceAll("\\%21", "!").replaceAll("\\%27", "'").replaceAll("\\%28", "(").replaceAll("\\%29", ")").replaceAll("\\%7E", "~");
-        } // This exception should never occur.
-        catch (UnsupportedEncodingException e) {
-            result = s;
-        }
-
-        return result;
-    }
+    
 }

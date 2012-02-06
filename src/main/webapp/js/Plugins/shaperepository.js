@@ -106,7 +106,7 @@ ORYX.Plugins.ShapeRepository = {
 		this.facade.getStencilSets().values().each((function(sset) {
 			
 			// For each Stencilset create and add a new Tree-Node
-			var stencilSetNode
+			var stencilSetNode = this.shapeList;
 			
 			var typeTitle = sset.title();
 			var extensions = sset.extensions();
@@ -114,7 +114,7 @@ ORYX.Plugins.ShapeRepository = {
 //				typeTitle += " / " + ORYX.Core.StencilSet.getTranslation(extensions.values()[0], "title");
 //			} 
 			
-			this.shapeList.appendChild(stencilSetNode = new Ext.tree.TreeNode({
+			/*this.shapeList.appendChild(stencilSetNode = new Ext.tree.TreeNode({
 				text:typeTitle, 			// Stencilset Name
 				allowDrag:false,
         		allowDrop:false,           
@@ -122,7 +122,7 @@ ORYX.Plugins.ShapeRepository = {
 	            cls:'headerShapeRep',
 				singleClickExpand:true}));
 			stencilSetNode.render();
-			stencilSetNode.expand();				
+			stencilSetNode.expand();	*/			
 			// Get Stencils from Stencilset
 			var stencils = sset.stencils(this.facade.getCanvas().getStencil(),
 										 this.facade.getRules());	
@@ -181,8 +181,8 @@ ORYX.Plugins.ShapeRepository = {
 			}).bind(this));
 		}).bind(this));
 			
-		if (this.shapeList.firstChild.firstChild) {
-			this.shapeList.firstChild.firstChild.expand(false, true);
+		if (this.shapeList.firstChild) {
+			this.shapeList.firstChild.expand(false, true);
 		}	
 	},
 

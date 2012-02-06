@@ -23,7 +23,13 @@ public class KMRStencil {
         BaseElement element;
         
         //check if it is one of 'our' elements
+        //Fact Model
         if (stencilId.startsWith("Model_")){
+            stencilId="TextAnnotation";
+            taskType=null;
+        }
+        //Cohort
+        if (stencilId.startsWith("Cohort_")){
             stencilId="TextAnnotation";
             taskType=null;
         }

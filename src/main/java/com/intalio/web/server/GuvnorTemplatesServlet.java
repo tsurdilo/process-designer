@@ -106,6 +106,7 @@ public class GuvnorTemplatesServlet extends HttpServlet{
                 //concat the new constraint
                 GuvnorConfigData existingWorkingSetConfigData = groupedWorkingSetConfigData.get(key);
                 existingWorkingSetConfigData.setMatchesValue(existingWorkingSetConfigData.getMatchesValue()+"|"+workingSetConfigData.getMatchesValue());
+                existingWorkingSetConfigData.setMatchesId(existingWorkingSetConfigData.getMatchesId()+"|"+workingSetConfigData.getMatchesId());
             }else{
                 groupedWorkingSetConfigData.put(key, workingSetConfigData);
             }

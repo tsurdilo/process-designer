@@ -9,8 +9,8 @@
       <constraintList>
         <constraints>
           <fieldConstraint>
-            <value>$d.matchesValue$</value>
-            <id>$d.matchesId$</id>
+            <value>$d.matchesId$</value>
+            <id>$d.matchesValue$</id>
             <operator>==</operator>
             <constraintValueType>1</constraintValueType>
             <expression>

@@ -127,6 +127,9 @@ import java.io.OutputStreamWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.jackson.JsonGenerator;
+import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.impl.FormalExpressionImpl;
+import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 
 /**
  * @author Esteban Aliverti
@@ -643,28 +646,70 @@ public class KMRJsonUnmarshaller {
                                         && ((FormalExpression)conditionalEventDefinition.getCondition()).getBody() != null
                                         && !((FormalExpression)conditionalEventDefinition.getCondition()).getBody().trim().equals("")){
                                     String body = ((FormalExpression)conditionalEventDefinition.getCondition()).getBody(); 
+                                    
+                                    String processId = def.getRootElements().get(0).getId();
+                                            
                                     StringBuilder ruleHeader = new StringBuilder();
+                                    StringBuilder defeaterRules = new StringBuilder();
                                     for (Entry<String, Map<String, String>> entry : cohortTypes.entrySet()) {
                                         ruleHeader.append("@");
                                         ruleHeader.append(entry.getKey());
                                         ruleHeader.append("([");
+                                        
+                                        defeaterRules.append("rule \"");
+                                        defeaterRules.append(processId);
+                                        defeaterRules.append(" defeater ");
+                                        defeaterRules.append(entry.getKey());
+                                        defeaterRules.append("\"\n");
+                                        defeaterRules.append("@activationListener('direct')\n");
+                                        defeaterRules.append("when\n");
+                                        defeaterRules.append("\t$a : Activation(rule.name == \"RuleFlow-Start-");
+                                        defeaterRules.append(processId);
+                                        defeaterRules.append("\")\n");
+                                        defeaterRules.append("\tnot ");
+                                        defeaterRules.append(entry.getKey());
+                                        defeaterRules.append("( ");
+                                        
                                         String separator = "";
                                         for (Entry<String, String> property : entry.getValue().entrySet()) {
-                                            ruleHeader.append(separator);
+                                            if (!property.getKey().toLowerCase().startsWith("cohortproperty_") || property.getValue().trim().equals("")){
+                                                continue;
+                                            }
+                                            
+                                            String propertyName = property.getKey().substring("cohortproperty_".length());
+                                            //since designer lowercase the id of the properties, we ned to get the real field name from another hidden property
+                                            propertyName = entry.getValue().get(propertyName+"_name"); 
+                                            
                                             ruleHeader.append("\"");
-                                            ruleHeader.append(property.getKey());
+                                            ruleHeader.append(propertyName);
                                             ruleHeader.append("\" : \"");
                                             ruleHeader.append(property.getValue());
-                                            ruleHeader.append("\"");
+                                            ruleHeader.append("\", ");
+                                            
+                                            defeaterRules.append(separator);
+                                            defeaterRules.append(propertyName);
+                                            defeaterRules.append(" == \"");
+                                            defeaterRules.append(property.getValue());
+                                            defeaterRules.append("\"");
+                                            
+                                            
                                             if (separator.equals("")){
                                                 separator = ", ";
                                             }
                                         }
                                         
+                                        //append also the process Id
+                                        ruleHeader.append("\"processId\" : \"");
+                                        ruleHeader.append(processId);
+                                        ruleHeader.append("\"");
                                         ruleHeader.append("])\n");
                                         
+                                        defeaterRules.append(")\n");
+                                        defeaterRules.append("then\n");
+                                        defeaterRules.append("\tkcontext.cancelActivation( $a );\n");
+                                        defeaterRules.append("end\n\n");
                                     }
-                                    body = ruleHeader.toString() + body;
+                                    body = "|-- auto-generated --|\n"+defeaterRules.toString()+"\n------\n"+ruleHeader.toString() + body;
                                     ((FormalExpression)conditionalEventDefinition.getCondition()).setBody(body);
                                 }
                             }

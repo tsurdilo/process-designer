@@ -2894,8 +2894,7 @@
                                 "value":"oid",
                                 "readonly":true,
                                 "optional":false,
-                                "visible":false,
-                                "hidden":true
+                                "visible":false
                             \},
                             \{
                                 "id":"oid",
@@ -2937,16 +2936,25 @@
                         "properties" :		[
                             $cohortDefs.(ch):{field|
                             \{
-                                "id":"$field$",
+                                "id":"cohortProperty_$field$", 
                                 "type":"String",
                                 "title":"$field$",
                                 "value":"",
                                 "readonly":false,
                                 "optional":true
                             \},
+                            \{
+                                "id":"$field$_name", 
+                                "type":"String",
+                                "title":"$field$",
+                                "value":"$field$",
+                                "readonly":true,
+                                "optional":false,
+                                "visible":false
+                            \},
                             }$
                             \{
-                                "id":"entity",
+                                "id":"cohortentity",
                                 "type":"String",
                                 "title":"Entity",
                                 "value":"$ch$",

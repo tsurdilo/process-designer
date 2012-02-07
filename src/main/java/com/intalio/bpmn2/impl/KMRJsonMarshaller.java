@@ -4,7 +4,9 @@
  */
 package com.intalio.bpmn2.impl;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -146,6 +148,8 @@ public class KMRJsonMarshaller extends Bpmn2JsonMarshaller {
             super.marshallTextAnnotation(textAnnotation, plane, generator, xOffset, yOffset, preProcessingData, def);
         }
     }
+
+    
     
     /*
     protected Association findOutgoingAssociation(BPMNPlane plane, BaseElement baseElement) {
@@ -172,5 +176,34 @@ public class KMRJsonMarshaller extends Bpmn2JsonMarshaller {
         throw new IllegalArgumentException(
                 "Could not find association information for " + baseElement.getId());
     }*/
+
+    @Override
+    protected void marshallNode(FlowNode node, Map<String, Object> properties, String stencil, BPMNPlane plane, JsonGenerator generator, int xOffset, int yOffset) throws JsonGenerationException, IOException {
+        
+        //remove any auto-generated defeater rule
+        if (stencil.equalsIgnoreCase("StartConditionalEvent")){
+            Object conditionObject = properties.get("conditionexpression");
+            if (conditionObject != null && !conditionObject.toString().trim().equals("") && conditionObject.toString().contains("#-#")){
+                BufferedReader reader = new BufferedReader(new StringReader(conditionObject.toString()));
+                StringBuilder finalCondition = new StringBuilder();
+                String line;
+                boolean startSavingLines = false;
+                while ((line = reader.readLine())!=null){
+                    if (line.startsWith("#-#")){
+                        startSavingLines = true;
+                    }
+                    
+                    if (startSavingLines){
+                        finalCondition.append(line);
+                        finalCondition.append("\n");
+                    }
+                }
+                
+                properties.put("conditionexpression", finalCondition.toString());
+            }
+        }
+        
+        super.marshallNode(node, properties, stencil, plane, generator, xOffset, yOffset);
+    }
     
 }

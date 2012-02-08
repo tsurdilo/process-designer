@@ -178,6 +178,8 @@ public class Bpmn2JsonUnmarshaller {
 
     private Bpmn2Resource _currentResource;
     
+    private Map<String,Escalation> _escalations = new HashMap<String, Escalation>();
+    
     public Bpmn2JsonUnmarshaller() {
         _helpers = new ArrayList<BpmnMarshallerHelper>();
         DroolsPackageImpl.init();
@@ -646,7 +648,7 @@ public class Bpmn2JsonUnmarshaller {
         List<RootElement> rootElements =  def.getRootElements();
         List<Signal> toAddSignals = new ArrayList<Signal>();
         List<Error> toAddErrors = new ArrayList<Error>();
-        List<Escalation> toAddEscalations = new ArrayList<Escalation>();
+        Set<Escalation> toAddEscalations = new HashSet<Escalation>();
         List<Message> toAddMessages = new ArrayList<Message>();
         List<ItemDefinition> toAddItemDefinitions = new ArrayList<ItemDefinition>();
         for(RootElement root : rootElements) {
@@ -683,13 +685,21 @@ public class Bpmn2JsonUnmarshaller {
                                 ((ErrorEventDefinition) ed).setErrorRef(err);
                                 
                             } else if(ed instanceof EscalationEventDefinition) {
-                                Escalation escalation = Bpmn2Factory.eINSTANCE.createEscalation();
+                                String escalationCode = null;
                                 Iterator<FeatureMap.Entry> iter = ed.getAnyAttribute().iterator();
                                 while(iter.hasNext()) {
                                     FeatureMap.Entry entry = iter.next();
                                     if(entry.getEStructuralFeature().getName().equals("esccode")) {
-                                        escalation.setEscalationCode((String) entry.getValue());
+                                        escalationCode = (String) entry.getValue();
+                                        break;
                                     }
+                                }
+                                
+                                Escalation escalation = this._escalations.get(escalationCode);
+                                if (escalation == null){
+                                    escalation = Bpmn2Factory.eINSTANCE.createEscalation();
+                                    escalation.setEscalationCode(escalationCode);
+                                    this._escalations.put(escalationCode, escalation);
                                 }
                                 toAddEscalations.add(escalation);
                                 ((EscalationEventDefinition) ed).setEscalationRef(escalation);
@@ -843,7 +853,7 @@ public class Bpmn2JsonUnmarshaller {
         List<RootElement> rootElements =  def.getRootElements();
         List<Signal> toAddSignals = new ArrayList<Signal>();
         List<Error> toAddErrors = new ArrayList<Error>();
-        List<Escalation> toAddEscalations = new ArrayList<Escalation>();
+        Set<Escalation> toAddEscalations = new HashSet<Escalation>();
         List<Message> toAddMessages = new ArrayList<Message>();
         List<ItemDefinition> toAddItemDefinitions = new ArrayList<ItemDefinition>();
         for(RootElement root : rootElements) {
@@ -880,13 +890,21 @@ public class Bpmn2JsonUnmarshaller {
                                 ((ErrorEventDefinition) ed).setErrorRef(err);
                                 
                             } else if(ed instanceof EscalationEventDefinition) {
-                                Escalation escalation = Bpmn2Factory.eINSTANCE.createEscalation();
+                                String escalationCode = null;
                                 Iterator<FeatureMap.Entry> iter = ed.getAnyAttribute().iterator();
                                 while(iter.hasNext()) {
                                     FeatureMap.Entry entry = iter.next();
                                     if(entry.getEStructuralFeature().getName().equals("esccode")) {
-                                        escalation.setEscalationCode((String) entry.getValue());
+                                        escalationCode = (String) entry.getValue();
+                                        break;
                                     }
+                                }
+                                
+                                Escalation escalation = this._escalations.get(escalationCode);
+                                if (escalation == null){
+                                    escalation = Bpmn2Factory.eINSTANCE.createEscalation();
+                                    escalation.setEscalationCode(escalationCode);
+                                    this._escalations.put(escalationCode, escalation);
                                 }
                                 toAddEscalations.add(escalation);
                                 ((EscalationEventDefinition) ed).setEscalationRef(escalation);
@@ -2070,6 +2088,22 @@ public class Bpmn2JsonUnmarshaller {
         } else {
             ee.setName("");
         }
+        
+//        List<EventDefinition> definitions = ee.getEventDefinitions();
+//            if (definitions != null && !definitions.isEmpty()){
+//                EventDefinition ed = definitions.get(0);
+//                if(ed instanceof EscalationEventDefinition) {
+//                if(properties.get("escalationcode") != null && !"".equals(properties.get("escalationcode"))) {
+//                    ExtendedMetaData metadata = ExtendedMetaData.INSTANCE;
+//                    EAttributeImpl extensionAttribute = (EAttributeImpl) metadata.demandFeature(
+//                                "http://www.jboss.org/drools", "esccode", false, false);
+//                    EStructuralFeatureImpl.SimpleFeatureMapEntry extensionEntry = new EStructuralFeatureImpl.SimpleFeatureMapEntry(extensionAttribute,
+//                        properties.get("escalationcode"));
+//                    ((EscalationEventDefinition) ee.getEventDefinitions().get(0)).getAnyAttribute().add(extensionEntry);
+//                }
+//            } 
+//        }
+        
     }
     
     protected void applyAssociationProperties(Association association, Map<String, String> properties) {

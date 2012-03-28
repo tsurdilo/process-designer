@@ -139,6 +139,21 @@ public class Bpmn2JsonMarshaller {
 	public static final String defaultBgColor_Activities = "#b1c2d6";
 	public static final String defaultBgColor_Events = "#ffffff";
 	
+    private static final String COMPONENT_SEPARATOR = "\\^";
+    private static final String ELEMENT_SEPARATOR = "@";
+    private static final String ATTRIBUTES_SEPARATOR = "\\|";
+    private static final String ATTRIBUTES_ELEMENTS_SEPARATOR = ",";
+    private static final String KEY_VALUE_SEPARATOR = ":";
+    private static final String[] KNOWN_KEYS = { "users", "groups", "from",
+            "tousers", "togroups", "replyto", "subject", "body" };
+    
+    private static final String reasignmentItemTemplate = 
+        "{\"reassignmentType\":\"{type}\",\"reassignmentToUsers\":\"{users}\",\"reassignmentToGroups\":\"{groups}\",\"reassignmentExpiresAt\":\"{expires}\"}";
+    private static final String notificationItemTemplate = 
+        "{\"notificationType\":\"{type}\",\"notificationToUsers\":\"{tousers}\",\"notificationToGroup\":\"{togroups}\"," +
+        "\"notificationExpiresAt\":\"{expires}\",\"notificationSubject\":\"{subject}\",\"notificationBody\":\"{body}\"," +
+        "\"notificationFrom\":\"{from}\",\"notificationReplyTo\":\"{replyto}\"}";
+
 	private Map<String, DiagramElement> _diagramElements = new HashMap<String, DiagramElement>();
 	private Map<String,Association> _diagramAssociations = new HashMap<String, Association>();
 	private static final Logger _logger = Logger.getLogger(Bpmn2JsonMarshaller.class);
@@ -1179,6 +1194,7 @@ public class Bpmn2JsonMarshaller {
     		    sb.setLength(sb.length() - 1);
     		}
     		properties.put("actors", sb.toString());
+    		
     	} else if (task instanceof SendTask) {
     		taskType = "Send";
     		SendTask st = (SendTask) task;
@@ -1211,6 +1227,10 @@ public class Bpmn2JsonMarshaller {
         
         // data inputs
         DataInput groupDataInput = null;
+        DataInput reassignNotStartedDataInput = null;
+        DataInput reassignNotCompletedDataInput = null;
+        DataInput notifyNotStartedDataInput = null;
+        DataInput notifyNotCompletedDataInput = null;
         if(task.getIoSpecification() != null) {
             List<InputSet> inputSetList = task.getIoSpecification().getInputSets();
             StringBuilder dataInBuffer = new StringBuilder();
@@ -1227,6 +1247,22 @@ public class Bpmn2JsonMarshaller {
                     }
                     if(dataIn.getName() != null && dataIn.getName().equals("GroupId")) {
                     	groupDataInput = dataIn;
+                    }
+                    
+                    if(dataIn.getName() != null && dataIn.getName().equals("NotStartedReassign")) {
+                        reassignNotStartedDataInput = dataIn;
+                    }
+                    
+                    if(dataIn.getName() != null && dataIn.getName().equals("NotCompletedReassign")) {
+                        reassignNotCompletedDataInput = dataIn;
+                    }
+                    
+                    if(dataIn.getName() != null && dataIn.getName().equals("NotStartedNotify")) {
+                        notifyNotStartedDataInput = dataIn;
+                    }
+                    
+                    if(dataIn.getName() != null && dataIn.getName().equals("NotCompletedNotify")) {
+                        notifyNotCompletedDataInput = dataIn;
                     }
                 }
             }
@@ -1262,6 +1298,11 @@ public class Bpmn2JsonMarshaller {
         List<DataOutputAssociation> outputAssociations = task.getDataOutputAssociations();
         List<String> uniDirectionalAssociations = new ArrayList<String>();
         //List<String> biDirectionalAssociations = new ArrayList<String>();
+        StringBuffer reassignments = new StringBuffer();
+        int reassignCounter = 0;
+        
+        StringBuffer notifications = new StringBuffer();
+        int notifyCounter = 0;
         
         for(DataInputAssociation datain : inputAssociations) {
             String lhsAssociation = "";
@@ -1310,6 +1351,59 @@ public class Bpmn2JsonMarshaller {
             						((FormalExpression) datain.getAssignment().get(0).getTo()).getBody().equals(groupDataInput.getId())) {
             			properties.put("groupid", ((FormalExpression) datain.getAssignment().get(0).getFrom()).getBody());
             		}
+            		
+            		if (reassignNotStartedDataInput != null && datain.getAssignment().get(0).getTo() != null &&
+                            ((FormalExpression) datain.getAssignment().get(0).getTo()).getBody() != null &&
+                                    ((FormalExpression) datain.getAssignment().get(0).getTo()).getBody().equals(reassignNotStartedDataInput.getId())) {
+            		    
+            		    if (reassignments.length() > 0) {
+            		        reassignments.append(",");
+            		    }
+            		    String[] value = buildComplexEditorJsonString(((FormalExpression) datain.getAssignment().get(0).getFrom()).getBody(), "not-started", reasignmentItemTemplate);
+            		    if (value != null && value.length == 2) {
+                		    reassignments.append(value[0]);
+                		    reassignCounter += Integer.parseInt(value[1]);
+            		    }
+                    }
+            		if (reassignNotCompletedDataInput != null && datain.getAssignment().get(0).getTo() != null &&
+                            ((FormalExpression) datain.getAssignment().get(0).getTo()).getBody() != null &&
+                                    ((FormalExpression) datain.getAssignment().get(0).getTo()).getBody().equals(reassignNotCompletedDataInput.getId())) {
+            		    if (reassignments.length() > 0) {
+                            reassignments.append(",");
+                        }
+            		    String[] value = buildComplexEditorJsonString(((FormalExpression) datain.getAssignment().get(0).getFrom()).getBody(), "not-completed", reasignmentItemTemplate);
+            		    if (value != null && value.length == 2) {
+                            reassignments.append(value[0]);
+                            reassignCounter += Integer.parseInt(value[1]);
+            		    }
+                    }
+            		
+            		if (notifyNotStartedDataInput != null && datain.getAssignment().get(0).getTo() != null &&
+                            ((FormalExpression) datain.getAssignment().get(0).getTo()).getBody() != null &&
+                                    ((FormalExpression) datain.getAssignment().get(0).getTo()).getBody().equals(notifyNotStartedDataInput.getId())) {
+                        
+                        if (notifications.length() > 0) {
+                            notifications.append(",");
+                        }
+                        String[] value = buildComplexEditorJsonString(((FormalExpression) datain.getAssignment().get(0).getFrom()).getBody(), "not-started", notificationItemTemplate);
+                        if (value != null && value.length == 2) {
+                            notifications.append(value[0]);
+                            notifyCounter += Integer.parseInt(value[1]);
+                        }
+                    }
+                    if (notifyNotCompletedDataInput != null && datain.getAssignment().get(0).getTo() != null &&
+                            ((FormalExpression) datain.getAssignment().get(0).getTo()).getBody() != null &&
+                                    ((FormalExpression) datain.getAssignment().get(0).getTo()).getBody().equals(notifyNotCompletedDataInput.getId())) {
+                        if (notifications.length() > 0) {
+                            notifications.append(",");
+                        }
+                        String[] value = buildComplexEditorJsonString(((FormalExpression) datain.getAssignment().get(0).getFrom()).getBody(), "not-completed", notificationItemTemplate);
+                        if (value != null && value.length == 2) {
+                            notifications.append(value[0]);
+                            notifyCounter += Integer.parseInt(value[1]);
+                        }
+                    }
+            		
             	}
             } 
 //            else if(isBiDirectional) {
@@ -1323,7 +1417,15 @@ public class Bpmn2JsonMarshaller {
                 uniDirectionalAssociations.add(lhsAssociation + "," + rhsAssociation);
             }
         }
+        if (reassignCounter > 0) {
+            String value = buildWrapInJsonString(reassignments.toString(), reassignCounter + "");
+            properties.put("reassignments", value);
+        }
         
+        if (notifyCounter > 0) {
+            String value = buildWrapInJsonString(notifications.toString(), notifyCounter + "");
+            properties.put("notifications", value);
+        }
         for(DataOutputAssociation dataout : outputAssociations) {
             if(dataout.getSourceRef().size() > 0) { 
                 String lhsAssociation = ((DataOutput) dataout.getSourceRef().get(0)).getName();
@@ -2246,6 +2348,66 @@ public class Bpmn2JsonMarshaller {
             }
         }
         return false;
+    }
+    
+    private String[] buildComplexEditorJsonString(String reassignmentString, String type, String itemTemplate) {
+        
+        
+        if (reassignmentString == null) {
+         
+            return null;
+        }
+        
+        int counter = 0;
+        StringBuffer items = new StringBuffer();
+        String[] components = reassignmentString.split(COMPONENT_SEPARATOR);
+        
+        for (String component : components) {
+            if (items.length() > 0) {
+                items.append(",");
+            }
+            counter++;
+            
+            String[] elements = component.split(ELEMENT_SEPARATOR);
+            String actionComponent = elements[0].substring(1, elements[0].length()-1);
+            String expireComponents = elements[1].substring(1, elements[1].length()-1);
+            
+            String item = itemTemplate.replaceAll("\\{expires\\}", expireComponents);
+            item = item.replaceAll("\\{type\\}", type);
+            String[] attributes = actionComponent.split(ATTRIBUTES_SEPARATOR);
+            
+            for (String attribute : attributes) {
+                for (String knownKey : KNOWN_KEYS) {
+
+                    if (attribute.startsWith(knownKey)) {
+                        String value = null;
+                        try {
+
+                            value = attribute.substring(knownKey.length() + KEY_VALUE_SEPARATOR.length());
+                        } catch (IndexOutOfBoundsException e) {
+
+                            value = "";
+
+                        }
+                        item = item.replaceAll("\\{"+knownKey+"\\}", value);
+                    }
+                }
+            }
+            items.append(item);
+        }
+        String[] result = {items.toString(), counter+""};
+        return result;
+        
+    }
+    
+    private String buildWrapInJsonString(String reassignmentString, String counter) {
+        String jsonTemplate = "{\"totalCount\":{0},\"items\":[{1}]}";
+
+        String jsonString = jsonTemplate.replaceAll("\\{0\\}", counter);
+        jsonString = jsonString.replaceAll("\\{1\\}", reassignmentString);
+        
+        return jsonString;
+        
     }
     
 }

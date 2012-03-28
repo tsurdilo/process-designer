@@ -175,6 +175,22 @@ public class Bpmn2JsonUnmarshaller {
     private Map<String,Message> _messages = new HashMap<String, Message>();
     private Map<String,ItemDefinition> _itemDefinitions = new HashMap<String, ItemDefinition>();
     
+    public static final String reassignmentExpressionTemplate = "[users:{0}|groups:{1}]@[{2}]";
+    public static final String reassignmentExpiresAtKey = "reassignmentExpiresAt";
+    public static final String reassignmentTypeKey = "reassignmentType";
+    public static final String reassignmentToUsersKey = "reassignmentToUsers";
+    public static final String reassignmentToGroupsKey = "reassignmentToGroups";
+    
+    public static final String notificationExpressionTemplate = "[from:{0}|tousers:{1}|togroups:{2}|replyto:{3}|subject:{4}|body:{5}]@[{6}]";
+    public static final String notificationExpiresAtKey = "notificationExpiresAt";
+    public static final String notificationTypeKey = "notificationType";
+    public static final String notificationToUsersKey = "notificationToUsers";
+    public static final String notificationToGroupsKey = "notificationToGroup";
+    public static final String notificationSubjectKey = "notificationSubject";
+    public static final String notificationBodyKey = "notificationBody";
+    public static final String notificationFromKey = "notificationFrom";
+    public static final String notificationReplyToKey = "notificationReplyTo";
+    
     public Bpmn2JsonUnmarshaller() {
         _helpers = new ArrayList<BpmnMarshallerHelper>();
         DroolsPackageImpl.init();
@@ -3572,8 +3588,437 @@ public class Bpmn2JsonUnmarshaller {
                 task.getDataInputAssociations().add(dia);
         	}
         }
+        
+        if(properties.get("reassignmentExpiresAt") != null && properties.get("reassignmentExpiresAt").length() > 0) {
+           
+           
+           if(task.getIoSpecification() == null) {
+               InputOutputSpecification iospec = Bpmn2Factory.eINSTANCE.createInputOutputSpecification();
+               task.setIoSpecification(iospec);
+           }
+           List<DataInput> dataInputs = task.getIoSpecification().getDataInputs();
+           boolean foundReassignNotStartedInput = false;
+           boolean foundReassignNotCompletedInput = false;
+           DataInput foundInputS = null;
+           DataInput foundInputC = null;
+           for(DataInput din : dataInputs) {
+               if(din.getName().equals("NotStartedReassign")) {
+                   foundReassignNotStartedInput = true;
+                   foundInputS = din;
+                   
+               } else if(din.getName().equals("NotCompletedReassign")) {
+                   foundReassignNotCompletedInput = true;
+                   foundInputC = din;
+               }
+               if (foundReassignNotStartedInput && foundReassignNotCompletedInput) {
+                   break;
+               }
+           }
+           
+           String reassignmentExpressionNotStarted = buildReassignmentExpression(properties, 0);
+           String reassignmentExpressionNotCompleted = buildReassignmentExpression(properties, 1);
+           
+           
+           // process not started reassignments
+           if(!foundReassignNotStartedInput) {
+               DataInput d = Bpmn2Factory.eINSTANCE.createDataInput();
+               d.setId(task.getId() + "_" + "NotStartedReassign" + "Input");
+               d.setName("NotStartedReassign");
+               task.getIoSpecification().getDataInputs().add(d);
+               foundInputS = d;
+               
+               if(task.getIoSpecification().getInputSets() == null || task.getIoSpecification().getInputSets().size() < 1) {
+                   InputSet inset = Bpmn2Factory.eINSTANCE.createInputSet();
+                   task.getIoSpecification().getInputSets().add(inset);
+               }
+               task.getIoSpecification().getInputSets().get(0).getDataInputRefs().add(d);
+           }
+           boolean foundReassignNotStartedAssociation = false;
+           List<DataInputAssociation> inputAssociations = task.getDataInputAssociations();
+           for(DataInputAssociation da : inputAssociations) {
+               if(da.getTargetRef().getId().equals(foundInputS.getId())) {
+                   foundReassignNotStartedAssociation = true;
+                   
+                   ((FormalExpression) da.getAssignment().get(0).getFrom()).setBody(reassignmentExpressionNotStarted);
+               }
+           }
+           
+           if(!foundReassignNotStartedAssociation) {
+               DataInputAssociation dia = Bpmn2Factory.eINSTANCE.createDataInputAssociation();
+               dia.setTargetRef(foundInputS);
+               
+               Assignment a = Bpmn2Factory.eINSTANCE.createAssignment();
+               FormalExpression reassignNotStartedFromExpression = Bpmn2Factory.eINSTANCE.createFormalExpression();
+               
+               reassignNotStartedFromExpression.setBody(reassignmentExpressionNotStarted);
+               
+               FormalExpression reassignNotStartedToExpression = Bpmn2Factory.eINSTANCE.createFormalExpression();
+               reassignNotStartedToExpression.setBody(foundInputS.getId());
+               
+               a.setFrom(reassignNotStartedFromExpression);
+               a.setTo(reassignNotStartedToExpression);
+               
+               dia.getAssignment().add(a);
+               task.getDataInputAssociations().add(dia);
+           }
+          
+           // process not completed reassignments
+           if(!foundReassignNotCompletedInput) {
+               DataInput d = Bpmn2Factory.eINSTANCE.createDataInput();
+               d.setId(task.getId() + "_" + "NotCompletedReassign" + "Input");
+               d.setName("NotCompletedReassign");
+               task.getIoSpecification().getDataInputs().add(d);
+               foundInputC = d;
+               
+               if(task.getIoSpecification().getInputSets() == null || task.getIoSpecification().getInputSets().size() < 1) {
+                   InputSet inset = Bpmn2Factory.eINSTANCE.createInputSet();
+                   task.getIoSpecification().getInputSets().add(inset);
+               }
+               task.getIoSpecification().getInputSets().get(0).getDataInputRefs().add(d);
+           }
+           boolean foundReassignNotCompletedAssociation = false;
+           inputAssociations = task.getDataInputAssociations();
+           for(DataInputAssociation da : inputAssociations) {
+               if(da.getTargetRef().getId().equals(foundInputC.getId())) {
+                   foundReassignNotCompletedAssociation = true;
+                   
+                   ((FormalExpression) da.getAssignment().get(0).getFrom()).setBody(reassignmentExpressionNotCompleted);
+               }
+           }
+           
+           if(!foundReassignNotCompletedAssociation) {
+               DataInputAssociation dia = Bpmn2Factory.eINSTANCE.createDataInputAssociation();
+               dia.setTargetRef(foundInputC);
+               
+               Assignment a = Bpmn2Factory.eINSTANCE.createAssignment();
+               FormalExpression reassignNotCompletedFromExpression = Bpmn2Factory.eINSTANCE.createFormalExpression();
+               
+               reassignNotCompletedFromExpression.setBody(reassignmentExpressionNotCompleted);
+               
+               FormalExpression reassignNotCompletedToExpression = Bpmn2Factory.eINSTANCE.createFormalExpression();
+               reassignNotCompletedToExpression.setBody(foundInputC.getId());
+               
+               a.setFrom(reassignNotCompletedFromExpression);
+               a.setTo(reassignNotCompletedToExpression);
+               
+               dia.getAssignment().add(a);
+               task.getDataInputAssociations().add(dia);
+           }
+               
+            
+        } else {
+            // reset since there is no reassignment
+            if (task.getIoSpecification() != null) {
+                List<DataInput> dataInputs = task.getIoSpecification().getDataInputs();
+               
+                boolean foundReassignNotStartedInput = false;
+                boolean foundReassignNotCompletedInput = false;
+                DataInput notStartedfoundInput = null;
+                DataInput notCompletedfoundInput = null;
+                for(DataInput din : dataInputs) {
+                    if(din.getName().equals("NotStartedReassign")) {
+                        foundReassignNotStartedInput = true;
+                        notStartedfoundInput = din;
+                      
+                    } else if(din.getName().equals("NotCompletedReassign")) {
+                        foundReassignNotCompletedInput = true;
+                        notCompletedfoundInput = din;
+                        
+                    }
+                    
+                    if (foundReassignNotStartedInput && foundReassignNotCompletedInput) {
+                        break;
+                    }
+                }
+                List<DataInputAssociation> inputAssociations = task.getDataInputAssociations();
+                if (foundReassignNotStartedInput) {
+                    for(DataInputAssociation da : inputAssociations) {
+                        if(da.getTargetRef().getId().equals(notStartedfoundInput.getId())) {
+                           
+                            ((FormalExpression) da.getAssignment().get(0).getFrom()).setBody("");
+                        }
+                    }
+                }
+                
+                if (foundReassignNotCompletedInput) {
+                    for(DataInputAssociation da : inputAssociations) {
+                        if(da.getTargetRef().getId().equals(notCompletedfoundInput.getId())) {
+                           
+                            ((FormalExpression) da.getAssignment().get(0).getFrom()).setBody("");
+                        }
+                    }
+                }
+                
+            }
+        }
+        
+        if(properties.get("notificationExpiresAt") != null && properties.get("notificationExpiresAt").length() > 0) {
+            System.out.println("notifications are defined as follows " + properties.get("notificationExpiresAt"));
+            System.out.println("notifications are defined as follows " + properties.get("notificationType"));
+            System.out.println("notifications are defined as follows " + properties.get("notificationToUsers"));
+            System.out.println("notifications are defined as follows " + properties.get("notificationToGroup"));
+            System.out.println("notifications are defined as follows " + properties.get("notificationSubject"));
+            System.out.println("notifications are defined as follows " + properties.get("notificationBody"));
+            
+            if(task.getIoSpecification() == null) {
+                InputOutputSpecification iospec = Bpmn2Factory.eINSTANCE.createInputOutputSpecification();
+                task.setIoSpecification(iospec);
+            }
+            List<DataInput> dataInputs = task.getIoSpecification().getDataInputs();
+            boolean foundNotifyNotStartedInput = false;
+            boolean foundNotifyNotCompletedInput = false;
+            DataInput foundInputS = null;
+            DataInput foundInputC = null;
+            for(DataInput din : dataInputs) {
+                if(din.getName().equals("NotStartedNotify")) {
+                    foundNotifyNotStartedInput = true;
+                    foundInputS = din;
+                    
+                } else if(din.getName().equals("NotCompletedNotify")) {
+                    foundNotifyNotCompletedInput = true;
+                    foundInputC = din;
+                }
+                if (foundNotifyNotStartedInput && foundNotifyNotCompletedInput) {
+                    break;
+                }
+            }
+            
+            String notificationExpressionNotStarted = buildNotificationExpression(properties, 0);
+            String notificationExpressionNotCompleted = buildNotificationExpression(properties, 1);
+            
+            
+            // process not started reassignments
+            if(!foundNotifyNotStartedInput) {
+                DataInput d = Bpmn2Factory.eINSTANCE.createDataInput();
+                d.setId(task.getId() + "_" + "NotStartedNotify" + "Input");
+                d.setName("NotStartedNotify");
+                task.getIoSpecification().getDataInputs().add(d);
+                foundInputS = d;
+                
+                if(task.getIoSpecification().getInputSets() == null || task.getIoSpecification().getInputSets().size() < 1) {
+                    InputSet inset = Bpmn2Factory.eINSTANCE.createInputSet();
+                    task.getIoSpecification().getInputSets().add(inset);
+                }
+                task.getIoSpecification().getInputSets().get(0).getDataInputRefs().add(d);
+            }
+            boolean foundNotifyNotStartedAssociation = false;
+            List<DataInputAssociation> inputAssociations = task.getDataInputAssociations();
+            for(DataInputAssociation da : inputAssociations) {
+                if(da.getTargetRef().getId().equals(foundInputS.getId())) {
+                    foundNotifyNotStartedAssociation = true;
+                    
+                    ((FormalExpression) da.getAssignment().get(0).getFrom()).setBody(notificationExpressionNotStarted);
+                }
+            }
+            
+            if(!foundNotifyNotStartedAssociation) {
+                DataInputAssociation dia = Bpmn2Factory.eINSTANCE.createDataInputAssociation();
+                dia.setTargetRef(foundInputS);
+                
+                Assignment a = Bpmn2Factory.eINSTANCE.createAssignment();
+                FormalExpression notifyNotStartedFromExpression = Bpmn2Factory.eINSTANCE.createFormalExpression();
+                
+                notifyNotStartedFromExpression.setBody(notificationExpressionNotStarted);
+                
+                FormalExpression notifyNotStartedToExpression = Bpmn2Factory.eINSTANCE.createFormalExpression();
+                notifyNotStartedToExpression.setBody(foundInputS.getId());
+                
+                a.setFrom(notifyNotStartedFromExpression);
+                a.setTo(notifyNotStartedToExpression);
+                
+                dia.getAssignment().add(a);
+                task.getDataInputAssociations().add(dia);
+            }
+           
+            // process not completed reassignments
+            if(!foundNotifyNotCompletedInput) {
+                DataInput d = Bpmn2Factory.eINSTANCE.createDataInput();
+                d.setId(task.getId() + "_" + "NotCompletedNotify" + "Input");
+                d.setName("NotCompletedNotify");
+                task.getIoSpecification().getDataInputs().add(d);
+                foundInputC = d;
+                
+                if(task.getIoSpecification().getInputSets() == null || task.getIoSpecification().getInputSets().size() < 1) {
+                    InputSet inset = Bpmn2Factory.eINSTANCE.createInputSet();
+                    task.getIoSpecification().getInputSets().add(inset);
+                }
+                task.getIoSpecification().getInputSets().get(0).getDataInputRefs().add(d);
+            }
+            boolean foundNotifyNotCompletedAssociation = false;
+            inputAssociations = task.getDataInputAssociations();
+            for(DataInputAssociation da : inputAssociations) {
+                if(da.getTargetRef().getId().equals(foundInputC.getId())) {
+                    foundNotifyNotCompletedAssociation = true;
+                    
+                    ((FormalExpression) da.getAssignment().get(0).getFrom()).setBody(notificationExpressionNotCompleted);
+                }
+            }
+            
+            if(!foundNotifyNotCompletedAssociation) {
+                DataInputAssociation dia = Bpmn2Factory.eINSTANCE.createDataInputAssociation();
+                dia.setTargetRef(foundInputC);
+                
+                Assignment a = Bpmn2Factory.eINSTANCE.createAssignment();
+                FormalExpression notifyNotCompletedFromExpression = Bpmn2Factory.eINSTANCE.createFormalExpression();
+                
+                notifyNotCompletedFromExpression.setBody(notificationExpressionNotCompleted);
+                
+                FormalExpression notifyNotCompletedToExpression = Bpmn2Factory.eINSTANCE.createFormalExpression();
+                notifyNotCompletedToExpression.setBody(foundInputC.getId());
+                
+                a.setFrom(notifyNotCompletedFromExpression);
+                a.setTo(notifyNotCompletedToExpression);
+                
+                dia.getAssignment().add(a);
+                task.getDataInputAssociations().add(dia);
+            }
+                
+             
+         } else {
+             // reset since there is no reassignment
+             if (task.getIoSpecification() != null) {
+                 List<DataInput> dataInputs = task.getIoSpecification().getDataInputs();
+                
+                 boolean foundNotifyNotStartedInput = false;
+                 boolean foundNotifyNotCompletedInput = false;
+                 DataInput notStartedfoundInput = null;
+                 DataInput notCompletedfoundInput = null;
+                 for(DataInput din : dataInputs) {
+                     if(din.getName().equals("NotStartedNotify")) {
+                         foundNotifyNotStartedInput = true;
+                         notStartedfoundInput = din;
+                       
+                     } else if(din.getName().equals("NotCompletedNotify")) {
+                         foundNotifyNotCompletedInput = true;
+                         notCompletedfoundInput = din;
+                         
+                     }
+                     
+                     if (foundNotifyNotStartedInput && foundNotifyNotCompletedInput) {
+                         break;
+                     }
+                 }
+                 List<DataInputAssociation> inputAssociations = task.getDataInputAssociations();
+                 if (foundNotifyNotStartedInput) {
+                     for(DataInputAssociation da : inputAssociations) {
+                         if(da.getTargetRef().getId().equals(notStartedfoundInput.getId())) {
+                            
+                             ((FormalExpression) da.getAssignment().get(0).getFrom()).setBody("");
+                         }
+                     }
+                 }
+                 
+                 if (foundNotifyNotCompletedInput) {
+                     for(DataInputAssociation da : inputAssociations) {
+                         if(da.getTargetRef().getId().equals(notCompletedfoundInput.getId())) {
+                            
+                             ((FormalExpression) da.getAssignment().get(0).getFrom()).setBody("");
+                         }
+                     }
+                 }
+                 
+             }
+         }
     }
     
+    private String buildReassignmentExpression(Map<String, String> properties, int type) {
+        //[users:john|groups:sales]@[4h]
+        
+        StringBuffer expressions = new StringBuffer();
+        
+        if (type == 0  && "not-started".equalsIgnoreCase(properties.get(reassignmentTypeKey))) {
+            
+            expressions.append(processReassignTemplate(reassignmentExpressionTemplate, properties, ""));
+        } else if (type == 1  && "not-completed".equalsIgnoreCase(properties.get(reassignmentTypeKey))) {
+            expressions.append(processReassignTemplate(reassignmentExpressionTemplate, properties, ""));
+        }
+        // process indexed properties
+        for (int index = 1; index < 100; index++) {
+            if (properties.get(reassignmentExpiresAtKey+index) != null) {
+                
+                if (type == 0  && "not-started".equalsIgnoreCase(properties.get(reassignmentTypeKey+index))) {
+                    if (expressions.length() > 0) {
+                        expressions.append("^");
+                    }
+                    expressions.append(processReassignTemplate(reassignmentExpressionTemplate, properties, index+""));
+                } else if (type == 1  && "not-completed".equalsIgnoreCase(properties.get(reassignmentTypeKey+index))) {
+                    if (expressions.length() > 0) {
+                        expressions.append("^");
+                    }
+                    expressions.append(processReassignTemplate(reassignmentExpressionTemplate, properties, index+""));
+                }
+            } else {
+                break;
+            }
+            
+        }
+        
+        return expressions.toString();
+    }
+    
+    private String buildNotificationExpression(Map<String, String> properties, int type) {
+        //[from:mike|tousers:john,mary|togroups:sales,hr|replyto:mike|subject:Test of notification|body:And here is the body]@[4h]"
+        
+        StringBuffer expressions = new StringBuffer();
+        
+        if (type == 0  && "not-started".equalsIgnoreCase(properties.get(notificationTypeKey))) {
+            
+            expressions.append(processNotifyTemplate(notificationExpressionTemplate, properties, ""));
+        } else if (type == 1  && "not-completed".equalsIgnoreCase(properties.get(notificationTypeKey))) {
+            expressions.append(processNotifyTemplate(notificationExpressionTemplate, properties, ""));
+        }
+        // process indexed properties
+        for (int index = 1; index < 100; index++) {
+            if (properties.get(notificationExpiresAtKey+index) != null) {
+                
+                if (type == 0  && "not-started".equalsIgnoreCase(properties.get(notificationTypeKey+index))) {
+                    if (expressions.length() > 0) {
+                        expressions.append("^");
+                    }
+                    expressions.append(processNotifyTemplate(notificationExpressionTemplate, properties, index+""));
+                } else if (type == 1  && "not-completed".equalsIgnoreCase(properties.get(notificationTypeKey+index))) {
+                    if (expressions.length() > 0) {
+                        expressions.append("^");
+                    }
+                    expressions.append(processNotifyTemplate(notificationExpressionTemplate, properties, index+""));
+                }
+            } else {
+                break;
+            }
+            
+        }
+        
+        return expressions.toString();
+    }
+    
+    private String processReassignTemplate(String expressionTemplate, Map<String, String> properties, String index) {
+        String expression = expressionTemplate.replaceAll("\\{0\\}", properties.get(reassignmentToUsersKey+index));
+        expression = expression.replaceAll("\\{1\\}", properties.get(reassignmentToGroupsKey+index));
+        expression = expression.replaceAll("\\{2\\}", properties.get(reassignmentExpiresAtKey+index));
+        
+        return expression;
+    }
+    
+    private String processNotifyTemplate(String expressionTemplate, Map<String, String> properties, String index) {
+        String expression = expressionTemplate.replaceAll("\\{0\\}", defaultValue(properties.get(notificationFromKey+index), ""));
+        expression = expression.replaceAll("\\{1\\}", defaultValue(properties.get(notificationToUsersKey+index), ""));
+        expression = expression.replaceAll("\\{2\\}", defaultValue(properties.get(notificationToGroupsKey+index), ""));
+        expression = expression.replaceAll("\\{3\\}", defaultValue(properties.get(notificationReplyToKey+index), ""));
+        expression = expression.replaceAll("\\{4\\}", defaultValue(properties.get(notificationSubjectKey+index), ""));
+        expression = expression.replaceAll("\\{5\\}", defaultValue(properties.get(notificationBodyKey+index), ""));
+        expression = expression.replaceAll("\\{6\\}", defaultValue(properties.get(notificationExpiresAtKey+index), ""));
+        
+        return expression;
+    }
+    
+    private String defaultValue(String value, String defaultValue) {
+        if (value == null) {
+            return defaultValue;
+        }
+        
+        return value;
+    }
+
     protected void applyGatewayProperties(Gateway gateway, Map<String, String> properties) {
         if(properties.get("name") != null && properties.get("name").length() > 0) {
             gateway.setName(properties.get("name"));
@@ -3640,11 +4085,12 @@ public class Bpmn2JsonUnmarshaller {
 
     private Map<String, String> unmarshallProperties(JsonParser parser) throws JsonParseException, IOException {
         Map<String, String> properties = new HashMap<String, String>();
-        while (parser.nextToken() != JsonToken.END_OBJECT) {
-            String fieldname = parser.getCurrentName();
-            parser.nextToken();
-            properties.put(fieldname, parser.getText());
-        }
+//        while (parser.nextToken() != JsonToken.END_OBJECT) {
+//            String fieldname = parser.getCurrentName();
+//            parser.nextToken();
+//            properties.put(fieldname, parser.getText());
+//        }
+        parseObject(parser, properties, 0);
         return properties;
     }
 
@@ -3672,6 +4118,62 @@ public class Bpmn2JsonUnmarshaller {
     
     protected String wrapInCDATABlock(String value) {
     	return "<![CDATA[" + value + "]]>";
+    }
+    
+    private void parseObject(JsonParser parser, Map<String, String> properties, int counter) throws JsonParseException, IOException  {
+        JsonToken token = parser.nextToken();
+        int index = counter;
+        while (token != JsonToken.END_OBJECT && token != null) {
+            String fieldname = null;
+            if (token == JsonToken.FIELD_NAME) {
+               fieldname = parser.getCurrentName();
+               token = parser.nextToken();
+            }
+            
+            if (token == JsonToken.VALUE_STRING || token == JsonToken.VALUE_NUMBER_INT) {
+            
+                if (index > 0) {
+                    properties.put(fieldname + index,  parser.getText());
+                } else {
+                    properties.put(fieldname,  parser.getText());
+                }
+            } else if (token == JsonToken.START_ARRAY) {
+                parseArray(parser, properties, index);
+                
+            } else if (token == JsonToken.START_OBJECT) {
+                parseObject(parser, properties, index);
+                
+            }
+            token = parser.nextToken();
+        }
+    }
+    
+    private void parseArray(JsonParser parser, Map<String, String> properties, int counter) throws JsonParseException, IOException {
+        JsonToken token = parser.nextToken();
+        String fieldname = null;
+        int index = counter;
+        while (token != JsonToken.END_ARRAY && token != null) {
+
+            if (token == JsonToken.FIELD_NAME) {
+                fieldname = parser.getCurrentName();
+                token = parser.nextToken();
+            }
+            if (token == JsonToken.VALUE_STRING || token == JsonToken.VALUE_NUMBER_INT) {
+                if (index > 0) {
+                    properties.put(fieldname + index,  parser.getText());
+                } else {
+                    properties.put(fieldname,  parser.getText());
+                }
+            } else if (token == JsonToken.START_ARRAY) {
+                parseArray(parser, properties, index);
+                
+            } else if (token == JsonToken.START_OBJECT) {
+                
+                parseObject(parser, properties, index);
+                index++;
+            }
+            token = parser.nextToken();
+        }
     }
 }
 

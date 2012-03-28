@@ -136,7 +136,18 @@
 					"optional":true,
 					"length":"",
 					"wrapLines":true
-				}
+				},
+                {
+                    "id":"htdeadline",
+                    "type":"Htdeadline",
+                    "title":"Htdeadline",
+                    "value":"",
+                    "description":"Reasignment",
+                    "readonly":false,
+                    "optional":true,
+                    "length":"",
+                    "wrapLines":true
+                }
 				/**,
 				{
 					"id":"outputset",
@@ -2568,7 +2579,113 @@
 					"description":"Group id value.",
 					"readonly":false,
 					"optional":true
-				}
+				},
+                {
+                    "id":"reassignments",
+                    "type":"Complex",
+                    "title":"Reassignments",
+                    "value":"",
+                    "description":"",
+                    "readonly":false,
+                    "optional":true,
+                    "complexItems": [
+                        {
+                            "id":"reassignmentType",
+                            "name":"Trigger when",
+                            "type":"String",
+                            "value":"",
+                            "width":100,
+                            "optional":false 
+                        },
+                        {
+                            "id":"reassignmentToUsers",
+                            "name":"To users",
+                            "type":"String",
+                            "value":"",
+                            "width":100,
+                            "optional":true 
+                        },
+                        {
+                            "id":"reassignmentToGroups",
+                            "name":"To Groups",
+                            "type":"String",
+                            "value":"",
+                            "width":100,
+                            "optional":true
+                        }
+                        ,
+                        {
+                            "id":"reassignmentExpiresAt",
+                            "name":"Expires At",
+                            "type":"String",
+                            "value":"",
+                            "width":100,
+                            "optional":false
+                        }
+                    ]
+                },
+                {
+                    "id":"notifications",
+                    "type":"Complex",
+                    "title":"Notifications",
+                    "value":"",
+                    "description":"",
+                    "readonly":false,
+                    "optional":true,
+                    "complexItems": [
+                        {
+                            "id":"notificationType",
+                            "name":"Trigger when",
+                            "type":"String",
+                            "value":"",
+                            "width":100,
+                            "optional":false 
+                        },
+                        {
+                            "id":"notificationToUsers",
+                            "name":"To Users",
+                            "type":"String",
+                            "value":"",
+                            "width":100,
+                            "optional":true 
+                        },
+                        {
+                            "id":"notificationToGroup",
+                            "name":"To Groups",
+                            "type":"String",
+                            "value":"",
+                            "width":100,
+                            "optional":true
+                        }
+                        ,
+                        {
+                            "id":"notificationExpiresAt",
+                            "name":"Expires At",
+                            "type":"String",
+                            "value":"",
+                            "width":100,
+                            "optional":false
+                        }
+                        ,
+                        {
+                            "id":"notificationSubject",
+                            "name":"Subject",
+                            "type":"String",
+                            "value":"",
+                            "width":100,
+                            "optional":true
+                        }
+                        ,
+                        {
+                            "id":"notificationBody",
+                            "name":"Body",
+                            "type":"String",
+                            "value":"",
+                            "width":100,
+                            "optional":true
+                        }
+                    ]
+                }
 				
 			]
 		},

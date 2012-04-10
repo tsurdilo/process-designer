@@ -116,6 +116,16 @@ public class EditorHandler extends HttpServlet {
     public static final String PREPROCESS = "designer.preprocess";
     
     /**
+     * The designer language looked up from system properties.
+     */
+    public static final String LANG = "designer.language";
+    
+    /**
+     * The designer default language.
+     */
+    public static final String DEFAULT_LANG = "en_us";
+    
+    /**
      * The designer bundle version looked up from the manifest.
      */
     public static final String BUNDLE_VERSION = "Bundle-Version";
@@ -231,7 +241,11 @@ public class EditorHandler extends HttpServlet {
         }
     
         // generate script to setup the languages
-        _envFiles.add("i18n/translation_en_us.js");
+        String language = System.getProperty(LANG) == null ? config.getInitParameter(LANG) : System.getProperty(LANG);
+        if (language == null || language.isEmpty()) {
+            language = DEFAULT_LANG;
+        }
+        _envFiles.add("i18n/translation_" + language + ".js");
         if (!_devMode) {
         	if (_logger.isInfoEnabled()) {
                 _logger.info(
@@ -376,6 +390,7 @@ public class EditorHandler extends HttpServlet {
         if(!isIE(request)){
             response.setContentType("application/xhtml+xml");
         }
+        response.setCharacterEncoding("UTF-8");
         XMLOutputter outputter = new XMLOutputter();
         Format format = Format.getPrettyFormat();
         format.setExpandEmptyElements(true);

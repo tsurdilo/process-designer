@@ -68,7 +68,6 @@ public class UUIDBasedRepositoryServlet extends HttpServlet {
         public void init() {
             factories.put("default", new UUIDBasedFileRepository());
             factories.put("jbpm", new UUIDBasedJbpmRepository());
-            factories.put("epn", new UUIDBasedEpnRepository());
             _init = true;
         }
         

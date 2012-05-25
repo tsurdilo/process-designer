@@ -183,8 +183,10 @@ ORYX.Plugins.Overlay = Clazz.extend({
 						} else if(p == "SYNTAX_CHECKS") {
 							x = -25;
 							y = (b.height() + 15 / 2) - 15;
-						}
-						else {
+						} else if(p == "JBW") {
+							x = (b.width() / 2) - 35;
+							y = -5;
+						} else {
 							return
 						}
 						

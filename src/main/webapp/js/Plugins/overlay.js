@@ -184,8 +184,11 @@ ORYX.Plugins.Overlay = Clazz.extend({
 							x = -25;
 							y = (b.height() + 15 / 2) - 15;
 						} else if(p == "JBW") {
-							x = (b.width() / 2) - 35;
+							x = (b.width() / 2) - 8;
 							y = -5;
+						} else if(p == "JBW2") {
+							x = (b.width() / 2) - 30;
+							y = -22;
 						} else {
 							return
 						}

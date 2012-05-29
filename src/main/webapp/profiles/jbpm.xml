@@ -41,5 +41,6 @@
     <plugin name="ORYX.Plugins.LockNode"/>
     <plugin name="ORYX.Plugins.JBW12"/>
     <externalloadurl protocol="http" host="localhost:8080" subdomain="drools-guvnor/org.drools.guvnor.Guvnor/oryxeditor" usr="admin" pwd="admin"/>
+    <runtimedata url="http://localhost:8080/jbossworld/statistics/process"/>
   </profile>
 </profiles>

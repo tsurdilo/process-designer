@@ -96,6 +96,8 @@ public interface IDiagramProfile {
      */
     public String getExternalLoadURLSubdomain();
     
+    public String getRuntimeDataURL();
+    
     /**
      * @return the user for external resource.
      */

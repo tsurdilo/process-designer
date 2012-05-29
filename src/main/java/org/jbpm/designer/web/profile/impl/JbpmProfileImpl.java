@@ -57,6 +57,7 @@ public class JbpmProfileImpl implements IDiagramProfile {
     private String _externalLoadSubdomain;
     private String _usr;
     private String _pwd;
+    private String _runtimedataurl;
     
     public JbpmProfileImpl(ServletContext servletContext) {
         this(servletContext, true);
@@ -158,6 +159,17 @@ public class JbpmProfileImpl implements IDiagramProfile {
                                 _pwd = reader.getAttributeValue(i);
                             }
                         }
+                    } else if ("runtimedata".equals(reader.getLocalName())) {
+                        for (int i = 0 ; i < reader.getAttributeCount() ; i++) {
+                            if ("url".equals(reader.getAttributeLocalName(i))) {
+                                String dataurl = reader.getAttributeValue(i);
+                                if(!isEmpty(dataurl)) {
+                                    _runtimedataurl = dataurl;
+                                } else {
+                                    _logger.info("Invalid runtiem data url specified");
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -188,8 +200,12 @@ public class JbpmProfileImpl implements IDiagramProfile {
     public String getExternalLoadURLSubdomain() {
         return _externalLoadSubdomain;
     }
+    
+    public String getRuntimeDataURL() {
+		return _runtimedataurl;
+	}
 
-    public String getUsr() {
+	public String getUsr() {
         return _usr;
     }
 

@@ -159,7 +159,11 @@ public class DefaultProfileImpl implements IDiagramProfile {
         return _externalLoadSubdomain;
     }
     
-    public String getUsr() {
+    public String getRuntimeDataURL() {
+		return null;
+	}
+
+	public String getUsr() {
         return _usr;
     }
 

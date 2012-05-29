@@ -221,8 +221,12 @@ public class EpnProfileImpl implements IDiagramProfile {
     public String getExternalLoadURLSubdomain() {
         return _externalLoadSubdomain;
     }
+    
+    public String getRuntimeDataURL() {
+		return null;
+	}
 
-    public String getUsr() {
+	public String getUsr() {
         return _usr;
     }
 

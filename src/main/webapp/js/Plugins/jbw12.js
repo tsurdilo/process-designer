@@ -31,19 +31,22 @@ ORYX.Plugins.JBW12 = Clazz.extend({
 	},
 	startPlay: function() {
 		this.doInitialOverlay();
-		setInterval(this.updateCounts.bind(this), 3000);
+		setInterval(this.updateCounts.bind(this), 4000);
 	},
 	updateCounts: function() {
+		//  /statistics/process 
 		Ext.Ajax.request({
             url: ORYX.PATH + 'jbw',
             method: 'POST',
-            success: function(response) {
+            success: function(request) {
     	   		try {
-    	   			if(response.responseText && response.responseText.length > 0) {
-    	   				var alldata = response.responseText.evalJSON();
-    	   				var processdata = alldata["data"];
-    	   				this.updateOverlay(processdata);
-    	   			}
+    	   			var resp = (request&&request.responseText?request.responseText:"{}").evalJSON();
+    	   			this.updateOverlay(resp);
+    	   			//if(response.responseText && response.responseText.length > 0) {
+    	   				//var alldata = response.responseText.evalJSON();
+    	   				//var processdata = alldata["data"];
+    	   				//this.updateOverlay(processdata);
+    	   			//}
     	   		} catch(e) {
     	   			Ext.Msg.minWidth = 600;
     	   			Ext.Msg.alert('Error retrieving runtime info:\n' + e);
@@ -57,6 +60,7 @@ ORYX.Plugins.JBW12 = Clazz.extend({
             	profile: ORYX.PROFILE
             }
         });
+		//var url = window.location.protocol + '//' + window.location.host + '/jbossworld/statistics/process';
 	},
 	updateOverlay: function(data) {
 		ORYX.EDITOR._canvas.getChildren().each((function(child) {
@@ -72,7 +76,23 @@ ORYX.Plugins.JBW12 = Clazz.extend({
 		if(child && (child instanceof ORYX.Core.Node || child instanceof ORYX.Core.Edge)) {
 			if(((child.getStencil().groups()[0] == "Activities") && (child.properties["oryx-tasktype"] && child.properties["oryx-tasktype"] == "User")) || (child.getStencil().groups()[0] == "End Events") || (child.getStencil().groups()[0] == "Start Events")) {
 				var count = "0";
-				this.showCountOverlay(child, count);
+				this.showOverlayOnChild(child, count);
+		        var rotating = ORYX.Editor.graft("http://www.w3.org/2000/svg", null,
+							 	['image', {
+							 		"id": "obj-" + child.resourceId,
+						            "height": "20",
+						            "width": "20"
+						        }]
+						);
+		        rotating.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', ORYX.PATH + "images/loaddata.gif");
+				this.facade.raiseEvent({
+		            type: ORYX.CONFIG.EVENT_OVERLAY_SHOW,
+		            id: "jbwanim." + child.resourceId,
+		            shapes: [child],
+		            node: rotating,
+		            nodePosition: "JBW2"
+		        });
+				//initsvgrotation(ORYX.EDITOR.getCanvas().getRootNode().ownerDocument, "obj-"+ child.resourceId);
 			} else {
 				child.setProperty("oryx-bordercolor", "#888888");
 				child.setProperty("oryx-bgcolor", "#CCEEFF");
@@ -86,12 +106,31 @@ ORYX.Plugins.JBW12 = Clazz.extend({
 			}
 		}
 	},
+	startRotation: function(child) {
+		initsvgrotation(ORYX.EDITOR.getCanvas().getRootNode().ownerDocument, "obj-"+ child.resourceId);
+	},
 	updateOverlayForChild: function(child, data) {
 		if(child && (child instanceof ORYX.Core.Node || child instanceof ORYX.Core.Edge)) {
 			if(((child.getStencil().groups()[0] == "Activities") && (child.properties["oryx-tasktype"] && child.properties["oryx-tasktype"] == "User")) || (child.getStencil().groups()[0] == "End Events") || (child.getStencil().groups()[0] == "Start Events")) {
-				if(data[child.properties["oryx-name"]]) {
-					this.hideOverlayOnChild(child);
-					this.showCountOverlay(child, data[child.properties["oryx-name"]]);
+				// start nodes -> processesStarted
+				// end nodes -> processesCompleted
+				// else -> id
+				if(child.getStencil().groups()[0] == "Start Events") {
+					if(data["processesStarted"]) {
+						this.showCountOverlay(child, data["processesStarted"]);
+					}
+				}
+				
+				if(child.getStencil().groups()[0] == "End Events") {
+					if(data["processesCompleted"]) {
+						this.showCountOverlay(child, data["processesCompleted"]);
+					}
+				}
+				
+				if(child.getStencil().groups()[0] == "Activities") {
+					if(data[child.resourceId]) {
+						this.showCountOverlay(child, data[child.resourceId]);
+					}
 				}
 			} 
 		}
@@ -102,40 +141,11 @@ ORYX.Plugins.JBW12 = Clazz.extend({
 		}
 	},
 	showCountOverlay: function(child, count) {
-		count = "Count: " + count;
 		if (!(child instanceof ORYX.Core.Shape)) {
             return;
 		}
-		this.facade.raiseEvent({
-            type: ORYX.CONFIG.EVENT_OVERLAY_HIDE,
-            id: "jbw." + child.resourceId
-        });
-		
-		var attr = {
-				fill: "mediumslateblue"
-        };
-		
-		var text = ORYX.Editor.graft("http://www.w3.org/2000/svg", null, ['text', {
-            "style": "font-size: 14px; font-weight: bold; fill: #FF0000"
-        }, count]);
-        
-        this.facade.raiseEvent({
-            type: ORYX.CONFIG.EVENT_OVERLAY_SHOW,
-            id: "jbw." + child.resourceId,
-            shapes: [child],
-            //attributes: attr,
-            node: text,
-            nodePosition: "JBW"
-        });
-        this.facade.raiseEvent({
-            type: ORYX.CONFIG.EVENT_OVERLAY_SHOW,
-            id: "jbwanim." + child.resourceId,
-            shapes: [child],
-            attributes: attr
-            //node: text,
-            //nodePosition: "JBW"
-        });
-        setInterval(this.hideAnim.bind(this), 500);
+		this.hideOverlayOnChild(child);
+		this.showOverlayOnChild(child, count);
 	},
 	hideOverlayOnChild: function(child){
         this.facade.raiseEvent({
@@ -143,16 +153,17 @@ ORYX.Plugins.JBW12 = Clazz.extend({
             id: "jbw." + child.resourceId
         });
     },
-    hideAnim: function() {
-    	ORYX.EDITOR._canvas.getChildren().each((function(child) {
-    		if(child && (child instanceof ORYX.Core.Node)) {
-    			if(((child.getStencil().groups()[0] == "Activities") && (child.properties["oryx-tasktype"] && child.properties["oryx-tasktype"] == "User")) || (child.getStencil().groups()[0] == "End Events") || (child.getStencil().groups()[0] == "Start Events")) {
-    				this.facade.raiseEvent({
-    		            type: ORYX.CONFIG.EVENT_OVERLAY_HIDE,
-    		            id: "jbwanim." + child.resourceId
-    		        });
-    			}
-    		}
-		}).bind(this));
+    showOverlayOnChild: function(child, count) {
+    	var text = ORYX.Editor.graft("http://www.w3.org/2000/svg", null, ['text', {
+            "style": "font-size: 18px; font-weight: bold; fill: black"
+        }, count]);
+        
+        this.facade.raiseEvent({
+            type: ORYX.CONFIG.EVENT_OVERLAY_SHOW,
+            id: "jbw." + child.resourceId,
+            shapes: [child],
+            node: text,
+            nodePosition: "JBW"
+        });
     }
 });

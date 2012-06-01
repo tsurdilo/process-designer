@@ -301,6 +301,10 @@ public class EditorHandler extends HttpServlet {
             HttpServletResponse response) 
             throws ServletException, IOException {
         Document doc = (Document) _doc.clone();
+        String playMode = request.getParameter("playmode");
+        if(playMode == null || playMode.length() < 1) {
+        	playMode = "false";
+        }
         String profileName = request.getParameter("profile");
         if(profileName == null || profileName.length() < 1) {
         	// default to jbpm
@@ -445,6 +449,9 @@ public class EditorHandler extends HttpServlet {
                 replacementMade = true;
             } else if ("defaultSkin".equals(elt)) { 
                 resultHtml.append("<link rel=\"Stylesheet\" media=\"screen\" href=\"/designer/css/theme-default.css\" type=\"text/css\"/>");
+                replacementMade = true;
+            }else if ("playmode".equals(elt)) { 
+                resultHtml.append(playMode);
                 replacementMade = true;
             } else if("overlaySkin".equals(elt)) {
             	if(_skin != null && !_skin.equals("default")) {

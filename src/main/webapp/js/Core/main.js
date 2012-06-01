@@ -293,8 +293,8 @@ ORYX.Editor = {
 		
 		// Hide every region except the center
 		for (region in this.layout_regions) {
-			if ( region != "center" ) {
-				//this.layout_regions[ region ].hide();
+			if ( region != "center" && ORYX.PLAYMODE == "true") {
+				this.layout_regions[ region ].setVisible(false);
 			}
 		}
 		
@@ -434,7 +434,10 @@ ORYX.Editor = {
 						
 			// trigger doLayout() and show the pane
 			current_region.ownerCt.doLayout();
-			current_region.show();
+			if(ORYX.PLAYMODE == "true" && current_region.region != "center") {
+			} else {
+				current_region.show();
+			}
 
 			if(Ext.isMac)
 				ORYX.Editor.resizeFix();

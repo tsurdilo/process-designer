@@ -47,13 +47,15 @@ ORYX.Plugins.JBW12 = Clazz.extend({
     	   			var resp = (request&&request.responseText?request.responseText:"{}").evalJSON();
     	   			this.updateOverlay(resp);
     	   		} catch(e) {
-    	   			Ext.Msg.minWidth = 600;
-    	   			Ext.Msg.alert('Error retrieving runtime info:\n' + e);
+    	   			//Ext.Msg.minWidth = 600;
+    	   			//Ext.Msg.alert('Error retrieving runtime info:\n' + e);
+    	   			// edit - do not show the error message 
     	   		}
             }.bind(this),
             failure: function(){
-            	Ext.Msg.minWidth = 600;
-            	Ext.Msg.alert('Error retrieving runtime info.');
+            	//Ext.Msg.minWidth = 600;
+            	//Ext.Msg.alert('Error retrieving runtime info.');
+            	// edit - do not show the error message
             },
             params: {
             	profile: ORYX.PROFILE
